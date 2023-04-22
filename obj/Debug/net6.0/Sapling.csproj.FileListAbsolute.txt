@@ -1,0 +1,15 @@
+C:\Users\mhend\OneDrive\Documents\School\_Exploration Sapling\Sapling\obj\Debug\net6.0\Sapling.csproj.AssemblyReference.cache
+C:\Users\mhend\OneDrive\Documents\School\_Exploration Sapling\Sapling\obj\Debug\net6.0\Sapling.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\mhend\OneDrive\Documents\School\_Exploration Sapling\Sapling\obj\Debug\net6.0\Sapling.AssemblyInfoInputs.cache
+C:\Users\mhend\OneDrive\Documents\School\_Exploration Sapling\Sapling\obj\Debug\net6.0\Sapling.AssemblyInfo.cs
+C:\Users\mhend\OneDrive\Documents\School\_Exploration Sapling\Sapling\obj\Debug\net6.0\Sapling.csproj.CoreCompileInputs.cache
+C:\Users\mhend\OneDrive\Documents\School\_Exploration Sapling\Sapling\bin\Debug\net6.0\Sapling.exe
+C:\Users\mhend\OneDrive\Documents\School\_Exploration Sapling\Sapling\bin\Debug\net6.0\Sapling.deps.json
+C:\Users\mhend\OneDrive\Documents\School\_Exploration Sapling\Sapling\bin\Debug\net6.0\Sapling.runtimeconfig.json
+C:\Users\mhend\OneDrive\Documents\School\_Exploration Sapling\Sapling\bin\Debug\net6.0\Sapling.dll
+C:\Users\mhend\OneDrive\Documents\School\_Exploration Sapling\Sapling\bin\Debug\net6.0\Sapling.pdb
+C:\Users\mhend\OneDrive\Documents\School\_Exploration Sapling\Sapling\obj\Debug\net6.0\Sapling.dll
+C:\Users\mhend\OneDrive\Documents\School\_Exploration Sapling\Sapling\obj\Debug\net6.0\refint\Sapling.dll
+C:\Users\mhend\OneDrive\Documents\School\_Exploration Sapling\Sapling\obj\Debug\net6.0\Sapling.pdb
+C:\Users\mhend\OneDrive\Documents\School\_Exploration Sapling\Sapling\obj\Debug\net6.0\Sapling.genruntimeconfig.cache
+C:\Users\mhend\OneDrive\Documents\School\_Exploration Sapling\Sapling\obj\Debug\net6.0\ref\Sapling.dll
