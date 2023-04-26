@@ -90,11 +90,19 @@ internal static class Program
 
         // Testing our number operator
         NumberOperator multiply = new NumberOperator(0, 0, "*");
-        Float a = new Float(0, 0, "3.1");
-        Float b = new Float(0, 0, "2.6");
-        multiply.AppendChild(a);
-        multiply.AppendChild(b);
+        Float num1 = new Float(0, 0, "3.1");
+        Float num2 = new Float(0, 0, "2.6");
+        multiply.AppendChild(num1);
+        multiply.AppendChild(num2);
         _logger.Add(multiply.Evaluate().Value);
+
+        // Testing our boolean operator
+        BooleanOperator xor = new BooleanOperator(0, 0, "xor");
+        Sapling.Tokens.Boolean bool1 = new Sapling.Tokens.Boolean(0, 0, "False");
+        Sapling.Tokens.Boolean bool2 = new Sapling.Tokens.Boolean(0, 0, "True");
+        xor.AppendChild(bool1);
+        xor.AppendChild(bool2);
+        _logger.Add(xor.Evaluate().Value);
 
         return 0;
     }
