@@ -1,5 +1,6 @@
 namespace Sapling.Logging;
 using System.IO;
+using System;
 
 /// <summary>
 /// Class <c>Logger</c> allows us to create log files during comilation, execution, and testing of sapling programs.
