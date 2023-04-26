@@ -22,5 +22,5 @@ internal interface IOperator: IToken
     /// will return 7.
     /// </example>
     /// </summary>
-    public Number Evaluate();
+    public Value Evaluate();
 }
