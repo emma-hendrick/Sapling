@@ -1,12 +1,11 @@
 namespace Sapling.Tokens;
-using Sapling.Interfaces;
 using System;
 using System.Collections.Generic;
 
 /// <summary>
 /// Class <c>Number</c> represents a valid number (3, 6, 4.5, -3) within the sapling programming language.
 /// </summary>
-internal abstract class Number: Node, IToken
+internal abstract class Number: Value
 {
     public override List<Type> RequiredChildren
     {

@@ -1,7 +1,4 @@
 namespace Sapling.Tokens;
-using Sapling.Interfaces;
-using System;
-using System.Collections.Generic;
 
 /// <summary>
 /// Class <c>Float</c> represents a valid floating point number (3.2, 6.63, 7.3, -3.02) within the sapling programming language.

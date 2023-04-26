@@ -1,7 +1,4 @@
 namespace Sapling.Tokens;
-using Sapling.Interfaces;
-using System;
-using System.Collections.Generic;
 
 /// <summary>
 /// Class <c>Integer</c> represents a valid integer (3, 6, 7, -3) within the sapling programming language.

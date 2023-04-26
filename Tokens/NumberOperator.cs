@@ -22,10 +22,15 @@ internal class NumberOperator: Node, IOperator
     /// For example:
     /// <code>
     /// NumberOperator multiply = new NumberOperator(0, 0, "*");
+    ///
     /// Float a = new Float(0, 0, "3.1");
+    ///
     /// Float b = new Float(0, 0, "2.6");
+    ///
     /// multiply.AppendChild(a);
+    ///
     /// multiply.AppendChild(b);
+    ///
     /// multiply.evaluate();
     /// </code>
     /// will return "8.06".
@@ -40,18 +45,18 @@ internal class NumberOperator: Node, IOperator
     /// <example>
     /// For example:
     /// <code>
-    /// NumberOperator operator1 = new Operator(1, 1, "+");
+    /// NumberOperator operator1 = new Operator(0, 0, "+");
     ///
-    /// operator1.AddChild(new Integer(3));
+    /// operator1.AddChild(new Integer(0, 0, "3"));
     ///
-    /// operator1.AddChild(new Integer(4));
+    /// operator1.AddChild(new Integer(0, 0, "4"));
     ///
     /// operator1.Evaluate();
     /// </code>
-    /// will return 7.
+    /// will return an integer with the value 7.
     /// </example>
     /// </summary>
-    public Number Evaluate()
+    public Value Evaluate()
     {
         if (RequiredChildren.Count != CurrentChildren.Count)
         {
