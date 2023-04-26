@@ -57,12 +57,32 @@ internal abstract class Node: IToken
                 (LinePos == other.LinePos);
     }
 
+    /// <summary>
+    /// This method returns true if the node has all of the children it needs to execute.
+    /// <example>
+    /// For example:
+    /// <code>
+    /// uncompletedNode.CompletedChildren();
+    /// </code>
+    /// will return false.
+    /// </example>
+    /// </summary>
     public bool CompletedChildren()
     {
         return (RequiredChildren.Count == CurrentChildren.Count);
     }
 
-    public void AppendChild()
+    /// <summary>
+    /// This method allows us to add children to uncompleted nodes.
+    /// <example>
+    /// For example:
+    /// <code>
+    /// uncompletedNode.AppendChild(child);
+    /// </code>
+    /// will append the child to the uncompletedNode.
+    /// </example>
+    /// </summary>
+    public void AppendChild(Node child)
     {
         
     }

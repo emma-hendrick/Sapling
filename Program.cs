@@ -1,4 +1,6 @@
 ﻿namespace Sapling;
+using Sapling.Logging;
+using Sapling.Tokens;
 using System;
 using System.Collections.Generic;
 
@@ -7,7 +9,14 @@ using System.Collections.Generic;
 /// </summary>
 internal static class Program
 {
-    // A list of valid commands
+    /// <summary>
+    /// A logger to be used in Sapling compilation, execution, and testing.
+    /// </summary>
+    private static Logger _logger = new Logger();
+
+    /// <summary>
+    /// A list of valid commands when executing the Sapling compiler from the command line.
+    /// </summary>
     private static List<string> _validCommands = new List<string>()
         {
             "run",
@@ -15,47 +24,54 @@ internal static class Program
             "test"
         };
 
-    // Define the execution command string in one place, so if it changes we only need to update it once
-    private static string _executionStringFormat = $"Your execution command should be in the form of: sapling {{command}} {{filename.sl}}";
+    /// <summary>
+    /// An example of the execution string, which we can show the user if they enter an incorrect command.
+    /// </summary>
+    private static string _executionStringFormat = $"Your execution command should be in the form of: sapling {{command}} {{filename.sl}}.";
 
     // The programs entry point
     private static int Main(string[] args)
     {
-        // Default to using source.sl if the user does not provide a file
-        string filename = args.Length > 1 ? args[1]: "source.sl";
-
-        // Check whether the filename is valid, and if not, print an error
-        if(filename.Substring(filename.Length - 3) != ".sl")
+        try
         {
-            PrintError($"You have entered an invalid filename. Valid filenames should end in .sl. \n{_executionStringFormat}");
-            return 1;
+
+            // Default to using source.sl if the user does not provide a file
+            string filename = args.Length > 1 ? args[1]: "source.sl";
+
+            // Check whether the filename is valid, and if not, throw an error
+            if(filename.Substring(filename.Length - 3) != ".sl") throw new Exception($"You have entered an invalid filename: Valid filenames should end in .sl. {_executionStringFormat}");
+
+            // Default to run the program if the user does not provide a command
+            // Valid commands are run, build, and test
+            string command = args.Length != 0 ? args[0]: "run";
+
+            // Check whether the command is valid, and if not, throw an error
+            if(!_validCommands.Contains(command)) throw new Exception($"You have entered an invalid command: Valid commands are {string.Join(", ", _validCommands)}. {_executionStringFormat}");
+
+            // Execute the users command on their provided file
+            switch(command){
+                case "run":
+                    return Run(filename);
+                case "build":
+                    return Build(filename);
+                case "test":
+                    return Test(filename);
+            }
+
+            // As somehow, the program has not caught the error that we are executing a valid command, lets throw an error since nothing else has been returned.
+            // There was no success, so there must have been an error.
+            throw new Exception("Sorry, something went wrong. Please submit an issue on our GitHub repository, and we will address the issue as soon as possible.");
+
         }
-
-        // Default to run the program if the user does not provide a command
-        // Valid commands are run, build, and test
-        string command = args.Length != 0 ? args[0]: "run";
-
-        // Check whether the command is valid, and if not, print an error
-        if(!_validCommands.Contains(command))
+        catch (Exception exception)
         {
-            PrintError($"You have entered an invalid command. Valid commands are {string.Join(", ", _validCommands)}. \n{_executionStringFormat}");
+
+            // Log the error so that we can see what happened after the fact, then print the error
+            _logger.Add($"Exception: {exception.Message}");
+            PrintError(exception.Message);
             return 1;
-        }
 
-        // Execute the users command on their provided file
-        switch(command){
-            case "run":
-                return Run(filename);
-            case "build":
-                return Build(filename);
-            case "test":
-                return Test(filename);
         }
-
-        // As somehow, the program has not caught the error that we are executing a valid command, lets return an error since nothing else has been returned.
-        // There was no success, so there must have been an error.
-        PrintError("Sorry, something went wrong. Please submit an issue on our GitHub repository, and we will address the issue as soon as possible.");
-        return 1;
     }
 
     /// <summary>
@@ -70,6 +86,16 @@ internal static class Program
     /// </summary>
     private static int Build(string filename)
     {
+        _logger.Add($"Compiling {filename}");
+
+        // Testing our number operator
+        NumberOperator multiply = new NumberOperator(0, 0, "*");
+        Float a = new Float(0, 0, "3.1");
+        Float b = new Float(0, 0, "2.6");
+        multiply.AppendChild(a);
+        multiply.AppendChild(b);
+        _logger.Add(multiply.Evaluate().Value);
+
         return 0;
     }
 
@@ -85,6 +111,7 @@ internal static class Program
     /// </summary>
     private static int Run(string filename)
     {
+        _logger.Add($"Running {filename}");
         return 0;
     }
 
@@ -100,9 +127,9 @@ internal static class Program
     /// </summary>
     private static int Test(string filename)
     {
+        _logger.Add($"Testing {filename}");
         return 0;
     }
-
 
     /// <summary>
     /// This method prints an error message.
