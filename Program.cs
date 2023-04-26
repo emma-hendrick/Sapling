@@ -87,23 +87,6 @@ internal static class Program
     private static int Build(string filename)
     {
         _logger.Add($"Compiling {filename}");
-
-        // Testing our number operator
-        NumberOperator multiply = new NumberOperator(0, 0, "*");
-        Float num1 = new Float(0, 0, "3.1");
-        Float num2 = new Float(0, 0, "2.6");
-        multiply.AppendChild(num1);
-        multiply.AppendChild(num2);
-        _logger.Add(multiply.Evaluate().Value);
-
-        // Testing our boolean operator
-        BooleanOperator xor = new BooleanOperator(0, 0, "xor");
-        Sapling.Tokens.Boolean bool1 = new Sapling.Tokens.Boolean(0, 0, "False");
-        Sapling.Tokens.Boolean bool2 = new Sapling.Tokens.Boolean(0, 0, "True");
-        xor.AppendChild(bool1);
-        xor.AppendChild(bool2);
-        _logger.Add(xor.Evaluate().Value);
-
         return 0;
     }
 

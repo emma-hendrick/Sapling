@@ -77,13 +77,52 @@ internal abstract class Node: IToken
     /// <example>
     /// For example:
     /// <code>
-    /// uncompletedNode.AppendChild(child);
+    /// uncompletedNode.AddChild(child);
     /// </code>
-    /// will append the child to the uncompletedNode.
+    /// will add the child to the uncompletedNode.
     /// </example>
     /// </summary>
-    public void AppendChild(Node child)
+    public void AddChild(Node child)
     {
-        
+        // If we already have all of our children, throw an exception
+        if (CompletedChildren()) throw new Exception($"Cannot add new child with value {child.Value} on line {child.LineNum} at char {child.LinePos}.");
+
+        // See which types we still need
+        List<Type> neededTypes = RequiredChildren;
+        foreach (Node node in CurrentChildren)
+        {
+            foreach (Type T in neededTypes.ToList())
+            {
+                if (TypeEquivalence(T, node.GetType()))
+                {
+                    neededTypes.Remove(T);
+                    break;
+                }
+            }
+        }
+
+        // Iterate through the needed types
+        foreach (Type T in neededTypes.ToList())
+        {
+            if (TypeEquivalence(T, child.GetType()))
+            {
+                _currentChildren.Add(child);
+                return;
+            }
+        }
+
+        // If we did not find the type in the last loop, then we know it is the wrong type
+        throw new Exception($"Cannot add new child with type {child.GetType()} on line {child.LineNum} at char {child.LinePos}. Types needed are {string.Join(", ", neededTypes)}.");
+
+    }
+    
+
+    /// <summary>
+    /// This method allows us to see whether a type is equivalent to another
+    /// </summary>
+    private bool TypeEquivalence(Type potentialBase, Type potentialDescendant)
+    {
+        return potentialDescendant.IsSubclassOf(potentialBase)
+            || potentialDescendant == potentialBase;
     }
 }

@@ -63,10 +63,10 @@ internal class NumberOperator: Node, IOperator
             throw new Exception($"Cannot evaluate \"{Value}\" at line {LineNum} position {LinePos}, not all children are present.");
         }
 
-        int num1 = int.Parse(CurrentChildren[0].Value);
-        int num2 = int.Parse(CurrentChildren[1].Value);
+        float num1 = float.Parse(CurrentChildren[0].Value);
+        float num2 = float.Parse(CurrentChildren[1].Value);
 
-        int result;
+        float result;
 
         switch (Value)
         {
