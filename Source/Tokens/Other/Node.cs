@@ -8,16 +8,16 @@ using System.Collections.Generic;
 /// </summary>
 internal abstract class Node: IToken
 {
-    protected int _lineNum;
-    public int LineNum
+    protected int _startIndex;
+    public int startIndex
     {
-        get => _lineNum;
+        get => _startIndex;
     }
 
-    protected int _linePos;
-    public int LinePos
+    protected int _endIndex;
+    public int endIndex
     {
-        get => _linePos;
+        get => _endIndex;
     }
 
     protected string _value;
@@ -38,10 +38,10 @@ internal abstract class Node: IToken
         set => _currentChildren = value;
     }
 
-    public Node(int lineNum, int linePos, string value)
+    public Node(int startIndex, int endIndex, string value)
     {
-        _lineNum = lineNum;
-        _linePos = linePos;
+        _startIndex = startIndex;
+        _endIndex = endIndex;
         _value = value;
     }
     
@@ -53,8 +53,8 @@ internal abstract class Node: IToken
         // Ensure that all values are equal to check equality
         return  (CurrentChildren == other.CurrentChildren) && 
                 (Value == other.Value) && 
-                (LineNum == other.LineNum) && 
-                (LinePos == other.LinePos);
+                (startIndex == other.startIndex) && 
+                (endIndex == other.endIndex);
     }
 
     /// <summary>
@@ -85,7 +85,7 @@ internal abstract class Node: IToken
     public void AddChild(Node child)
     {
         // If we already have all of our children, throw an exception
-        if (CompletedChildren()) throw new Exception($"Cannot add new child with value {child.Value} on line {child.LineNum} at char {child.LinePos}.");
+        if (CompletedChildren()) throw new Exception($"Cannot add new child with value {child.Value} on line {child.startIndex} at char {child.endIndex}, all children completed.");
 
         // See which types we still need
         List<Type> neededTypes = RequiredChildren;
@@ -112,7 +112,7 @@ internal abstract class Node: IToken
         }
 
         // If we did not find the type in the last loop, then we know it is the wrong type
-        throw new Exception($"Cannot add new child with type {child.GetType()} on line {child.LineNum} at char {child.LinePos}. Types needed are {string.Join(", ", neededTypes)}.");
+        throw new Exception($"Cannot add new child with type {child.GetType()} on line {child.startIndex} at char {child.endIndex}. Types needed are {string.Join(", ", neededTypes)}.");
 
     }
     

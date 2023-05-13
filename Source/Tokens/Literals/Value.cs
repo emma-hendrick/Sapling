@@ -16,7 +16,7 @@ internal abstract class Value: Node, IToken
     /// will create a new Value instance with the value of "Michael".
     /// </example>
     /// </summary>
-    public Value(int lineNum, int linePos, string value): base(lineNum, linePos, value)
+    public Value(int startIndex, int endIndex, string value): base(startIndex, endIndex, value)
     {
     }
 }

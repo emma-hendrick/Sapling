@@ -15,7 +15,7 @@ internal class Float: Number
     /// will create a new Float instance with the value of 3.14.
     /// </example>
     /// </summary>
-    public Float(int lineNum, int linePos, string value): base(lineNum, linePos, Floatify(value))
+    public Float(int startIndex, int endIndex, string value): base(startIndex, endIndex, Floatify(value))
     {
     }
 

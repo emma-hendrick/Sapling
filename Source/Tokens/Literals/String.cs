@@ -22,7 +22,7 @@ internal class String: Value
     /// will create a new String instance with the value of Michael.
     /// </example>
     /// </summary>
-    public String(int lineNum, int linePos, string value): base(lineNum, linePos, value)
+    public String(int startIndex, int endIndex, string value): base(startIndex, endIndex, value)
     {
     }
 }

@@ -22,7 +22,7 @@ internal class Boolean: Value
     /// will create a new Boolean instance with the value of True.
     /// </example>
     /// </summary>
-    public Boolean(int lineNum, int linePos, string value): base(lineNum, linePos, Boolify(value))
+    public Boolean(int startIndex, int endIndex, string value): base(startIndex, endIndex, Boolify(value))
     {
     }
 

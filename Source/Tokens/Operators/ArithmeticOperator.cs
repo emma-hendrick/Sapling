@@ -4,9 +4,9 @@ using System;
 using System.Collections.Generic;
 
 /// <summary>
-/// Class <c>NumberOperator</c> represents a valid numerical operator (such as + - * or /) within the sapling programming language.
+/// Class <c>ArithmeticOperator</c> represents a valid numerical operator (such as + - * or /) within the sapling programming language.
 /// </summary>
-internal class NumberOperator: Node, IOperator
+internal class ArithmeticOperator: Node, IOperator
 {
     public override List<Type> RequiredChildren
     {
@@ -21,7 +21,7 @@ internal class NumberOperator: Node, IOperator
     /// <example>
     /// For example:
     /// <code>
-    /// NumberOperator multiply = new NumberOperator(0, 0, "*");
+    /// ArithmeticOperator multiply = new ArithmeticOperator(0, 0, "*");
     ///
     /// Float a = new Float(0, 0, "3.1");
     ///
@@ -36,7 +36,7 @@ internal class NumberOperator: Node, IOperator
     /// will return "8.06".
     /// </example>
     /// </summary>
-    public NumberOperator(int lineNum, int linePos, string value): base(lineNum, linePos, value)
+    public ArithmeticOperator(int startIndex, int endIndex, string value): base(startIndex, endIndex, value)
     {
     }
 
@@ -60,7 +60,7 @@ internal class NumberOperator: Node, IOperator
     {
         if (RequiredChildren.Count != CurrentChildren.Count)
         {
-            throw new Exception($"Cannot evaluate \"{Value}\" at line {LineNum} position {LinePos}, not all children are present.");
+            throw new Exception($"Cannot evaluate \"{Value}\" at line {startIndex} position {endIndex}, not all children are present.");
         }
 
         float num1 = float.Parse(CurrentChildren[0].Value);

@@ -15,7 +15,7 @@ internal class Integer: Number
     /// will create a new Integer instance with the value of 3.
     /// </example>
     /// </summary>
-    public Integer(int lineNum, int linePos, string value): base(lineNum, linePos, Intify(value))
+    public Integer(int startIndex, int endIndex, string value): base(startIndex, endIndex, Intify(value))
     {
     }
 

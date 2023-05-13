@@ -22,7 +22,7 @@ internal abstract class Number: Value
     /// will create a new Number instance with the value of 3.14.
     /// </example>
     /// </summary>
-    public Number(int lineNum, int linePos, string value): base(lineNum, linePos, value)
+    public Number(int startIndex, int endIndex, string value): base(startIndex, endIndex, value)
     {
     }
 }

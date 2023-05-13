@@ -22,7 +22,7 @@ internal class ID: Node, IToken
     /// will create a new ID instance with the value of x (which will be used then as a variable or function name).
     /// </example>
     /// </summary>
-    public ID(int lineNum, int linePos, string value): base(lineNum, linePos, value)
+    public ID(int startIndex, int endIndex, string value): base(startIndex, endIndex, value)
     {
     }
 }

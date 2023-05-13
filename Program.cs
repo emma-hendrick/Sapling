@@ -1,7 +1,8 @@
 ﻿namespace Sapling;
 using Sapling.Logging;
-using Sapling.Tokens;
+using Sapling.Lexer;
 using System;
+using System.IO;
 using System.Collections.Generic;
 
 /// <summary>
@@ -85,8 +86,32 @@ internal static class Program
     /// </example>
     /// </summary>
     private static int Build(string filename)
-    {
+    {   
         _logger.Add($"Compiling {filename}");
+        
+        try
+        {
+            // Get all tokens from the file
+            string fileContent = File.ReadAllText($"{filename}");
+            PrecedenceBasedLexer lexer = new PrecedenceBasedLexer(Constants._tokenList);
+            Console.WriteLine(lexer.GetTokens(fileContent));
+        }
+        catch (FileNotFoundException)
+        {
+            string error = "The file does not exist.";
+            _logger.Add(error);
+            PrintError(error);
+            return 1;
+
+        }
+        catch (IOException ex)
+        {
+            string error = $"An error occurred while reading the file: {ex.Message}";
+            _logger.Add(error);
+            PrintError(error);
+            return 1;
+        }
+
         return 0;
     }
 
@@ -102,6 +127,8 @@ internal static class Program
     /// </summary>
     private static int Run(string filename)
     {
+        Build(filename);
+
         _logger.Add($"Running {filename}");
         return 0;
     }
@@ -118,6 +145,8 @@ internal static class Program
     /// </summary>
     private static int Test(string filename)
     {
+        Build(filename);
+
         _logger.Add($"Testing {filename}");
         return 0;
     }

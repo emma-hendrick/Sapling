@@ -20,7 +20,7 @@ internal class SaplingType: Node, IToken
     /// will create a new SaplingType instance with the value of "int".
     /// </example>
     /// </summary>
-    public SaplingType(int lineNum, int linePos, string value): base(lineNum, linePos, value)
+    public SaplingType(int startIndex, int endIndex, string value): base(startIndex, endIndex, value)
     {
     }
 }

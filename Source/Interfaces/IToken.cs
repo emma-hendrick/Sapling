@@ -10,7 +10,7 @@ internal interface IToken: IEquatable<IToken>
     /// <summary>
     /// The line number the token is found on.
     /// </summary>
-    public int LineNum
+    public int startIndex
     {
         get;
     }
@@ -18,7 +18,7 @@ internal interface IToken: IEquatable<IToken>
     /// <summary>
     /// How many characters the token is from the left side of the screen.
     /// </summary>
-    public int LinePos
+    public int endIndex
     {
         get;
     }

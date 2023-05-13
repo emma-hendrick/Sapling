@@ -36,7 +36,7 @@ internal class BooleanOperator: Node, IOperator
     /// will return "True".
     /// </example>
     /// </summary>
-    public BooleanOperator(int lineNum, int linePos, string value): base(lineNum, linePos, value)
+    public BooleanOperator(int startIndex, int endIndex, string value): base(startIndex, endIndex, value)
     {
     }
 
@@ -60,7 +60,7 @@ internal class BooleanOperator: Node, IOperator
     {
         if (RequiredChildren.Count != CurrentChildren.Count)
         {
-            throw new Exception($"Cannot evaluate \"{Value}\" at line {LineNum} position {LinePos}, not all children are present.");
+            throw new Exception($"Cannot evaluate \"{Value}\" at line {startIndex} position {endIndex}, not all children are present.");
         }
 
         bool bool1 = bool.Parse(CurrentChildren[0].Value);
@@ -70,13 +70,13 @@ internal class BooleanOperator: Node, IOperator
 
         switch (Value)
         {
-            case "and":
+            case "&&":
                 result = bool1 && bool2;
             break;
-            case "or":
+            case "||":
                 result = bool1 || bool2;
             break;
-            case "xor":
+            case "^":
                 result = !(bool1 == bool2);
             break;
             default:
