@@ -6,19 +6,18 @@ using System.Text.RegularExpressions;
 /// </summary>
 internal class TokenDefinition
 {
-
     /// <summary>
     /// The regular expression which will be used to match the tokens.
     /// </summary>
     private Regex _regex;
     
     /// <summary>
-    /// The name of the token.
+    /// The name of the associated token.
     /// </summary>
     private readonly string _name;
     
     /// <summary>
-    /// The name of the token.
+    /// The constructor of the associated token.
     /// </summary>
     private readonly Func<int, int, string, Node> _constructor;
         
@@ -30,6 +29,14 @@ internal class TokenDefinition
         _regex = new Regex(regexPattern, RegexOptions.Compiled);
         _name = name;
         _constructor = constructor;
+    }
+
+    /// <summary>
+    /// Get the pattern which will be used to match the tokens.
+    /// </summary>
+    public Regex GetPattern()
+    {
+        return _regex;
     }
 
     /// <summary>

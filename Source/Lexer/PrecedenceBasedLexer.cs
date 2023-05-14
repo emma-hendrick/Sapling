@@ -1,5 +1,6 @@
 namespace Sapling.Lexer;
 using Sapling.Tokens;
+using System.Text.RegularExpressions;
 /// <summary>
 /// Class <c>PrecedenceBasedLexer</c> interprets text from a file and gets valid tokens from the text utilizing regex and precedence.
 /// </summary>
@@ -30,6 +31,7 @@ internal class PrecedenceBasedLexer
         {
             TokenDefinition tokenDefinition = _tokenQueue.Dequeue();
             IEnumerable<Node> tokenMatches = tokenDefinition.FindMatches(inputString);
+            inputString = tokenDefinition.GetPattern().Replace(inputString, match => new string(' ', match.Length));
             tokens.AddRange(tokenMatches);
         }
 
@@ -38,7 +40,7 @@ internal class PrecedenceBasedLexer
         int startIndex = 0;
         foreach (Node token in tokens)
         {
-            if (token.startIndex != startIndex) throw new Exception($"Unmatched characters \"{inputCopy.Substring(startIndex, token.startIndex)}\" in input string from {startIndex} to {token.startIndex}."); 
+            if (token.startIndex != startIndex && inputCopy.Substring(startIndex, token.startIndex - startIndex).Trim().Length != 0) throw new Exception($"Unmatched characters \"{inputCopy.Substring(startIndex, token.startIndex - startIndex)}\" in input string from {startIndex} to {token.startIndex}."); 
             startIndex = token.endIndex;
         }
 

@@ -12,6 +12,7 @@ internal class ID: Node, IToken
             typeof(SaplingType)
         };
     }
+    
     /// <summary>
     /// This construsts a new instance of an id (x, y, myFunc).
     /// <example>
