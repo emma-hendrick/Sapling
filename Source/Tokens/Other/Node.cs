@@ -1,5 +1,6 @@
 namespace Sapling.Tokens;
 using Sapling.Interfaces;
+using static Sapling.UtilFuncs;
 using System;
 using System.Collections.Generic;
 
@@ -114,15 +115,5 @@ internal abstract class Node: IToken
         // If we did not find the type in the last loop, then we know it is the wrong type
         throw new Exception($"Cannot add new child with type {child.GetType()} on line {child.startIndex} at char {child.endIndex}. Types needed are {string.Join(", ", neededTypes)}.");
 
-    }
-    
-
-    /// <summary>
-    /// This method allows us to see whether a type is equivalent to another
-    /// </summary>
-    private bool TypeEquivalence(Type potentialBase, Type potentialDescendant)
-    {
-        return potentialDescendant.IsSubclassOf(potentialBase)
-            || potentialDescendant == potentialBase;
     }
 }

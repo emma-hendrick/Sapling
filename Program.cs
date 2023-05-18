@@ -1,6 +1,7 @@
 ﻿namespace Sapling;
 using Sapling.Logging;
 using Sapling.Lexer;
+using static Sapling.UtilFuncs;
 using System;
 using System.IO;
 using System.Collections.Generic;
@@ -46,18 +47,29 @@ internal static class Program
             // Valid commands are run, build, and test
             string command = args.Length != 0 ? args[0]: "run";
 
-            // Check whether the command is valid, and if not, throw an error
-            if(!_validCommands.Contains(command)) throw new Exception($"You have entered an invalid command: Valid commands are {string.Join(", ", _validCommands)}. {_executionStringFormat}");
-
-            // Execute the users command on their provided file
+            // Execute the users command on their provided file, and store the result in success to return at the end
+            Func<string, int> commandFunc;
             switch(command){
                 case "run":
-                    return Run(filename);
+                    commandFunc = Run;
+                    break;
                 case "build":
-                    return Build(filename);
+                    commandFunc = Build;
+                     break;
                 case "test":
-                    return Test(filename);
+                    commandFunc = Test;
+                    break;
+                default:
+                    throw new Exception($"You have entered an invalid command: Valid commands are {string.Join(", ", _validCommands)}. {_executionStringFormat}");
+
+            
             }
+
+            // Store the result of the users command to return after execution
+            int success = commandFunc(filename);
+            _logger.NewSection();
+            _logger.Add($"Command \"{command}\" executed on \"{filename}\".");
+            return success;
 
             // As somehow, the program has not caught the error that we are executing a valid command, lets throw an error since nothing else has been returned.
             // There was no success, so there must have been an error.
@@ -88,13 +100,17 @@ internal static class Program
     private static int Build(string filename)
     {   
         _logger.Add($"Compiling {filename}");
+        IEnumerable<Tokens.Node> tokens;
         
+        // Get all tokens from the file
         try
         {
-            // Get all tokens from the file
             string fileContent = File.ReadAllText($"{filename}");
             PrecedenceBasedLexer lexer = new PrecedenceBasedLexer(Constants._tokenList);
-            Console.WriteLine(lexer.GetTokens(fileContent));
+            tokens = lexer.GetTokens(fileContent);
+
+            _logger.NewSection();
+            _logger.Add($"Acquired nodes");
         }
         catch (FileNotFoundException)
         {
@@ -110,6 +126,14 @@ internal static class Program
             _logger.Add(error);
             PrintError(error);
             return 1;
+        }
+
+        // Parse those tokens
+        foreach (Tokens.Node token in tokens)
+        {
+
+            if (!TypeEquivalence(typeof(Tokens.Comment), token.GetType())) _logger.Add($"{token.GetType()} {token.Value} at {token.startIndex} to {token.endIndex}.");
+
         }
 
         return 0;
@@ -129,6 +153,7 @@ internal static class Program
     {
         Build(filename);
 
+        _logger.NewSection();
         _logger.Add($"Running {filename}");
         return 0;
     }
@@ -147,6 +172,7 @@ internal static class Program
     {
         Build(filename);
 
+        _logger.NewSection();
         _logger.Add($"Testing {filename}");
         return 0;
     }

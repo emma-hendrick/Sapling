@@ -29,11 +29,11 @@ internal class Logger
         }
 
         _startTime = DateTime.Now.ToString("MMddyy-Hmmss");
-        Add("------------------------------");
+        NewSection();
     }
 
     /// <summary>
-    /// This method adds a new line to the current log.
+    /// This method adds a new line of text to the current log.
     /// <example>
     /// For example:
     /// <code>
@@ -49,5 +49,21 @@ internal class Logger
         {
             writer.WriteLine($"{time}| {message}");
         }
+    }
+
+
+    /// <summary>
+    /// This method adds a new dividing line to the current log.
+    /// <example>
+    /// For example:
+    /// <code>
+    /// loggerInstance.NewSection();
+    /// </code>
+    /// will add a new line to the log containing the characters used as a dividing line.
+    /// </example>
+    /// </summary>
+    public void NewSection()
+    {
+        Add("------------------------------");
     }
 }
