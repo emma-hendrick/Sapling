@@ -2,6 +2,7 @@
 using Sapling.Logging;
 using Sapling.Lexer;
 using static Sapling.UtilFuncs;
+using static Sapling.TestLLVM;
 using System;
 using System.IO;
 using System.Collections.Generic;
@@ -99,6 +100,7 @@ internal static class Program
     /// </summary>
     private static int Build(string filename)
     {   
+        _logger.NewSection();
         _logger.Add($"Compiling {filename}");
         IEnumerable<Tokens.Node> tokens;
         
@@ -132,7 +134,7 @@ internal static class Program
         foreach (Tokens.Node token in tokens)
         {
 
-            if (!TypeEquivalence(typeof(Tokens.Comment), token.GetType())) _logger.Add($"{token.GetType()} {token.Value} at {token.startIndex} to {token.endIndex}.");
+            if (!TypeEquivalence(typeof(Tokens.Comment), token.GetType())) _logger.Add($"{token.GetType()} \"{token.Value}\" at {token.startIndex} to {token.endIndex}");
 
         }
 
@@ -159,7 +161,7 @@ internal static class Program
     }
 
     /// <summary>
-    /// This method runs an sapling program in testing mode.
+    /// This method tests LLVM IR generation, compilation, and execution, and then runs a sapling program in testing mode.
     /// <example>
     /// For example:
     /// <code>
@@ -170,6 +172,11 @@ internal static class Program
     /// </summary>
     private static int Test(string filename)
     {
+        if (!CompilationTest(_logger))
+        {
+            throw new Exception("There was an error when testing LLVM compilation. Please check our github, and if there is not an issue posted, please post it.");
+        }
+
         Build(filename);
 
         _logger.NewSection();
