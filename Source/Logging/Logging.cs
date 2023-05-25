@@ -29,7 +29,6 @@ internal class Logger
         }
 
         _startTime = DateTime.Now.ToString("MMddyy-Hmmss");
-        NewSection();
     }
 
     /// <summary>
