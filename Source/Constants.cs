@@ -8,6 +8,7 @@ using System.Collections.Generic;
 /// </summary>
 internal static class Constants
 {
+    internal static string _defaultFileName = "source.sapl";
     /// <summary>
     /// A list of valid tokens and their precedence in the Sapling programming language.
     /// </summary> 

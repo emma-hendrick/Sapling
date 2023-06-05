@@ -13,6 +13,11 @@ internal class Logger
     private string _startTime;
 
     /// <summary>
+    /// The name of the file this log is generated for.
+    /// </summary>
+    private string _filename = "";
+
+    /// <summary>
     /// This construsts a new logger.
     /// <example>
     /// For example:
@@ -22,6 +27,15 @@ internal class Logger
     /// will create a new logger called logger instance and will begin creating a log file.
     /// </example>
     /// </summary>
+    public Logger(string filename)
+    {
+        if (!Directory.Exists("./logs")) {
+            Directory.CreateDirectory("./logs");
+        }
+
+        _startTime = DateTime.Now.ToString("MMddyy-Hmmss");
+        _filename = filename;
+    }
     public Logger()
     {
         if (!Directory.Exists("./logs")) {
@@ -29,6 +43,7 @@ internal class Logger
         }
 
         _startTime = DateTime.Now.ToString("MMddyy-Hmmss");
+        _filename = Constants._defaultFileName;
     }
 
     /// <summary>
@@ -44,7 +59,7 @@ internal class Logger
     public void Add(string message)
     {
         string time = DateTime.Now.ToString("H:mm:ss");
-        using (StreamWriter writer = File.AppendText($"./logs/{_startTime}.log"))
+        using (StreamWriter writer = File.AppendText($"./logs/{_filename}-{_startTime}.log"))
         {
             writer.WriteLine($"{time}| {message}");
         }

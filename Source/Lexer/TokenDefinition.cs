@@ -1,6 +1,7 @@
 namespace Sapling.Lexer;
 using Sapling.Tokens;
 using System.Text.RegularExpressions;
+
 /// <summary>
 /// Class <c>TokenDefinition</c> allows us to define a tokens pattern, and the token and precedence associated with it.
 /// </summary>

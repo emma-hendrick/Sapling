@@ -1,6 +1,6 @@
 namespace Sapling.Lexer;
 using Sapling.Tokens;
-using System.Text.RegularExpressions;
+
 /// <summary>
 /// Class <c>PrecedenceBasedLexer</c> interprets text from a file and gets valid tokens from the text utilizing regex and precedence.
 /// </summary>
