@@ -30,7 +30,7 @@ internal static class Program
     /// <summary>
     /// An example of the execution string, which we can show the user if they enter an incorrect command.
     /// </summary>
-    private static string _executionStringFormat = $"Your execution command should be in the form of: sapling {{command}} {{filename.sapl}}.";
+    private static string _executionStringFormat = $"Your execution command should be in the form of: sapling {{command}} {{filename.sl}}.";
 
     // The programs entry point
     private static int Main(string[] args)
@@ -45,7 +45,7 @@ internal static class Program
             _logger = new Logger(filename.Substring(0, filename.Length - 3));
 
             // Check whether the filename is valid, and if not, throw an error
-            if(filename.Substring(filename.Length - 5) != ".sapl") throw new Exception($"You have entered an invalid filename: Valid filenames should end in .sapl. {_executionStringFormat}");
+            if(filename.Substring(filename.Length - 3) != ".sl") throw new Exception($"You have entered an invalid filename: Valid filenames should end in .sl. {_executionStringFormat}");
 
             // Default to run the program if the user does not provide a command
             // Valid commands are run, build, and test
@@ -96,7 +96,7 @@ internal static class Program
     /// <example>
     /// For example:
     /// <code>
-    /// Build("source.sapl");
+    /// Build("source.sl");
     /// </code>
     /// results in the creation of source.exe.
     /// </example>
@@ -149,7 +149,7 @@ internal static class Program
     /// <example>
     /// For example:
     /// <code>
-    /// Run("source.sapl");
+    /// Run("source.sl");
     /// </code>
     /// results in the creation and execution of source.exe.
     /// </example>
@@ -168,7 +168,7 @@ internal static class Program
     /// <example>
     /// For example:
     /// <code>
-    /// Test("source.sapl");
+    /// Test("source.sl");
     /// </code>
     /// results in the creation and testing of source.exe.
     /// </example>
