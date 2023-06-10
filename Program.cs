@@ -6,6 +6,7 @@ using static Sapling.TestLLVM;
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 /// <summary>
 /// Class <c>Program</c> interprets and runs the users command to either run, build, or test a sapling program.
@@ -28,6 +29,14 @@ internal static class Program
         };
 
     /// <summary>
+    /// A list of invalid filenames which are used for specific testing cases.
+    /// </summary>
+    private static List<string> _invalidFilenames = new List<string>()
+        {
+            "test_add.sl"
+        };
+
+    /// <summary>
     /// An example of the execution string, which we can show the user if they enter an incorrect command.
     /// </summary>
     private static string _executionStringFormat = $"Your execution command should be in the form of: sapling {{command}} {{filename.sl}}.";
@@ -45,6 +54,7 @@ internal static class Program
             _logger = new Logger(filename.Substring(0, filename.Length - 3), true);
 
             // Check whether the filename is valid, and if not, throw an error
+            if(_invalidFilenames.Contains(filename)) throw new Exception($"You have entered an invalid filename: You cannot use the following, as they are reserved for tests: {string.Join(' ', _invalidFilenames)}");
             if(filename.Substring(filename.Length - 3) != ".sl") throw new Exception($"You have entered an invalid filename: Valid filenames should end in .sl. {_executionStringFormat}");
 
             // Default to run the program if the user does not provide a command
@@ -70,7 +80,8 @@ internal static class Program
             }
 
             // Store the result of the users command to return after execution
-            int success = commandFunc(filename);
+            string baseFilename = filename.Substring(0, filename.Length - 3);
+            int success = commandFunc(baseFilename);
             _logger.NewSection();
             _logger.Add($"Command \"{command}\" executed on \"{filename}\".");
             return success;
@@ -104,13 +115,13 @@ internal static class Program
     private static int Build(string filename)
     {   
         _logger.NewSection();
-        _logger.Add($"Compiling {filename}");
+        _logger.Add($"Compiling {filename}.sl");
         IEnumerable<Tokens.Node> tokens;
         
         // Get all tokens from the file
         try
         {
-            string fileContent = File.ReadAllText($"{filename}");
+            string fileContent = File.ReadAllText($"{filename}.sl");
             PrecedenceBasedLexer lexer = new PrecedenceBasedLexer(Constants._tokenList);
             tokens = lexer.GetTokens(fileContent);
 
@@ -141,7 +152,39 @@ internal static class Program
 
         }
 
-        return 0;
+        _logger.NewSection();
+        _logger.Add("Compiling executable");
+
+        // Run the clang command
+        Process process = new Process();
+        process.StartInfo.FileName = "clang";
+        process.StartInfo.Arguments = $"{filename}.bc -o {filename}";
+        process.StartInfo.RedirectStandardOutput = true;
+        process.StartInfo.UseShellExecute = false;
+        process.Start();
+
+        // Read the output or wait for the process to exit
+        string output = process.StandardOutput.ReadToEnd();
+        process.WaitForExit();
+
+        // Process the output or handle any errors
+        if (output != "")
+        {
+            _logger.Add($"Compilation generated output: Output = {output}");
+        }
+
+        // Check the process exit code
+        int exitCode = process.ExitCode;
+        if (exitCode == 0)
+        {
+            _logger.Add("Compilation succeeded.");
+        }
+        else
+        {
+            throw new Exception($"Compilation failed with exit code: {exitCode}");
+        }
+
+        return exitCode;
     }
 
     /// <summary>
@@ -159,8 +202,38 @@ internal static class Program
         Build(filename);
 
         _logger.NewSection();
-        _logger.Add($"Running {filename}");
-        return 0;
+        _logger.Add($"Running {filename}.sl");
+
+        // Execute the generated file
+        Process process = new Process();
+        process.StartInfo.FileName = filename;
+        // process.StartInfo.Arguments = $""; TODO get args from input
+        process.StartInfo.RedirectStandardOutput = true;
+        process.StartInfo.UseShellExecute = false;
+        process.Start();
+
+        // Read the output or wait for the process to exit
+        string output = process.StandardOutput.ReadToEnd();
+        process.WaitForExit();
+
+        // Process the output or handle any errors
+        if (output != "")
+        {
+            _logger.Add($"Execution generated output: Output = {output}");
+        }
+
+        // Check the process exit code
+        int exitCode = process.ExitCode;
+        if (exitCode == 0)
+        {
+            _logger.Add("Execution succeeded.");
+        }
+        else
+        {
+            throw new Exception($"Execution failed with exit code: {exitCode}");
+        }
+
+        return exitCode;
     }
 
     /// <summary>
@@ -183,8 +256,38 @@ internal static class Program
         Build(filename);
 
         _logger.NewSection();
-        _logger.Add($"Testing {filename}");
-        return 0;
+        _logger.Add($"Testing {filename}.sl");
+
+        // Execute the generated file
+        Process process = new Process();
+        process.StartInfo.FileName = filename;
+        // process.StartInfo.Arguments = $"test"; TODO get args from input
+        process.StartInfo.RedirectStandardOutput = true;
+        process.StartInfo.UseShellExecute = false;
+        process.Start();
+
+        // Read the output or wait for the process to exit
+        string output = process.StandardOutput.ReadToEnd();
+        process.WaitForExit();
+
+        // Process the output or handle any errors
+        if (output != "")
+        {
+            _logger.Add($"Testing generated output: Output = {output}");
+        }
+
+        // Check the process exit code
+        int exitCode = process.ExitCode;
+        if (exitCode == 0)
+        {
+            _logger.Add("Testing succeeded.");
+        }
+        else
+        {
+            throw new Exception($"Testing failed with exit code: {exitCode}");
+        }
+
+        return exitCode;
     }
 
     /// <summary>
