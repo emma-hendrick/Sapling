@@ -1,16 +1,10 @@
 namespace Sapling.Tokens;
-using Sapling.Interfaces;
 
 /// <summary>
 /// Class <c>Delimeter</c> represents a valid delimeter ( { } ) within the sapling programming language.
 /// </summary>
-internal class Delimeter: Node, IToken
+internal class Delimeter: Token
 {
-    public override List<Type> RequiredChildren
-    {
-        get => new List<Type>(){};
-    }
-
     /// <summary>
     /// This construsts a new instance of a delimeter ( { } ).
     /// <example>

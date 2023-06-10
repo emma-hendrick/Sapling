@@ -1,17 +1,10 @@
 namespace Sapling.Tokens;
-using System;
-using System.Collections.Generic;
 
 /// <summary>
 /// Class <c>String</c> represents a valid character ('a', 'b', '╝') within the sapling programming language.
 /// </summary>
-internal class Character: Value
+internal class Character: Token
 {
-    public override List<Type> RequiredChildren
-    {
-        get => new List<Type>(){};
-    }
-
     /// <summary>
     /// This construsts a new instance of a character.
     /// <example>

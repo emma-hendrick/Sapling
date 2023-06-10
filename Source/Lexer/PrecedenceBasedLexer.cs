@@ -22,26 +22,26 @@ internal class PrecedenceBasedLexer
     /// <summary>
     /// Returns all the tokens in order of precedence.
     /// </summary>
-    public IEnumerable<Node> GetTokens(string inputString)
+    public IEnumerable<Token> GetTokens(string inputString)
     {
-        List<Node> tokens = new List<Node>();
+        List<Token> tokens = new List<Token>();
         string inputCopy = inputString;
 
         while (_tokenQueue.Count > 0)
         {
             TokenDefinition tokenDefinition = _tokenQueue.Dequeue();
-            IEnumerable<Node> tokenMatches = tokenDefinition.FindMatches(inputString);
+            IEnumerable<Token> tokenMatches = tokenDefinition.FindMatches(inputString);
             inputString = tokenDefinition.GetPattern().Replace(inputString, match => new string(' ', match.Length));
             tokens.AddRange(tokenMatches);
         }
 
-        tokens.Sort((t1, t2) => t1.startIndex.CompareTo(t2.startIndex));
+        tokens.Sort((t1, t2) => t1.StartIndex.CompareTo(t2.StartIndex));
 
         int startIndex = 0;
-        foreach (Node token in tokens)
+        foreach (Token token in tokens)
         {
-            if (token.startIndex != startIndex && inputCopy.Substring(startIndex, token.startIndex - startIndex).Trim().Length != 0) throw new Exception($"Unmatched characters \"{inputCopy.Substring(startIndex, token.startIndex - startIndex)}\" in input string from {startIndex} to {token.startIndex}."); 
-            startIndex = token.endIndex;
+            if (token.StartIndex != startIndex && inputCopy.Substring(startIndex, token.StartIndex - startIndex).Trim().Length != 0) throw new Exception($"Unmatched characters \"{inputCopy.Substring(startIndex, token.StartIndex - startIndex)}\" in input string from {startIndex} to {token.StartIndex}."); 
+            startIndex = token.EndIndex;
         }
 
         return tokens;

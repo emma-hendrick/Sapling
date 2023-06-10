@@ -100,7 +100,7 @@ internal static class Constants
         (new TokenDefinition(
             @"=", 
             "Assignment", 
-            (startIndex, endIndex, value) => new Assignment(startIndex, endIndex, value)), 
+            (startIndex, endIndex, value) => new Assign(startIndex, endIndex, value)), 
             7),
         
         (new TokenDefinition(

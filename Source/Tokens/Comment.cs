@@ -1,17 +1,10 @@
 namespace Sapling.Tokens;
-using Sapling.Interfaces;
 
 /// <summary>
 /// Class <c>Comment</c> represents a valid comment (# hello) within the sapling programming language.
 /// </summary>
-internal class Comment: Node, IToken
+internal class Comment: Token
 {
-    public override List<Type> RequiredChildren
-    {
-        get => new List<Type>(){
-            typeof(SaplingType)
-        };
-    }
     /// <summary>
     /// This construsts a new instance of an comment (# hello).
     /// <example>

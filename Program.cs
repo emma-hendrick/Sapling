@@ -116,7 +116,7 @@ internal static class Program
     {   
         _logger.NewSection();
         _logger.Add($"Compiling {filename}.sl");
-        IEnumerable<Tokens.Node> tokens;
+        IEnumerable<Tokens.Token> tokens;
         
         // Get all tokens from the file
         try
@@ -145,10 +145,10 @@ internal static class Program
         }
 
         // Parse those tokens
-        foreach (Tokens.Node token in tokens)
+        foreach (Tokens.Token token in tokens)
         {
 
-            if (!TypeEquivalence(typeof(Tokens.Comment), token.GetType())) _logger.Add($"{token.GetType()} \"{token.Value}\" at {token.startIndex} to {token.endIndex}");
+            if (!TypeEquivalence(typeof(Tokens.Comment), token.GetType())) _logger.Add($"{token.GetType()} \"{token.Value}\" at {token.StartIndex} to {token.EndIndex}");
 
         }
 

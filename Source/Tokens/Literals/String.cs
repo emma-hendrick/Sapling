@@ -1,17 +1,10 @@
 namespace Sapling.Tokens;
-using System;
-using System.Collections.Generic;
 
 /// <summary>
 /// Class <c>String</c> represents a valid string ("a", "bob", "f34f893h4dwkSDVer!@%#") within the sapling programming language.
 /// </summary>
-internal class String: Value
+internal class String: Token
 {
-    public override List<Type> RequiredChildren
-    {
-        get => new List<Type>(){};
-    }
-
     /// <summary>
     /// This construsts a new instance of a string.
     /// <example>

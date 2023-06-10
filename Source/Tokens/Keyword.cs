@@ -1,16 +1,10 @@
 namespace Sapling.Tokens;
-using Sapling.Interfaces;
 
 /// <summary>
 /// Class <c>Keyword</c> represents a valid keyword (for, while, switch, if) within the sapling programming language.
 /// </summary>
-internal class Keyword: Node, IToken
+internal class Keyword: Token
 {
-    public override List<Type> RequiredChildren
-    {
-        get => new List<Type>(){};
-    }
-
     /// <summary>
     /// This construsts a new instance of an keyword (for, while, switch, if).
     /// <example>

@@ -20,12 +20,12 @@ internal class TokenDefinition
     /// <summary>
     /// The constructor of the associated token.
     /// </summary>
-    private readonly Func<int, int, string, Node> _constructor;
+    private readonly Func<int, int, string, Token> _constructor;
         
     /// <summary>
     /// This constructs a new token definition.
     /// </summary>
-    public TokenDefinition(string regexPattern, string name, Func<int, int, string, Node> constructor)
+    public TokenDefinition(string regexPattern, string name, Func<int, int, string, Token> constructor)
     {
         _regex = new Regex(regexPattern, RegexOptions.Compiled);
         _name = name;
@@ -43,7 +43,7 @@ internal class TokenDefinition
     /// <summary>
     /// method <c>NumberOperator</c> represents a valid numerical operator (such as + - * or /) within the sapling programming language.
     /// </summary>
-    public IEnumerable<Node> FindMatches(string inputString)
+    public IEnumerable<Token> FindMatches(string inputString)
     {
         var matches = _regex.Matches(inputString);
         for(int i=0; i<matches.Count; i++)
