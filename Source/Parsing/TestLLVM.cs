@@ -1,6 +1,5 @@
 namespace Sapling;
 using Sapling.Logging;
-using System;
 using System.Diagnostics;
 
 /// <summary>
