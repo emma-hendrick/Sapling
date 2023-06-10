@@ -51,7 +51,7 @@ internal class TestLLVM
         }
         else
         {
-            log.Add("Compilation failed with exit code: " + exitCode);
+            throw new Exception($"Compilation failed with exit code: {exitCode}");
         }
 
         log.NewSection();
