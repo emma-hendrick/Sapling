@@ -76,7 +76,6 @@ internal class TestLLVM
 
         // Get the return value
         int returnValue = process2.ExitCode;
-        log.NewSection();
         log.Add($"Execution return value: {returnValue}");
 
         // Verify that the value is what we expected
