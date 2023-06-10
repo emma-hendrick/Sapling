@@ -1,4 +1,4 @@
-# A test file to test the lexer and parser
+# A test file to test the lexer, parser, and compiler
 int x = 5 + 5;
 return x;
 
