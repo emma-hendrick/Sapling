@@ -1,6 +1,10 @@
 *.vscode
 *.log
 *.note
+*.bc
+*.ll
+*.o
+*.exe
 logs
 bin
 obj
