@@ -13,6 +13,11 @@ internal class Logger
     private string _startTime;
 
     /// <summary>
+    /// Whether or not we are outputting to the console
+    /// </summary>
+    private bool _printOutput;
+
+    /// <summary>
     /// The name of the file this log is generated for.
     /// </summary>
     private string _filename = "";
@@ -27,7 +32,7 @@ internal class Logger
     /// will create a new logger called logger instance and will begin creating a log file.
     /// </example>
     /// </summary>
-    public Logger(string filename)
+    public Logger(string filename = Constants._defaultFileName, bool printOutput = false)
     {
         if (!Directory.Exists("./logs")) {
             Directory.CreateDirectory("./logs");
@@ -35,15 +40,7 @@ internal class Logger
 
         _startTime = DateTime.Now.ToString("MMddyy-Hmmss");
         _filename = filename;
-    }
-    public Logger()
-    {
-        if (!Directory.Exists("./logs")) {
-            Directory.CreateDirectory("./logs");
-        }
-
-        _startTime = DateTime.Now.ToString("MMddyy-Hmmss");
-        _filename = Constants._defaultFileName;
+        _printOutput = printOutput;
     }
 
     /// <summary>
@@ -63,6 +60,8 @@ internal class Logger
         {
             writer.WriteLine($"{time}| {message}");
         }
+
+        if (_printOutput) Console.WriteLine($"{time}| {message}");
     }
 
 

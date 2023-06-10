@@ -42,7 +42,7 @@ internal static class Program
             string filename = args.Length > 1 ? args[1]: Constants._defaultFileName;
 
             // Reinitialize the logger to use the filename provided in the parameters
-            _logger = new Logger(filename.Substring(0, filename.Length - 3));
+            _logger = new Logger(filename.Substring(0, filename.Length - 3), true);
 
             // Check whether the filename is valid, and if not, throw an error
             if(filename.Substring(filename.Length - 3) != ".sl") throw new Exception($"You have entered an invalid filename: Valid filenames should end in .sl. {_executionStringFormat}");
