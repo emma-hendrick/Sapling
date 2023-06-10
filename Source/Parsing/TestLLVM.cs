@@ -28,7 +28,7 @@ internal class TestLLVM
         // Run the clang command
         Process process = new Process();
         process.StartInfo.FileName = "clang";
-        process.StartInfo.Arguments = "test_add.bc -o test_add"; // Replace with the actual command arguments
+        process.StartInfo.Arguments = "test_add.bc -o test_add"; 
         process.StartInfo.RedirectStandardOutput = true;
         process.StartInfo.UseShellExecute = false;
         process.Start();
@@ -59,7 +59,7 @@ internal class TestLLVM
 
         // Execute the generated file
         Process process2 = new Process();
-        process2.StartInfo.FileName = "test_add"; // Replace with the actual path to your executable file
+        process2.StartInfo.FileName = "test_add"; 
         process2.StartInfo.RedirectStandardOutput = true;
         process2.StartInfo.UseShellExecute = false;
         process2.Start();
