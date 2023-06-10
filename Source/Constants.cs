@@ -68,13 +68,13 @@ internal static class Constants
             5),
 
         (new TokenDefinition(
-            @"\b(int|float|str|char|bool|void)\b", 
+            @"\b(int|float|str|char|bool)\b", 
             "Type", 
             (startIndex, endIndex, value) => new SaplingType(startIndex, endIndex, value)), 
             3),
 
         (new TokenDefinition(
-            @"\b(if|else|for|while|return|switch|case|break|continue)\b", 
+            @"\b(return)\b", 
             "Keyword", 
             (startIndex, endIndex, value) => new Keyword(startIndex, endIndex, value)), 
             2),
@@ -86,7 +86,7 @@ internal static class Constants
             6),
 
         (new TokenDefinition(
-            @"(=|\+|\-|\*|/)", 
+            @"(\+|\-|\*|/)", 
             "ArithmeticOperator", 
             (startIndex, endIndex, value) => new ArithmeticOperator(startIndex, endIndex, value)), 
             6),
@@ -96,9 +96,15 @@ internal static class Constants
             "BooleanOperator", 
             (startIndex, endIndex, value) => new BooleanOperator(startIndex, endIndex, value)), 
             6),
+
+        (new TokenDefinition(
+            @"=", 
+            "Assignment", 
+            (startIndex, endIndex, value) => new Assignment(startIndex, endIndex, value)), 
+            7),
         
         (new TokenDefinition(
-            @"(\(|\)|\{|\}|\;|\?|\:)", 
+            @"(\(|\)|\{|\}|\;)", 
             "Delimeter", 
             (startIndex, endIndex, value) => new Delimeter(startIndex, endIndex, value)), 
             1),
