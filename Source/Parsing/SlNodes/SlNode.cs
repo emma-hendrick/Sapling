@@ -1,4 +1,5 @@
-// namespace Sapling.Nodes;
+namespace Sapling.Nodes;
+
 // using Sapling.Tokens;
 // using System;
 // using System.Collections.Generic;
