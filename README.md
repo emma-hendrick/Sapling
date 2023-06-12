@@ -8,6 +8,10 @@ Hello all, welcome to the sapling programming language. Once this is in a workin
 
 Setting up Classes for all Tokens which will be used within Sapling
 
+### 0.0.1
+
+Compilation of some testing code works; AST not yet implemented
+
 ---
 
 **Enjoy!**

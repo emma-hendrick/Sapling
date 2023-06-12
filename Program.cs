@@ -1,7 +1,6 @@
 ﻿namespace Sapling;
 using Sapling.Logging;
 using Sapling.Lexer;
-using static Sapling.UtilFuncs;
 using static Sapling.TestLLVM;
 using System;
 using System.IO;
@@ -150,14 +149,11 @@ internal static class Program
             return 1;
         }
 
-        // Parse those tokens
-        foreach (Tokens.Token token in tokens)
-        {
+        // Create a parser to handle our tokens
+        Parser parser = new Parser(tokens, _logger);
+        parser.Parse();
 
-            if (!TypeEquivalence(typeof(Tokens.Comment), token.GetType())) _logger.Add($"{token.GetType()} \"{token.Value}\" at {token.StartIndex} to {token.EndIndex}");
-
-        }
-
+        // Generate the LLVM IR
         _logger.NewSection();
         _logger.Add("Writing LLVM IR");
 
