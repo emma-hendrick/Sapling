@@ -114,56 +114,56 @@ internal class Parser
     /// <summary>
     /// This method parses an assignment operator for a property and adds the needed nodes to the AST.
     /// </summary>
-    // private SlAssignValue ParseAssignProperty()
-    // {
-    // }
+    private SlAssignProperty ParseAssignProperty()
+    {
+    }
 
     /// <summary>
     /// This method parses an assignment operator for a method and adds the needed nodes to the AST.
     /// </summary>
-    // private SlAssignMethod ParseAssignMethod()
-    // {
-    // }
+    private SlAssignMethod ParseAssignMethod()
+    {
+    }
 
     /// <summary>
     /// This method parses an assignment operator for a function and adds the needed nodes to the AST.
     /// </summary>
-    // private SlAssignClass ParseAssignClass()
-    // {
-    // }
+    private SlAssignClass ParseAssignClass()
+    {
+    }
 
     /// <summary>
     /// This method parses an expression and adds the needed nodes to the AST.
     /// </summary>
-    // private SlExpression ParseExpression()
-    // {
-    // }
+    private SlExpression ParseExpression()
+    {
+    }
 
     /// <summary>
     /// This method parses an identifier and adds the needed nodes to the AST.
     /// </summary>
-    // private SlExpression ParseIdentifier()
-    // {
-    // }
+    private SlExpression ParseIdentifier()
+    {
+    }
 
     /// <summary>
     /// This method parses a parensthetical expression and adds the needed nodes to the AST.
     /// </summary>
-    // private SlParenExpression ParseParenExpression()
-    // {
-    // }
+    private SlParenExpression ParseParenExpression()
+    {
+    }
 
     /// <summary>
     /// This method parses a return statement and adds the needed nodes to the AST.
     /// </summary>
-    // private SlReturn ParseReturn()
-    // {
-    // }
+    private SlReturn ParseReturn()
+    {
+    }
 
     /// <summary>
     /// This method calls a function and adds the needed nodes to the AST.
     /// </summary>
-    // private SlFunctionCall ParseFunctionCall()
-    // {
-    // }
+    private SlFunctionCall ParseFunctionCall()
+    {
+    }
 }
