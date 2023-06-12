@@ -1,6 +1,5 @@
 *.vscode
 *.log
-*.note
 *.bc
 *.ll
 *.o
@@ -8,3 +7,6 @@
 logs
 bin
 obj
+builds
+notes
+examples_for_me

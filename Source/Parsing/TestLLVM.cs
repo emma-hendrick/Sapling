@@ -28,7 +28,7 @@ internal class TestLLVM
         // Run the clang command
         Process process = new Process();
         process.StartInfo.FileName = "clang";
-        process.StartInfo.Arguments = "test_add.bc -o test_add"; 
+        process.StartInfo.Arguments = "tests/test_add.bc -o tests/test_add"; 
         process.StartInfo.RedirectStandardOutput = true;
         process.StartInfo.UseShellExecute = false;
         process.Start();
@@ -59,7 +59,7 @@ internal class TestLLVM
 
         // Execute the generated file
         Process process2 = new Process();
-        process2.StartInfo.FileName = "test_add"; 
+        process2.StartInfo.FileName = "tests/test_add"; 
         process2.StartInfo.RedirectStandardOutput = true;
         process2.StartInfo.UseShellExecute = false;
         process2.Start();
@@ -146,7 +146,7 @@ internal class TestLLVM
 
         // Compile it!
         log.Add("Outputting bitcode to test_add.bc");
-        if (LLVMSharp.LLVM.WriteBitcodeToFile(module, "test_add.bc") != 0) {
+        if (LLVMSharp.LLVM.WriteBitcodeToFile(module, "tests/test_add.bc") != 0) {
             log.Add("Error: error writing bitcode to file");
         }
 

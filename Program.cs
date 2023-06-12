@@ -114,8 +114,14 @@ internal static class Program
     /// </summary>
     private static int Build(string filename)
     {   
+        // Create a new logger section and create a new builds folder if necessary
         _logger.NewSection();
+        if (!Directory.Exists("./builds")) {
+            _logger.Add($"Creating builds folder");
+            Directory.CreateDirectory("./builds");
+        }
         _logger.Add($"Compiling {filename}.sl");
+
         IEnumerable<Tokens.Token> tokens;
         
         // Get all tokens from the file
@@ -153,38 +159,70 @@ internal static class Program
         }
 
         _logger.NewSection();
-        _logger.Add("Compiling executable");
+        _logger.Add("Writing LLVM IR");
 
-        // Run the clang command
-        Process process = new Process();
-        process.StartInfo.FileName = "clang";
-        process.StartInfo.Arguments = $"{filename}.bc -o {filename}";
-        process.StartInfo.RedirectStandardOutput = true;
-        process.StartInfo.UseShellExecute = false;
-        process.Start();
+        // Run the clang command to write the LLVM IR
+        Process process1 = new Process();
+        process1.StartInfo.FileName = "clang";
+        process1.StartInfo.Arguments = $"builds/{filename}.bc -S -emit-llvm -o builds/source.ll";
+        process1.StartInfo.RedirectStandardOutput = true;
+        process1.StartInfo.UseShellExecute = false;
+        process1.Start();
 
         // Read the output or wait for the process to exit
-        string output = process.StandardOutput.ReadToEnd();
-        process.WaitForExit();
+        string output1 = process1.StandardOutput.ReadToEnd();
+        process1.WaitForExit();
 
         // Process the output or handle any errors
-        if (output != "")
+        if (output1 != "")
         {
-            _logger.Add($"Compilation generated output: Output = {output}");
+            _logger.Add($"LLVM IR writing generated output: Output = {output1}");
         }
 
         // Check the process exit code
-        int exitCode = process.ExitCode;
-        if (exitCode == 0)
+        int exitCode1 = process1.ExitCode;
+        if (exitCode1 == 0)
+        {
+            _logger.Add("LLVM IR writing succeeded.");
+        }
+        else
+        {
+            throw new Exception($"LLVM IR writing failed with exit code: {exitCode1}");
+        }
+
+        _logger.NewSection();
+        _logger.Add("Compiling executable");
+
+        // Run the clang command to compile the code
+        Process process2 = new Process();
+        process2.StartInfo.FileName = "clang";
+        process2.StartInfo.Arguments = $"builds/{filename}.bc -o builds/{filename}";
+        process2.StartInfo.RedirectStandardOutput = true;
+        process2.StartInfo.UseShellExecute = false;
+        process2.Start();
+
+        // Read the output or wait for the process to exit
+        string output2 = process2.StandardOutput.ReadToEnd();
+        process2.WaitForExit();
+
+        // Process the output or handle any errors
+        if (output2 != "")
+        {
+            _logger.Add($"Compilation generated output: Output = {output2}");
+        }
+
+        // Check the process exit code
+        int exitCode2 = process2.ExitCode;
+        if (exitCode2 == 0)
         {
             _logger.Add("Compilation succeeded.");
         }
         else
         {
-            throw new Exception($"Compilation failed with exit code: {exitCode}");
+            throw new Exception($"Compilation failed with exit code: {exitCode2}");
         }
 
-        return exitCode;
+        return exitCode2;
     }
 
     /// <summary>
@@ -206,7 +244,7 @@ internal static class Program
 
         // Execute the generated file
         Process process = new Process();
-        process.StartInfo.FileName = filename;
+        process.StartInfo.FileName = $"builds/{filename}";
         // process.StartInfo.Arguments = $""; TODO get args from input
         process.StartInfo.RedirectStandardOutput = true;
         process.StartInfo.UseShellExecute = false;
@@ -260,7 +298,7 @@ internal static class Program
 
         // Execute the generated file
         Process process = new Process();
-        process.StartInfo.FileName = filename;
+        process.StartInfo.FileName = $"builds/{filename}";
         // process.StartInfo.Arguments = $"test"; TODO get args from input
         process.StartInfo.RedirectStandardOutput = true;
         process.StartInfo.UseShellExecute = false;
