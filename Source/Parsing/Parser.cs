@@ -31,7 +31,7 @@ internal class Parser
     /// <code>
     /// Parser p = new Parser(tokens, log);
     /// </code>
-    /// will create a new Parser, which can then be used to generate the LLVM for a set of tokens.
+    /// will create a new Parser, which can then be used to generate the AST for a set of tokens.
     /// </example>
     /// </summary>
     public Parser(IEnumerable<Token> tokens, Logger logger)
@@ -64,7 +64,8 @@ internal class Parser
         // Ignore the comments
         if (TypeEquivalence(typeof(Tokens.Comment), _current.Value.GetType())) 
         {    
-            return GetNextNode();
+            _current = GetNextNode();
+            return _current;
         }
 
         // Get the _current token
@@ -87,7 +88,8 @@ internal class Parser
         // Ignore the comments
         if (TypeEquivalence(typeof(Tokens.Comment), _current.Value.GetType())) 
         {    
-            return GetNextNode();
+            _current = GetNextNode();
+            return _current;
         }
 
         // Get the _current token
@@ -101,14 +103,61 @@ internal class Parser
     /// <summary>
     /// This method generates the AST from the tokens returned by the lexer.
     /// </summary>
-    public void Parse()
+    public AST Parse()
     {
-        // Parse the tokens
+        // Create a new instance of an abstract syntax tree
+        AST ast = new AST(_logger);
+
+        // Parse the tokens and create AST nodes from them
         while (_current != null)
         {
-            // Update the _current node
-            _current = GetNextNode();
+            switch (_current.Value.GetType().Name)
+            {
+                case (nameof(Sapling.Tokens.SaplingType)):
+
+                    // Assign to methods and classes as needed, else assign to a property
+                    if (_current.Value.Value == "method") ParseAssignMethod();
+                    else if (_current.Value.Value == "class") ParseAssignClass();
+                    else ParseAssignProperty();
+                    break;
+
+                case (nameof(Sapling.Tokens.Keyword)):
+
+                    // Parse the return statement if the keyword is return, if it isnt, throw an error
+                    if (_current.Value.Value == "return") ParseReturn();
+                    else throw new Exception($"Unexpected keyword \"{_current.Value.Value}\" in input string from {_current.Value.StartIndex} to {_current.Value.EndIndex}."); 
+                    break;
+
+                case (nameof(Sapling.Tokens.Boolean)): case (nameof(Sapling.Tokens.Character)): case (nameof(Sapling.Tokens.String)): case (nameof(Sapling.Tokens.Float)): case (nameof(Sapling.Tokens.Integer)): 
+
+                    // Assign to methods and classes as needed, else assign to a property
+                    ParseExpression();
+                    break;
+
+                case (nameof(Sapling.Tokens.Delimeter)):
+
+                    // Parse a Paren expression if it is a L parenthesis, otherwise throw an error
+                    if (_current.Value.Value == "(") ParseParenExpression();
+                    else throw new Exception($"Unexpected delimiter \"{_current.Value.Value}\" in input string from {_current.Value.StartIndex} to {_current.Value.EndIndex}."); 
+                    break;
+
+                case (nameof(Sapling.Tokens.ID)):
+
+                    // Parse a identifier as a function if it is immediately followed by a left parenthesis
+                    if (_current.Next is not null && _current.Next.Value.Value == "(") ParseFunctionCall();
+                    else ParseIdentifier();
+                    break;
+
+                default:
+                    throw new Exception("Gadzooks! There was an unexpected token at the end of the parser!!");
+            }
+
+            // Update the _current linked list node
+            GetNextNode();
         }
+
+        // Return the tree
+        return ast;
     }
 
     /// <summary>
@@ -116,6 +165,7 @@ internal class Parser
     /// </summary>
     private SlAssignProperty ParseAssignProperty()
     {
+        return new SlAssignProperty();
     }
 
     /// <summary>
@@ -123,6 +173,7 @@ internal class Parser
     /// </summary>
     private SlAssignMethod ParseAssignMethod()
     {
+        return new SlAssignMethod();
     }
 
     /// <summary>
@@ -130,6 +181,7 @@ internal class Parser
     /// </summary>
     private SlAssignClass ParseAssignClass()
     {
+        return new SlAssignClass();
     }
 
     /// <summary>
@@ -137,13 +189,15 @@ internal class Parser
     /// </summary>
     private SlExpression ParseExpression()
     {
+        return new SlExpression();
     }
 
     /// <summary>
     /// This method parses an identifier and adds the needed nodes to the AST.
     /// </summary>
-    private SlExpression ParseIdentifier()
+    private SlIdentifierExpression ParseIdentifier()
     {
+        return new SlIdentifierExpression();
     }
 
     /// <summary>
@@ -151,6 +205,7 @@ internal class Parser
     /// </summary>
     private SlParenExpression ParseParenExpression()
     {
+        return new SlParenExpression();
     }
 
     /// <summary>
@@ -158,6 +213,7 @@ internal class Parser
     /// </summary>
     private SlReturn ParseReturn()
     {
+        return new SlReturn();
     }
 
     /// <summary>
@@ -165,5 +221,6 @@ internal class Parser
     /// </summary>
     private SlFunctionCall ParseFunctionCall()
     {
+        return new SlFunctionCall();
     }
 }

@@ -151,7 +151,10 @@ internal static class Program
 
         // Create a parser to handle our tokens
         Parser parser = new Parser(tokens, _logger);
-        parser.Parse();
+        AST ast = parser.Parse();
+
+        // Call the generate code method on the AST to emit the bitcode for our program
+        ast.GenerateCode($"builds/{filename}.bc");
 
         // Generate the LLVM IR
         _logger.NewSection();
