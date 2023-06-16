@@ -2,6 +2,6 @@ namespace Sapling.Nodes;
 
 /// <summary>
 /// </summary>
-internal class SlFunctionCall: SlNode
+internal class SlMethodCall: SlStatement
 {
 }

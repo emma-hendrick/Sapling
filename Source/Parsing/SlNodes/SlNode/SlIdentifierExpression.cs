@@ -2,6 +2,9 @@ namespace Sapling.Nodes;
 
 /// <summary>
 /// </summary>
-internal class SlIdentifierExpression: SlNode
+internal class SlIdentifierExpression: SlExpression
 {
+    public SlIdentifierExpression(string identifier)
+    {
+    }
 }

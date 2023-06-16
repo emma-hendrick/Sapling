@@ -4,4 +4,7 @@ namespace Sapling.Nodes;
 /// </summary>
 internal class SlReturn: SlStatement
 {
+    public SlReturn(SlExpression r)
+    {
+    }
 }

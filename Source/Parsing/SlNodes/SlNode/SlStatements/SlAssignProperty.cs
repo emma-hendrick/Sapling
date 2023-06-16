@@ -4,4 +4,7 @@ namespace Sapling.Nodes;
 /// </summary>
 internal class SlAssignProperty: SlStatement
 {
+    public SlAssignProperty(string identifier, SlExpression expression)
+    {
+    }
 }

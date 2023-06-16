@@ -50,7 +50,7 @@ internal static class Program
             string filename = args.Length > 1 ? args[1]: Constants._defaultFileName;
 
             // Reinitialize the logger to use the filename provided in the parameters
-            _logger = new Logger(filename.Substring(0, filename.Length - 3), false);
+            _logger = new Logger(filename.Substring(0, filename.Length - 3), true);
 
             // Check whether the filename is valid, and if not, throw an error
             if(_invalidFilenames.Contains(filename)) throw new Exception($"You have entered an invalid filename: You cannot use the following, as they are reserved for tests: {string.Join(' ', _invalidFilenames)}");
@@ -163,7 +163,7 @@ internal static class Program
         // Run the clang command to write the LLVM IR
         Process process1 = new Process();
         process1.StartInfo.FileName = "clang";
-        process1.StartInfo.Arguments = $"builds/{filename}.bc -S -emit-llvm -o builds/source.ll";
+        process1.StartInfo.Arguments = $"builds/{filename}.bc -S -emit-llvm -o builds/{filename}.ll";
         process1.StartInfo.RedirectStandardOutput = true;
         process1.StartInfo.UseShellExecute = false;
         process1.Start();
