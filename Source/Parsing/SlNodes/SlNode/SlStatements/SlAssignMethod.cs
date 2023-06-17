@@ -4,4 +4,7 @@ namespace Sapling.Nodes;
 /// </summary>
 internal class SlAssignMethod: SlStatement
 {
+    public SlAssignMethod(string identifier, SlMethod method)
+    {
+    }
 }

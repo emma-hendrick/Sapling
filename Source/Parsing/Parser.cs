@@ -24,7 +24,10 @@ internal class Parser
     /// </summary>
     private Logger _logger;
 
-    // The valid literal types
+
+    /// <summary>
+    /// The valid literal types
+    /// </summary>
     private List<string> _literals = new List<string> { 
         nameof(Sapling.Tokens.Boolean), 
         nameof(Sapling.Tokens.Character), 
@@ -33,7 +36,9 @@ internal class Parser
         nameof(Sapling.Tokens.Integer),
     };
 
-    // The valid operators
+    /// <summary>
+    /// The valid operators
+    /// </summary>
     private List<string> _operators = new List<string> { 
         nameof(Sapling.Tokens.BooleanOperator), 
         nameof(Sapling.Tokens.ArithmeticOperator), 
@@ -162,8 +167,8 @@ internal class Parser
 
             case (nameof(Sapling.Tokens.ID)):
 
-                // Parse a identifier as a function if it is immediately followed by a left parenthesis, otherwise parse it as an expression
-                if (_current.Next is not null && _current.Next.Value.Value == "(") method.Append(ParseFunctionCall());
+                // Parse a identifier as a method if it is immediately followed by a left parenthesis, otherwise parse it as an expression
+                if (_current.Next is not null && _current.Next.Value.Value == "(") method.Append(ParseMethodCall());
                 else throw new Exception($"Unexpected identifier \"{_current.Value.Value}\" in input string at {_current.Value.StartIndex} to {_current.Value.EndIndex}."); 
                 break;
 
@@ -197,7 +202,7 @@ internal class Parser
         else if (!(nameof(Sapling.Tokens.Delimeter) == _current.Value.GetType().Name && _current.Value.Value == ";")) throw new Exception($"Missing Semicolon!! Instead got {_current.Value.Value}");
         GetNextNode(); // Consume ;
 
-        return new SlAssignProperty(identifier, expression);
+        return new SlAssignProperty(type, identifier, expression);
     }
 
     /// <summary>
@@ -205,7 +210,26 @@ internal class Parser
     /// </summary>
     private SlAssignMethod ParseAssignMethod()
     {
-        return new SlAssignMethod();
+        if (_current is null) throw new Exception("Trying to parse null type!!");
+        string type = _current.Value.Value;
+        GetNextNode(); // Consume type
+
+        if (_current is null) throw new Exception("Trying to parse null identifier!!");
+        string identifier = _current.Value.Value;
+        GetNextNode(); // Consume identifier
+
+        if (_current is null) throw new Exception("Trying to parse null assignment!!");
+        else if (!(nameof(Sapling.Tokens.Assign) == _current.Value.GetType().Name)) throw new Exception($"Missing Assignment Operator!! Instead got {_current.Value.Value}");
+        GetNextNode(); // Consume = sign
+
+        if (_current is null) throw new Exception("Trying to parse null expression!!");
+        SlMethod method = ParseMethod(); // Consume the method
+
+        if (_current is null) throw new Exception("Trying to parse null delimiter!!");
+        else if (!(nameof(Sapling.Tokens.Delimeter) == _current.Value.GetType().Name && _current.Value.Value == ";")) throw new Exception($"Missing Semicolon!! Instead got {_current.Value.Value}");
+        GetNextNode(); // Consume ;
+
+        return new SlAssignMethod(identifier, method);
     }
 
     /// <summary>
@@ -213,7 +237,45 @@ internal class Parser
     /// </summary>
     private SlAssignClass ParseAssignClass()
     {
-        return new SlAssignClass();
+        // A list of subclasses
+        List<SlAssignClass> subclasses = new List<SlAssignClass>();
+        // A list of methods
+        List<SlAssignMethod> methods = new List<SlAssignMethod>();
+        // A list of properties
+        List<SlAssignProperty> properties = new List<SlAssignProperty>();
+
+        if (_current is null) throw new Exception("Trying to parse null type!!");
+        string type = _current.Value.Value;
+        GetNextNode(); // Consume type
+
+        if (_current is null) throw new Exception("Trying to parse null identifier!!");
+        string identifier = _current.Value.Value;
+        GetNextNode(); // Consume identifier
+
+        if (_current is null) throw new Exception("Trying to parse null assignment!!");
+        else if (!(nameof(Sapling.Tokens.Assign) == _current.Value.GetType().Name)) throw new Exception($"Missing Assignment Operator!! Instead got {_current.Value.Value}");
+        GetNextNode(); // Consume = sign
+
+        if (_current is null) throw new Exception("Trying to parse null delimiter!!");
+        else if (!(nameof(Sapling.Tokens.Delimeter) == _current.Value.GetType().Name && _current.Value.Value == "{}")) throw new Exception($"Missing Opening Brace!! Instead got {_current.Value.Value}");
+        GetNextNode(); // Consume {
+
+        while(_current.Value.GetType().Name == typeof(Sapling.Tokens.SaplingType).Name)
+        {
+            if (_current.Value.Value == "method") methods.Append(ParseAssignMethod()); // Add to methods
+            else if (_current.Value.Value == "class") subclasses.Append(ParseAssignClass()); // Add to subclasses
+            else properties.Append(ParseAssignProperty()); // Add to properties
+        }
+
+        if (_current is null) throw new Exception("Trying to parse null delimiter!!");
+        else if (!(nameof(Sapling.Tokens.Delimeter) == _current.Value.GetType().Name && _current.Value.Value == "}")) throw new Exception($"Missing Closing Brace!! Instead got {_current.Value.Value}");
+        GetNextNode(); // Consume }
+
+        if (_current is null) throw new Exception("Trying to parse null delimiter!!");
+        else if (!(nameof(Sapling.Tokens.Delimeter) == _current.Value.GetType().Name && _current.Value.Value == ";")) throw new Exception($"Missing Semicolon!! Instead got {_current.Value.Value}");
+        GetNextNode(); // Consume ;
+
+        return new SlAssignClass(identifier, subclasses, methods, properties);
     }
 
     /// <summary>
@@ -293,8 +355,8 @@ internal class Parser
         else if (_literals.Contains(_current.Value.GetType().Name))
         {
             // This is just a value
-            SlExpression expression = new SlExpression();
-            GetNextNode();
+            SlExpression expression = new SlLiteralExpression(_current.Value.GetType().Name, _current.Value.Value);
+            GetNextNode(); // Consume the value
             return expression;
         }
         else throw new Exception("Invalid Expression!!");
@@ -327,7 +389,8 @@ internal class Parser
     /// </summary>
     private SlOperator ParseOperator()
     {
-        SlOperator op = new SlOperator();
+        if (_current is null) throw new Exception("Trying to parse null operator!!");
+        SlOperator op = new SlOperator(_current.Value.Value);
         GetNextNode(); // Consume operator
         return op;
     }
@@ -344,10 +407,12 @@ internal class Parser
     }
 
     /// <summary>
-    /// This method calls a function and adds the needed nodes to the AST.
+    /// This method calls a method and adds the needed nodes to the AST.
     /// </summary>
-    private SlMethodCall ParseFunctionCall()
+    private SlMethodCall ParseMethodCall()
     {
+        // This one will be complicated because we also have to parse arguments and consume all of them, then actually execute the right code
+        // TODO
         return new SlMethodCall();
     }
 }

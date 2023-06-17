@@ -4,4 +4,7 @@ namespace Sapling.Nodes;
 /// </summary>
 internal class SlOperator
 {
+    public SlOperator(string optype)
+    {
+    }
 }
