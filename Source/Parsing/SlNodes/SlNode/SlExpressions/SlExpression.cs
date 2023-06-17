@@ -2,6 +2,6 @@ namespace Sapling.Nodes;
 
 /// <summary>
 /// </summary>
-internal class SlExpression: SlNode
+internal abstract class SlExpression: SlNode
 {
 }
