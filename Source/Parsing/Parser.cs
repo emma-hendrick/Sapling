@@ -237,12 +237,8 @@ internal class Parser
     /// </summary>
     private SlAssignClass ParseAssignClass()
     {
-        // A list of subclasses
-        List<SlAssignClass> subclasses = new List<SlAssignClass>();
-        // A list of methods
-        List<SlAssignMethod> methods = new List<SlAssignMethod>();
-        // A list of properties
-        List<SlAssignProperty> properties = new List<SlAssignProperty>();
+        // A list of subclasses, methods, and properties
+        List<SlStatement> statements = new List<SlStatement>();
 
         if (_current is null) throw new Exception("Trying to parse null type!!");
         string type = _current.Value.Value;
@@ -259,13 +255,9 @@ internal class Parser
         if (_current is null) throw new Exception("Trying to parse null delimiter!!");
         else if (!(nameof(Sapling.Tokens.Delimeter) == _current.Value.GetType().Name && _current.Value.Value == "{}")) throw new Exception($"Missing Opening Brace!! Instead got {_current.Value.Value}");
         GetNextNode(); // Consume {
-
-        while(_current.Value.GetType().Name == typeof(Sapling.Tokens.SaplingType).Name)
-        {
-            if (_current.Value.Value == "method") methods.Append(ParseAssignMethod()); // Add to methods
-            else if (_current.Value.Value == "class") subclasses.Append(ParseAssignClass()); // Add to subclasses
-            else properties.Append(ParseAssignProperty()); // Add to properties
-        }
+            
+        if (_current is null) throw new Exception("Trying to parse null class!!");
+        SlClass slClass = ParseClass(); // Consume the class
 
         if (_current is null) throw new Exception("Trying to parse null delimiter!!");
         else if (!(nameof(Sapling.Tokens.Delimeter) == _current.Value.GetType().Name && _current.Value.Value == "}")) throw new Exception($"Missing Closing Brace!! Instead got {_current.Value.Value}");
@@ -275,13 +267,13 @@ internal class Parser
         else if (!(nameof(Sapling.Tokens.Delimeter) == _current.Value.GetType().Name && _current.Value.Value == ";")) throw new Exception($"Missing Semicolon!! Instead got {_current.Value.Value}");
         GetNextNode(); // Consume ;
 
-        return new SlAssignClass(identifier, subclasses, methods, properties);
+        return new SlAssignClass(identifier, slClass);
     }
 
     /// <summary>
     /// This method parses an optree and adds the needed nodes to the AST.
     /// </summary>
-    private SlOptree ParseOptree()
+    private SlParsedOptree ParseOptree()
     {
         // A list of expressions in the optree
         List<SlExpression> expressions = new List<SlExpression>(); 
@@ -297,8 +289,12 @@ internal class Parser
             expressions.Append(ParseSingleExpression());
         }
 
-        // Create an Optree of the expressions and operators
-        return new SlOptree(expressions, operators);
+        // This will be used to actually build a tree from the expressions and operators
+        SlOptree rawOptree = new SlOptree(expressions, operators);
+        rawOptree.ParseToNodes(_logger);
+
+        // Create a parsedOptree from the raw optree
+        return new SlParsedOptree(rawOptree);
     }
 
     /// <summary>
@@ -319,6 +315,23 @@ internal class Parser
 
         GetNextNode(); // Remove the }
         return method;
+    }
+
+    /// <summary>
+    /// This method parses a class and adds the needed nodes to the AST.
+    /// </summary>
+    public SlClass ParseClass()
+    {
+        SlClass slClass = new SlClass();
+
+        while(_current != null && _current.Value.GetType().Name == typeof(Sapling.Tokens.SaplingType).Name)
+        {
+            if (_current.Value.Value == "method") slClass.Append(ParseAssignMethod()); // Add a method
+            else if (_current.Value.Value == "class") slClass.Append(ParseAssignClass()); // Add a subclass
+            else slClass.Append(ParseAssignProperty()); // Add a property
+        }
+
+        return slClass;
     }
 
     /// <summary>

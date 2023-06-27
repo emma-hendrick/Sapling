@@ -96,7 +96,7 @@ internal static class Program
             // Log the error so that we can see what happened after the fact, then print the error
             _logger.Add($"Exception: {exception.Message}");
             PrintError(exception.Message);
-            return 1;
+            return -1;
 
         }
     }
@@ -138,7 +138,7 @@ internal static class Program
             string error = "The file does not exist.";
             _logger.Add(error);
             PrintError(error);
-            return 1;
+            return -1;
 
         }
         catch (IOException ex)
@@ -146,7 +146,7 @@ internal static class Program
             string error = $"An error occurred while reading the file: {ex.Message}";
             _logger.Add(error);
             PrintError(error);
-            return 1;
+            return -1;
         }
 
         // Create a parser to handle our tokens

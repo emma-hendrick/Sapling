@@ -1,5 +1,6 @@
 namespace Sapling;
 using Sapling.Logging;
+using System.IO;
 using System.Diagnostics;
 
 /// <summary>
@@ -12,6 +13,10 @@ internal class TestLLVM
     /// </summary>
     internal static bool CompilationTest(Logger log)
     {
+        if (!Directory.Exists("./tests")) {
+            Directory.CreateDirectory("./tests");
+        }
+
         return TestAdd(log);
     }
     

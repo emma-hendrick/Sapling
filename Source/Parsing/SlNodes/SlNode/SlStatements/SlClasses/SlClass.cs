@@ -3,14 +3,14 @@ using Sapling.Logging;
 
 /// <summary>
 /// </summary>
-internal class SlMethod: SlNode
+internal class SlClass: SlNode
 {
     // Create a list of statments which this method will execute when it is called
     List<SlStatement> statements = new List<SlStatement>();
 
     public void GenerateCode(Logger logger, LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMBasicBlockRef entry, LLVMSharp.LLVMValueRef method, SlScope scope)
     {
-        logger.Add("Generating code for SlMethod");
+        logger.Add("Generating code for SlClass");
 
         // We use this to add instructions to the functions block
         LLVMSharp.LLVM.PositionBuilderAtEnd(builder, entry);

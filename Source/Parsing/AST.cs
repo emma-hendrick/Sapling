@@ -38,13 +38,14 @@ internal class AST
     /// <example>
     public void GenerateCode(string filename)
     {
-    }
+        // Open new section to generate LLVM
+        _logger.NewSection();
+        _logger.Add("Generating LLVM");
 
-    /// <summary>
-    /// Append a node to the root node.
-    /// <example>
-    public void Append(SlStatement node)
-    {
-        _root.Append(node);
+        // We use this to add instructions to the functions block
+        LLVMSharp.LLVMBuilderRef builder = LLVMSharp.LLVM.CreateBuilder();
+
+        // Now we will execute the code of the root node
+        _root.GenerateCode(_logger);
     }
 }

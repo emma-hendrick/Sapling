@@ -56,7 +56,7 @@ internal static class Constants
             4),
 
         (new TokenDefinition(
-            @"\b(True|False)\b", 
+            @"\b(true|false)\b", 
             "BooleanLiteral", 
             (startIndex, endIndex, value) => new Sapling.Tokens.Boolean(startIndex, endIndex, value)), 
             4),

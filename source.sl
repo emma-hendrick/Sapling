@@ -15,6 +15,7 @@ return x;
 # delimiter: ;
 
 # We expect the parser to then create the following tree
+#             class_main
 #              fn_main
 #       =               return
 #    x     +               x

@@ -1,11 +1,15 @@
 namespace Sapling.Nodes;
+using Sapling.Logging;
 
 /// <summary>
 /// </summary>
 internal abstract class SlNode
 {
     /// <summary>
-    /// Generate the LLVM bitcode for this node and its children.
+    /// Base method for LLVM generation
     /// <example>
-    public abstract void GenerateCode();
+    public void GenerateCode(Logger logger)
+    {
+        logger.Add("Code Generation Base Method Called");
+    }
 }

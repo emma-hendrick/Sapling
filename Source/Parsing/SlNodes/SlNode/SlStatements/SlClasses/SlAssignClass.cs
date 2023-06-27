@@ -1,10 +1,24 @@
 namespace Sapling.Nodes;
+using Sapling.Logging;
 
 /// <summary>
 /// </summary>
 internal class SlAssignClass: SlStatement
 {
-    public SlAssignClass(string identifier, List<SlAssignClass> subclasses, List<SlAssignMethod> methods, List<SlAssignProperty> properties)
+    private string _classIdentifier;
+    private SlClass _slClass;
+
+    public SlAssignClass(string identifier, SlClass slClass)
     {
+        _classIdentifier = identifier;
+        _slClass = slClass;
+    }
+    
+    /// <summary>
+    /// Generate code for a LLVM class
+    /// <example>
+    public override void GenerateCode(Logger logger, LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMBasicBlockRef self_entry, SlScope scope)
+    {
+        logger.Add("Generating code for SlAssignClass");
     }
 }
