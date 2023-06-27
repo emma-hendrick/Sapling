@@ -21,14 +21,15 @@ internal class SlAssignMethod: SlStatement
     {
         logger.Add("Generating code for SlAssignMethod");
 
-        // Add sum to the module
+        // Add new method to the module
         LLVMSharp.LLVMTypeRef[] method_param_types = { };
         LLVMSharp.LLVMTypeRef method_fn_type = LLVMSharp.LLVM.FunctionType(LLVMSharp.LLVM.Int32Type(), method_param_types, false);
-        
         LLVMSharp.LLVMValueRef new_method = LLVMSharp.LLVM.AddFunction(module, _methodIdentifier, method_fn_type);
 
-        // Entry/Exit point for the add function
-        LLVMSharp.LLVMBasicBlockRef method_entry = LLVMSharp.LLVM.AppendBasicBlock(new_method, "entry");
+        // Entry/Exit point for the method
+        logger.IncreaseIndent();
+        logger.Add($"Adding Basic Block: \"{_methodIdentifier}_entry\"");
+        LLVMSharp.LLVMBasicBlockRef method_entry = LLVMSharp.LLVM.AppendBasicBlock(new_method, $"{_methodIdentifier}_entry");
 
         // Generate the code for the method
         _method.GenerateCode(logger, module, builder, method_entry, new_method, scope);

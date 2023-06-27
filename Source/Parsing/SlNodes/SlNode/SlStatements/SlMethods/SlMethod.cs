@@ -14,18 +14,30 @@ internal class SlMethod: SlNode
 
         // We use this to add instructions to the functions block
         LLVMSharp.LLVM.PositionBuilderAtEnd(builder, entry);
+
+        bool hasReturn = statements.Any(statement => statement is SlReturn);
         
         foreach (SlStatement statement in statements)
         {
             statement.GenerateCode(logger, module, builder, entry, scope);
         }
+
+        logger.Add($"Method contains return: {hasReturn}");
+
+        if (!hasReturn)
+        {
+            // Return 0 to indicate a successful run
+            logger.Add("Adding terminator for current method (it did not have its own)");
+            logger.DecreaseIndent();
+            LLVMSharp.LLVM.BuildRet(builder, LLVMSharp.LLVM.ConstInt(LLVMSharp.LLVM.Int32Type(), 0, false));
+        }
     }
 
     /// <summary>
-    /// Append a node as a child of this.
+    /// Add a node as a child of this.
     /// <example>
-    public void Append(SlStatement node)
+    public void Add(SlStatement node)
     {
-        statements.Append(node);
+        statements.Add(node);
     }
 }

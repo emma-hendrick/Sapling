@@ -20,6 +20,9 @@ internal class SlReturn: SlStatement
         logger.Add("Generating code for SlReturn");
 
         LLVMSharp.LLVMValueRef expression = _return.GenerateValue(logger, builder, scope);
+        
+        logger.Add("Adding terminator for current method");
+        logger.DecreaseIndent();
         LLVMSharp.LLVM.BuildRet(builder, expression);
     }
 }

@@ -50,7 +50,7 @@ internal static class Program
             string filename = args.Length > 1 ? args[1]: Constants._defaultFileName;
 
             // Reinitialize the logger to use the filename provided in the parameters
-            _logger = new Logger(filename.Substring(0, filename.Length - 3), true);
+            _logger = new Logger(filename.Substring(0, filename.Length - 3), printOutput: true, debug: true);
 
             // Check whether the filename is valid, and if not, throw an error
             if(_invalidFilenames.Contains(filename)) throw new Exception($"You have entered an invalid filename: You cannot use the following, as they are reserved for tests: {string.Join(' ', _invalidFilenames)}");
@@ -93,9 +93,9 @@ internal static class Program
         catch (Exception exception)
         {
 
-            // Log the error so that we can see what happened after the fact, then print the error
-            _logger.Add($"Exception: {exception.Message}");
+            // Print the error then dump the error
             PrintError(exception.Message);
+            _logger.Dump(exception);
             return -1;
 
         }
@@ -147,6 +147,13 @@ internal static class Program
             _logger.Add(error);
             PrintError(error);
             return -1;
+        }
+        
+        // Remove the bitcode if it already exists
+        if (File.Exists($"builds/{filename}.bc"))
+        {
+            File.Delete($"builds/{filename}.bc");
+            _logger.Add($"builds/{filename}.bc deleted.");
         }
 
         // Create a parser to handle our tokens
@@ -342,6 +349,6 @@ internal static class Program
         // Just printing in red
         Console.ForegroundColor = ConsoleColor.DarkRed;
         Console.WriteLine(Error);
-        Console.ForegroundColor = ConsoleColor.White;
+        Console.ResetColor();
     }
 }

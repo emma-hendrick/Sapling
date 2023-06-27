@@ -19,19 +19,19 @@ internal class SlLiteralExpression: SlExpression
         Func<string, Logger, LLVMSharp.LLVMBuilderRef, SlScope, LLVMSharp.LLVMValueRef> parser;
         switch (_type)
         {
-            case "int":
+            case "Integer":
                 parser = ParseInt;
                 break;
-            case "float":
+            case "Float":
                 parser = ParseFloat;
                 break;
-            case "str":
+            case "String":
                 parser = ParseString;
                 break;
-            case "char":
+            case "Char":
                 parser = ParseChar;
                 break;
-            case "bool":
+            case "Bool":
                 parser = ParseBool;
                 break;
             default:

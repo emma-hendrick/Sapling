@@ -133,7 +133,7 @@ internal class Parser
         // Parse the tokens and create AST nodes from them
         while (_current != null)
         {
-            AppendNextNode(root);
+            AddNextNode(root);
         }
 
         // Return the tree
@@ -141,9 +141,9 @@ internal class Parser
     }
 
     /// <summary>
-    /// This method appends a new node to an SlMethod
+    /// This method adds a new node to an SlMethod
     /// </summary>
-    public void AppendNextNode(SlMethod method)
+    public void AddNextNode(SlMethod method)
     {
         if (_current is null) throw new Exception("Gadzooks! We are trying to add a statement when there are none to be had!!");
 
@@ -153,22 +153,22 @@ internal class Parser
             case (nameof(Sapling.Tokens.SaplingType)):
 
                 // Assign to methods and classes as needed, else assign to a property
-                if (_current.Value.Value == "method") method.Append(ParseAssignMethod());
-                else if (_current.Value.Value == "class") method.Append(ParseAssignClass());
-                else method.Append(ParseAssignProperty());
+                if (_current.Value.Value == "method") method.Add(ParseAssignMethod());
+                else if (_current.Value.Value == "class") method.Add(ParseAssignClass());
+                else method.Add(ParseAssignProperty());
                 break;
 
             case (nameof(Sapling.Tokens.Keyword)):
 
                 // Parse the return statement if the keyword is return, if it isnt, throw an error
-                if (_current.Value.Value == "return") method.Append(ParseReturn());
+                if (_current.Value.Value == "return") method.Add(ParseReturn());
                 else throw new Exception($"Unexpected keyword \"{_current.Value.Value}\" in input string from {_current.Value.StartIndex} to {_current.Value.EndIndex}."); 
                 break;
 
             case (nameof(Sapling.Tokens.ID)):
 
                 // Parse a identifier as a method if it is immediately followed by a left parenthesis, otherwise parse it as an expression
-                if (_current.Next is not null && _current.Next.Value.Value == "(") method.Append(ParseMethodCall());
+                if (_current.Next is not null && _current.Next.Value.Value == "(") method.Add(ParseMethodCall());
                 else throw new Exception($"Unexpected identifier \"{_current.Value.Value}\" in input string at {_current.Value.StartIndex} to {_current.Value.EndIndex}."); 
                 break;
 
@@ -280,18 +280,17 @@ internal class Parser
         List<SlOperator> operators = new List<SlOperator>(); 
 
         // Add the initial expression to the optree
-        expressions.Append(ParseSingleExpression());
+        expressions.Add(ParseSingleExpression());
 
-        // While the current node is an operator, append it and the expression following it
+        // While the current node is an operator, add it and the expression following it
         while (_current is not null && _operators.Contains(_current.Value.GetType().Name))
         {
-            operators.Append(ParseOperator());
-            expressions.Append(ParseSingleExpression());
+            operators.Add(ParseOperator());
+            expressions.Add(ParseSingleExpression());
         }
 
         // This will be used to actually build a tree from the expressions and operators
-        SlOptree rawOptree = new SlOptree(expressions, operators);
-        rawOptree.ParseToNodes(_logger);
+        SlOptree rawOptree = SlOptreeFactory.CreateInstance(_logger, expressions, operators);
 
         // Create a parsedOptree from the raw optree
         return new SlParsedOptree(rawOptree);
@@ -310,7 +309,7 @@ internal class Parser
         // Parse the tokens and create AST nodes from them
         while (_current != null && _current.Value.Value != "}")
         {
-            AppendNextNode(method);
+            AddNextNode(method);
         }
 
         GetNextNode(); // Remove the }
@@ -326,9 +325,9 @@ internal class Parser
 
         while(_current != null && _current.Value.GetType().Name == typeof(Sapling.Tokens.SaplingType).Name)
         {
-            if (_current.Value.Value == "method") slClass.Append(ParseAssignMethod()); // Add a method
-            else if (_current.Value.Value == "class") slClass.Append(ParseAssignClass()); // Add a subclass
-            else slClass.Append(ParseAssignProperty()); // Add a property
+            if (_current.Value.Value == "method") slClass.Add(ParseAssignMethod()); // Add a method
+            else if (_current.Value.Value == "class") slClass.Add(ParseAssignClass()); // Add a subclass
+            else slClass.Add(ParseAssignProperty()); // Add a property
         }
 
         return slClass;

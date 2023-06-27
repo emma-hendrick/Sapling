@@ -22,10 +22,10 @@ internal class SlClass: SlNode
     }
 
     /// <summary>
-    /// Append a node as a child of this.
+    /// Add a node as a child of this.
     /// <example>
-    public void Append(SlStatement node)
+    public void Add(SlStatement node)
     {
-        statements.Append(node);
+        statements.Add(node);
     }
 }

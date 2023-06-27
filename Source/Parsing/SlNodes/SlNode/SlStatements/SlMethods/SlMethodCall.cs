@@ -10,6 +10,7 @@ internal class SlMethodCall: SlStatement
     /// <example>
     public override void GenerateCode(Logger logger, LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMBasicBlockRef self_entry, SlScope scope)
     {
+        // TODO
         logger.Add("Generating code for SlMethodCall");
     }
 }

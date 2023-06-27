@@ -13,9 +13,19 @@ internal class Logger
     private string _startTime;
 
     /// <summary>
+    /// How indented the current log should be
+    /// </summary>
+    private string _indent;
+
+    /// <summary>
     /// Whether or not we are outputting to the console
     /// </summary>
     private bool _printOutput;
+
+    /// <summary>
+    /// Whether or not we are outputting to the console
+    /// </summary>
+    private bool _debug;
 
     /// <summary>
     /// The name of the file this log is generated for.
@@ -32,15 +42,27 @@ internal class Logger
     /// will create a new logger called logger instance and will begin creating a log file.
     /// </example>
     /// </summary>
-    public Logger(string filename = Constants._defaultFileName, bool printOutput = false)
+    public Logger(string filename = Constants._defaultFileName, bool printOutput = false, bool debug = false)
     {
         if (!Directory.Exists("./logs")) {
             Directory.CreateDirectory("./logs");
         }
 
         _startTime = DateTime.Now.ToString("MMddyy-Hmmss");
+        _indent = "";
         _filename = filename;
         _printOutput = printOutput;
+        _debug = debug;
+    }
+
+    public void IncreaseIndent()
+    {
+        _indent = $"{_indent}  ";
+    }
+
+    public void DecreaseIndent()
+    {
+        _indent = _indent.Substring(0, _indent.Length - 2);
     }
 
     /// <summary>
@@ -55,15 +77,25 @@ internal class Logger
     /// </summary>
     public void Add(string message)
     {
-        string time = DateTime.Now.ToString("H:mm:ss");
-        using (StreamWriter writer = File.AppendText($"./logs/{_filename}-{_startTime}.log"))
-        {
-            writer.WriteLine($"{time}| {message}");
-        }
-
-        if (_printOutput) Console.WriteLine($"{time}| {message}");
+        _Add(message);
+    }
+    public void Add(int i)
+    {
+        _Add(i.ToString());
     }
 
+    private void _Add(string message)
+    {
+        string time = DateTime.Now.ToString("H:mm:ss");
+        string m = $"{time}| {_indent}{message}";
+
+        using (StreamWriter writer = File.AppendText($"./logs/{_filename}-{_startTime}.log"))
+        {
+            writer.WriteLine(m);
+        }
+
+        if (_printOutput) Console.WriteLine(m);
+    }
 
     /// <summary>
     /// This method adds a new dividing line to the current log.
@@ -78,5 +110,37 @@ internal class Logger
     public void NewSection()
     {
         Add("------------------------------");
+    }
+
+    /// <summary>
+    /// This method dumps an error and its stack trace
+    /// <example>
+    /// For example:
+    /// <code>
+    /// loggerInstance.Dump(new Exception("BAD"));
+    /// </code>
+    /// should create a new log containing that error and its stack.
+    /// </example>
+    /// </summary>
+    public void Dump(Exception e)
+    {
+        if (!Directory.Exists("./logs/errs")) {
+            Directory.CreateDirectory("./logs/errs");
+        }
+        
+        string time = DateTime.Now.ToString("H:mm:ss");
+        string m = $"{time}| {e.Message}";
+        string? trace = e.StackTrace;
+
+        using (StreamWriter writer = File.AppendText($"./logs/errs/Err-{_filename}-{_startTime}.log"))
+        {
+            writer.WriteLine(m);
+            writer.WriteLine(trace);
+        }
+
+        // Just printing in like an orange to make the stack trace stand out better
+        Console.ForegroundColor = ConsoleColor.DarkRed;
+        if (_debug) Console.WriteLine(trace);
+        Console.ResetColor();
     }
 }

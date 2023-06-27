@@ -102,7 +102,7 @@ internal class TestLLVM
         log.NewSection();
         log.Add("Starting LLVM Add Test");
 
-        // Create our module and execution engine
+        // Create our module
         LLVMSharp.LLVMModuleRef module = LLVMSharp.LLVM.ModuleCreateWithName("root");
 
         // Add sum to the module

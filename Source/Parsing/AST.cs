@@ -42,10 +42,54 @@ internal class AST
         _logger.NewSection();
         _logger.Add("Generating LLVM");
 
+        // Create our module
+        LLVMSharp.LLVMModuleRef module = LLVMSharp.LLVM.ModuleCreateWithName("root");
+
         // We use this to add instructions to the functions block
         LLVMSharp.LLVMBuilderRef builder = LLVMSharp.LLVM.CreateBuilder();
 
+        // Entry / Exit point for MAIN
+        LLVMSharp.LLVMTypeRef[] main_param_types = { };
+        LLVMSharp.LLVMTypeRef main_fn_type = LLVMSharp.LLVM.FunctionType(LLVMSharp.LLVM.Int32Type(), main_param_types, false);
+        LLVMSharp.LLVMValueRef main = LLVMSharp.LLVM.AddFunction(module, "main", main_fn_type);
+        _logger.IncreaseIndent();
+        _logger.Add("Adding Basic Block: \"main_entry\"");
+        LLVMSharp.LLVMBasicBlockRef main_entry = LLVMSharp.LLVM.AppendBasicBlock(main, "main_entry");
+
+        // We use this to add instructions to the functions block
+        LLVMSharp.LLVM.PositionBuilderAtEnd(builder, main_entry);
+
+        // Now we create our global scope
+        SlScope global = new SlScope();
+        
         // Now we will execute the code of the root node
-        _root.GenerateCode(_logger);
+        _root.GenerateCode(_logger, module, builder, main_entry, main, global);
+        
+        // Ensure we didnt screw up...
+        _logger.Add("Verifying Module");
+        LLVMSharp.LLVM.VerifyModule(module, LLVMSharp.LLVMVerifierFailureAction.LLVMAbortProcessAction, out string error);
+        if (error is not null) _logger.Add($"Module Verification Error: {error}");
+
+        // Set the data layout
+        LLVMSharp.LLVM.SetDataLayout(module, "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128");
+
+        // Dispose of our builder
+        _logger.Add("Disposing of our builder");
+        LLVMSharp.LLVM.DisposeBuilder(builder);
+
+        // Compile it!
+        _logger.Add($"Outputting bitcode to {filename}");
+        if (LLVMSharp.LLVM.WriteBitcodeToFile(module, filename) != 0) {
+
+            // Shutdown LLVM
+            _logger.Add("Error Occurred, Shutting Down LLVM");
+            LLVMSharp.LLVM.Shutdown();
+
+            throw new Exception("Error writing bitcode to file");
+        }
+
+        // Shutdown LLVM
+        _logger.Add("Shutting Down LLVM");
+        LLVMSharp.LLVM.Shutdown();
     }
 }
