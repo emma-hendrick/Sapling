@@ -1,10 +1,9 @@
 # A test file to test the lexer, parser, and compiler
-int x = 13 / 5;
-int y = -1000;
+int x = 13;
+int y = 5;
+int z = x + y; 
 
-int z = x + y;
-
-return z;
+return 0;
 
 # We expect the lexer to return the following:
 # type: int

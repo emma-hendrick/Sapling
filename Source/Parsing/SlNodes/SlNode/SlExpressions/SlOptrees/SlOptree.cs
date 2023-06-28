@@ -6,7 +6,6 @@ using Sapling.Logging;
 internal class SlOptree: SlExpression
 {
     private SlExpression? _root;
-    private Logger _logger;
     private static Dictionary <string, int> _precedence = new Dictionary<string, int>
         {
             {"+", 2}, 
@@ -15,9 +14,8 @@ internal class SlOptree: SlExpression
             {"/", 3}
         };
 
-    public SlOptree(Logger logger, List<SlExpression> expressions, List<SlOperator> operators, SlExpression root): base(root.ExType)
+    public SlOptree(Logger logger, List<SlExpression> expressions, List<SlOperator> operators, SlExpression root, SlScope scope): base(logger, root.ExType, scope)
     {
-        _logger = logger;
         _root = root;
     }
 
@@ -27,7 +25,7 @@ internal class SlOptree: SlExpression
         return _root.ExType;
     }
 
-    public static SlExpression ParseToNodes(Logger logger, List<SlExpression> expressions, List<SlOperator> operators)
+    public static SlExpression ParseToNodes(Logger logger, List<SlExpression> expressions, List<SlOperator> operators, SlScope scope)
     {
         logger.Add("Parsing OpTree - Shunting Yard Time!");
         logger.IncreaseIndent();
@@ -82,7 +80,6 @@ internal class SlOptree: SlExpression
         logger.Add("Parsing Postfix Queue!");
         logger.IncreaseIndent();
         Stack<SlExpression> postfixStack = new Stack<SlExpression>();
-        int num = 0;
 
         while(postfixQueue.Count > 0)
         {
@@ -97,8 +94,7 @@ internal class SlOptree: SlExpression
                 logger.Add($"Dequeueing operator of type: {((SlOperator)item).OpType}");
                 SlExpression r = postfixStack.Pop();
                 SlExpression l = postfixStack.Pop();
-                postfixStack.Push(new SlOptreeNode((SlOperator)item, l, r, num));
-                num ++;
+                postfixStack.Push(new SlOptreeNode(logger, (SlOperator)item, l, r, scope));
             }
         }
 
@@ -108,20 +104,19 @@ internal class SlOptree: SlExpression
         return postfixStack.Pop();
     }
 
-    public override LLVMSharp.LLVMValueRef GenerateValue(Logger logger, LLVMSharp.LLVMBuilderRef builder, SlScope scope, LLVMSharp.LLVMModuleRef module)
+    public override LLVMSharp.LLVMValueRef GenerateValue(LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMModuleRef module)
     {
-        logger.Add($"Generating a value for root of OpTree");
+        Logger.Add($"Generating a value for root of OpTree");
         if (_root is null) throw new Exception("Attempting to generate value from unparsed optree");
-        return _root.GenerateValue(logger, builder, scope, module);
+        return _root.GenerateValue(builder, module);
     }
 }
 
-
 internal static class SlOptreeFactory
 {
-    public static SlOptree CreateInstance(Logger logger, List<SlExpression> expressions, List<SlOperator> operators)
+    public static SlOptree CreateInstance(Logger logger, List<SlExpression> expressions, List<SlOperator> operators, SlScope scope)
     {
-        SlExpression root = SlOptree.ParseToNodes(logger, expressions, operators);
-        return new SlOptree(logger, expressions, operators, root);
+        SlExpression root = SlOptree.ParseToNodes(logger, expressions, operators, scope);
+        return new SlOptree(logger, expressions, operators, root, scope);
     }
 }

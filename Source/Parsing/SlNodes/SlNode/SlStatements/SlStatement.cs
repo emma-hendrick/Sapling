@@ -5,5 +5,9 @@ using Sapling.Logging;
 /// </summary>
 internal abstract class SlStatement: SlNode
 {
-    public abstract void GenerateCode(Logger logger, LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMBasicBlockRef self_entry, SlScope scope);
+    public SlStatement(Logger logger, SlScope scope): base(logger, scope)
+    {
+    }
+
+    public abstract void GenerateCode(LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMBasicBlockRef self_entry);
 }

@@ -7,20 +7,19 @@ internal class SlIdentifierExpression: SlExpression
 {
     string _identifier;
 
-    public SlIdentifierExpression(string identifier): base(GetIdentifierType(identifier))
+    public SlIdentifierExpression(Logger logger, string identifier, SlScope scope): base(logger, GetIdentifierType(logger, identifier, scope), scope)
     {
         _identifier = identifier;
     }
 
-    private static string GetIdentifierType(string identifier)
+    private static string GetIdentifierType(Logger logger, string identifier, SlScope scope)
     {
-        // TODO - Get the type of the identifier from the scope
-        return "int";
+        return scope.GetType(logger, identifier);
     }
 
-    public override LLVMSharp.LLVMValueRef GenerateValue(Logger logger, LLVMSharp.LLVMBuilderRef builder, SlScope scope, LLVMSharp.LLVMModuleRef module)
+    public override LLVMSharp.LLVMValueRef GenerateValue(LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMModuleRef module)
     {
-        // TODO - Get value from scope
-        return LLVMSharp.LLVM.ConstInt(LLVMSharp.LLVM.Int32Type(), 0, false);
+        LLVMSharp.LLVMValueRef variable_alloc = Scope.Get(Logger, _identifier);
+        return LLVMSharp.LLVM.BuildLoad(builder, variable_alloc, "loadedValue");
     }
 }

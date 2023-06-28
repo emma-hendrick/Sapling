@@ -8,10 +8,10 @@ internal abstract class SlExpression: SlNode, IShuntingYardable
     private string _exType;
     public string ExType => _exType;
 
-    public SlExpression(string exType)
+    public SlExpression(Logger logger, string exType, SlScope scope): base(logger, scope)
     {
         _exType = exType;
     }
 
-    public abstract LLVMSharp.LLVMValueRef GenerateValue(Logger logger, LLVMSharp.LLVMBuilderRef builder, SlScope scope, LLVMSharp.LLVMModuleRef module);
+    public abstract LLVMSharp.LLVMValueRef GenerateValue(LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMModuleRef module);
 }

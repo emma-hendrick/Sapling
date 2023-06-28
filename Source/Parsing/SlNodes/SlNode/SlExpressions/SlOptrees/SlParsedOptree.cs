@@ -6,13 +6,13 @@ using Sapling.Logging;
 internal class SlParsedOptree: SlExpression
 {
     private SlOptree _optree;
-    public SlParsedOptree(SlOptree optree): base(optree.GetReturnType())
+    public SlParsedOptree(Logger logger, SlOptree optree, SlScope scope): base(logger, optree.GetReturnType(), scope)
     {
         _optree = optree;
     }
 
-    public override LLVMSharp.LLVMValueRef GenerateValue(Logger logger, LLVMSharp.LLVMBuilderRef builder, SlScope scope, LLVMSharp.LLVMModuleRef module)
+    public override LLVMSharp.LLVMValueRef GenerateValue(LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMModuleRef module)
     {
-        return _optree.GenerateValue(logger, builder, scope, module);
+        return _optree.GenerateValue(builder, module);
     }
 }

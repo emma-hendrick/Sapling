@@ -5,6 +5,17 @@ using Sapling.Logging;
 /// </summary>
 internal abstract class SlNode
 {
+    private Logger _logger;
+    public Logger Logger => _logger;
+    private SlScope _scope;
+    public SlScope Scope => _scope;
+
+    public SlNode(Logger logger, SlScope scope)
+    {
+        _logger = logger;
+        _scope = scope;
+    }
+
     /// <summary>
     /// Base method for LLVM generation
     /// <example>

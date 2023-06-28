@@ -10,12 +10,11 @@ internal class SlOptreeNode: SlExpression
     SlExpression _r;
     int _num;
 
-    public SlOptreeNode(SlOperator op, SlExpression l, SlExpression r, int num): base(GetReturnType(op, l, r))
+    public SlOptreeNode(Logger logger, SlOperator op, SlExpression l, SlExpression r, SlScope scope): base(logger, GetReturnType(op, l, r), scope)
     {
         _op = op;
         _l = l;
         _r = r;
-        _num = num;
     }
 
     private static string GetReturnType(SlOperator op, SlExpression l, SlExpression r)
@@ -23,9 +22,9 @@ internal class SlOptreeNode: SlExpression
         return op.GetReturnType(l.ExType, r.ExType);
     }
 
-    public override LLVMSharp.LLVMValueRef GenerateValue(Logger logger, LLVMSharp.LLVMBuilderRef builder, SlScope scope, LLVMSharp.LLVMModuleRef module)
+    public override LLVMSharp.LLVMValueRef GenerateValue(LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMModuleRef module)
     {
-        logger.Add($"Generating a value for {_l.ExType} {_op.OpType} {_l.ExType}");
+        Logger.Add($"Generating a value for {_l.ExType} {_op.OpType} {_l.ExType}");
         Func<LLVMSharp.LLVMBuilderRef, LLVMSharp.LLVMValueRef, LLVMSharp.LLVMValueRef, string, LLVMSharp.LLVMValueRef> func;
 
         switch (_op.OpType)
@@ -46,6 +45,6 @@ internal class SlOptreeNode: SlExpression
                 throw new Exception($"Unexpected operator type {_op.OpType}");
         }
 
-        return func(builder, _l.GenerateValue(logger, builder, scope, module), _r.GenerateValue(logger, builder, scope, module), $"result_{_num.ToString()}");
+        return func(builder, _l.GenerateValue(builder, module), _r.GenerateValue(builder, module), $"result_{_num.ToString()}");
     }
 }

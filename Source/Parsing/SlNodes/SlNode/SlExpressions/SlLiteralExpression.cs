@@ -8,15 +8,15 @@ internal class SlLiteralExpression: SlExpression
     private string _type;
     private string _value;
 
-    public SlLiteralExpression(string type, string value): base(type)
+    public SlLiteralExpression(Logger logger, string type, string value, SlScope scope): base(logger, type, scope)
     {
         _type = type;
         _value = value;
     }
 
-    public override LLVMSharp.LLVMValueRef GenerateValue(Logger logger, LLVMSharp.LLVMBuilderRef builder, SlScope scope, LLVMSharp.LLVMModuleRef module)
+    public override LLVMSharp.LLVMValueRef GenerateValue(LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMModuleRef module)
     {
-        Func<string, Logger, LLVMSharp.LLVMBuilderRef, SlScope, LLVMSharp.LLVMValueRef> parser;
+        Func<string, LLVMSharp.LLVMBuilderRef, LLVMSharp.LLVMValueRef> parser;
         switch (_type)
         {
             case "Integer":
@@ -38,30 +38,30 @@ internal class SlLiteralExpression: SlExpression
                 throw new Exception($"Unrecognized type {_type}");
         }
 
-        return parser(_value, logger, builder, scope);
+        return parser(_value, builder);
     }
 
-    public LLVMSharp.LLVMValueRef ParseInt(string value, Logger logger, LLVMSharp.LLVMBuilderRef builder, SlScope scope)
+    public LLVMSharp.LLVMValueRef ParseInt(string value, LLVMSharp.LLVMBuilderRef builder)
     {
         // These should be 32 bits long
         int i = int.Parse(value, System.Globalization.NumberStyles.AllowLeadingSign);
         return LLVMSharp.LLVM.ConstInt(LLVMSharp.LLVM.Int32Type(), (ulong)i, true);
     }
 
-    public LLVMSharp.LLVMValueRef ParseFloat(string value, Logger logger, LLVMSharp.LLVMBuilderRef builder, SlScope scope)
+    public LLVMSharp.LLVMValueRef ParseFloat(string value, LLVMSharp.LLVMBuilderRef builder)
     {
         // These should be 32 bits long
         float i = float.Parse(value, System.Globalization.NumberStyles.AllowLeadingSign);
         return LLVMSharp.LLVM.ConstInt(LLVMSharp.LLVM.FloatType(), (ulong)i, true);
     }
 
-    public LLVMSharp.LLVMValueRef ParseString(string value, Logger logger, LLVMSharp.LLVMBuilderRef builder, SlScope scope)
+    public LLVMSharp.LLVMValueRef ParseString(string value, LLVMSharp.LLVMBuilderRef builder)
     {
         // TODO - This is a little more complicated since it should be an array
         return LLVMSharp.LLVM.ConstInt(LLVMSharp.LLVM.Int1Type(), 0, false);
     }
 
-    public LLVMSharp.LLVMValueRef ParseChar(string value, Logger logger, LLVMSharp.LLVMBuilderRef builder, SlScope scope)
+    public LLVMSharp.LLVMValueRef ParseChar(string value, LLVMSharp.LLVMBuilderRef builder)
     {
         if ((value.Length - 2) != 1) throw new Exception($"Invalid char length of {(value.Length - 2)} in char {value}");
 
@@ -72,7 +72,7 @@ internal class SlLiteralExpression: SlExpression
         return LLVMSharp.LLVM.ConstInt(LLVMSharp.LLVM.Int8Type(), (ulong)i, false);
     }
 
-    public LLVMSharp.LLVMValueRef ParseBool(string value, Logger logger, LLVMSharp.LLVMBuilderRef builder, SlScope scope)
+    public LLVMSharp.LLVMValueRef ParseBool(string value, LLVMSharp.LLVMBuilderRef builder)
     {
         switch(value)
         {

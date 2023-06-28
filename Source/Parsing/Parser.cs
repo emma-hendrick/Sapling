@@ -126,14 +126,17 @@ internal class Parser
     /// </summary>
     public AST Parse()
     {
+        // Create the global scope
+        SlScope global = new SlScope();
+
         // Create a new instance of an abstract syntax tree
-        SlMethod root = new SlMethod();
+        SlMethod root = new SlMethod(_logger, global);
         AST ast = new AST(root, _logger);
 
         // Parse the tokens and create AST nodes from them
         while (_current != null)
         {
-            AddNextNode(root);
+            AddNextNode(root, global);
         }
 
         // Return the tree
@@ -143,7 +146,7 @@ internal class Parser
     /// <summary>
     /// This method adds a new node to an SlMethod
     /// </summary>
-    public void AddNextNode(SlMethod method)
+    public void AddNextNode(SlMethod method, SlScope scope)
     {
         if (_current is null) throw new Exception("Gadzooks! We are trying to add a statement when there are none to be had!!");
 
@@ -153,22 +156,22 @@ internal class Parser
             case (nameof(Sapling.Tokens.SaplingType)):
 
                 // Assign to methods and classes as needed, else assign to a property
-                if (_current.Value.Value == "method") method.Add(ParseAssignMethod());
-                else if (_current.Value.Value == "class") method.Add(ParseAssignClass());
-                else method.Add(ParseAssignProperty());
+                if (_current.Value.Value == "method") method.Add(ParseAssignMethod(scope));
+                else if (_current.Value.Value == "class") method.Add(ParseAssignClass(scope));
+                else method.Add(ParseAssignProperty(scope));
                 break;
 
             case (nameof(Sapling.Tokens.Keyword)):
 
                 // Parse the return statement if the keyword is return, if it isnt, throw an error
-                if (_current.Value.Value == "return") method.Add(ParseReturn());
+                if (_current.Value.Value == "return") method.Add(ParseReturn(scope));
                 else throw new Exception($"Unexpected keyword \"{_current.Value.Value}\" in input string from {_current.Value.StartIndex} to {_current.Value.EndIndex}."); 
                 break;
 
             case (nameof(Sapling.Tokens.ID)):
 
                 // Parse a identifier as a method if it is immediately followed by a left parenthesis, otherwise parse it as an expression
-                if (_current.Next is not null && _current.Next.Value.Value == "(") method.Add(ParseMethodCall());
+                if (_current.Next is not null && _current.Next.Value.Value == "(") method.Add(ParseMethodCall(scope));
                 else throw new Exception($"Unexpected identifier \"{_current.Value.Value}\" in input string at {_current.Value.StartIndex} to {_current.Value.EndIndex}."); 
                 break;
 
@@ -181,7 +184,7 @@ internal class Parser
     /// <summary>
     /// This method parses an assignment operator for a property and adds the needed nodes to the AST.
     /// </summary>
-    private SlAssignProperty ParseAssignProperty()
+    private SlAssignProperty ParseAssignProperty(SlScope scope)
     {
         if (_current is null) throw new Exception("Trying to parse null type!!");
         string type = _current.Value.Value;
@@ -196,19 +199,19 @@ internal class Parser
         GetNextNode(); // Consume = sign
 
         if (_current is null) throw new Exception("Trying to parse null expression!!");
-        SlExpression expression = ParseExpression(); // Consume the expression
+        SlExpression expression = ParseExpression(scope); // Consume the expression
 
         if (_current is null) throw new Exception("Trying to parse null delimiter!!");
         else if (!(nameof(Sapling.Tokens.Delimeter) == _current.Value.GetType().Name && _current.Value.Value == ";")) throw new Exception($"Missing Semicolon!! Instead got {_current.Value.Value}");
         GetNextNode(); // Consume ;
 
-        return new SlAssignProperty(type, identifier, expression);
+        return new SlAssignProperty(_logger, type, identifier, expression, scope);
     }
 
     /// <summary>
     /// This method parses an assignment operator for a method and adds the needed nodes to the AST.
     /// </summary>
-    private SlAssignMethod ParseAssignMethod()
+    private SlAssignMethod ParseAssignMethod(SlScope scope)
     {
         if (_current is null) throw new Exception("Trying to parse null type!!");
         string type = _current.Value.Value;
@@ -223,19 +226,19 @@ internal class Parser
         GetNextNode(); // Consume = sign
 
         if (_current is null) throw new Exception("Trying to parse null expression!!");
-        SlMethod method = ParseMethod(); // Consume the method
+        SlMethod method = ParseMethod(scope); // Consume the method
 
         if (_current is null) throw new Exception("Trying to parse null delimiter!!");
         else if (!(nameof(Sapling.Tokens.Delimeter) == _current.Value.GetType().Name && _current.Value.Value == ";")) throw new Exception($"Missing Semicolon!! Instead got {_current.Value.Value}");
         GetNextNode(); // Consume ;
 
-        return new SlAssignMethod(identifier, method);
+        return new SlAssignMethod(_logger, identifier, method, scope);
     }
 
     /// <summary>
     /// This method parses an assignment operator for a function and adds the needed nodes to the AST.
     /// </summary>
-    private SlAssignClass ParseAssignClass()
+    private SlAssignClass ParseAssignClass(SlScope scope)
     {
         // A list of subclasses, methods, and properties
         List<SlStatement> statements = new List<SlStatement>();
@@ -257,7 +260,7 @@ internal class Parser
         GetNextNode(); // Consume {
             
         if (_current is null) throw new Exception("Trying to parse null class!!");
-        SlClass slClass = ParseClass(); // Consume the class
+        SlClass slClass = ParseClass(scope); // Consume the class
 
         if (_current is null) throw new Exception("Trying to parse null delimiter!!");
         else if (!(nameof(Sapling.Tokens.Delimeter) == _current.Value.GetType().Name && _current.Value.Value == "}")) throw new Exception($"Missing Closing Brace!! Instead got {_current.Value.Value}");
@@ -267,49 +270,52 @@ internal class Parser
         else if (!(nameof(Sapling.Tokens.Delimeter) == _current.Value.GetType().Name && _current.Value.Value == ";")) throw new Exception($"Missing Semicolon!! Instead got {_current.Value.Value}");
         GetNextNode(); // Consume ;
 
-        return new SlAssignClass(identifier, slClass);
+        return new SlAssignClass(_logger, identifier, slClass, scope);
     }
 
     /// <summary>
     /// This method parses an optree and adds the needed nodes to the AST.
     /// </summary>
-    private SlParsedOptree ParseOptree()
+    private SlParsedOptree ParseOptree(SlScope scope)
     {
         // A list of expressions in the optree
         List<SlExpression> expressions = new List<SlExpression>(); 
         List<SlOperator> operators = new List<SlOperator>(); 
 
         // Add the initial expression to the optree
-        expressions.Add(ParseSingleExpression());
+        expressions.Add(ParseSingleExpression(scope));
 
         // While the current node is an operator, add it and the expression following it
         while (_current is not null && _operators.Contains(_current.Value.GetType().Name))
         {
-            operators.Add(ParseOperator());
-            expressions.Add(ParseSingleExpression());
+            operators.Add(ParseOperator(scope));
+            expressions.Add(ParseSingleExpression(scope));
         }
 
         // This will be used to actually build a tree from the expressions and operators
-        SlOptree rawOptree = SlOptreeFactory.CreateInstance(_logger, expressions, operators);
+        SlOptree rawOptree = SlOptreeFactory.CreateInstance(_logger, expressions, operators, scope);
 
         // Create a parsedOptree from the raw optree
-        return new SlParsedOptree(rawOptree);
+        return new SlParsedOptree(_logger, rawOptree, scope);
     }
 
     /// <summary>
     /// This method parses a method and adds the needed nodes to the AST.
     /// </summary>
-    public SlMethod ParseMethod()
+    public SlMethod ParseMethod(SlScope parentScope)
     {
+        // Create the method scope
+        SlScope scope = new SlScope(parentScope);
+
         // Create a new instance of a method
-        SlMethod method = new SlMethod();
+        SlMethod method = new SlMethod(_logger, scope);
 
         GetNextNode(); // Remove the {
 
         // Parse the tokens and create AST nodes from them
         while (_current != null && _current.Value.Value != "}")
         {
-            AddNextNode(method);
+            AddNextNode(method, scope);
         }
 
         GetNextNode(); // Remove the }
@@ -319,15 +325,17 @@ internal class Parser
     /// <summary>
     /// This method parses a class and adds the needed nodes to the AST.
     /// </summary>
-    public SlClass ParseClass()
+    public SlClass ParseClass(SlScope parentScope)
     {
-        SlClass slClass = new SlClass();
+        // Create the class scope
+        SlScope scope = new SlScope(parentScope);
+        SlClass slClass = new SlClass(_logger, scope);
 
         while(_current != null && _current.Value.GetType().Name == typeof(Sapling.Tokens.SaplingType).Name)
         {
-            if (_current.Value.Value == "method") slClass.Add(ParseAssignMethod()); // Add a method
-            else if (_current.Value.Value == "class") slClass.Add(ParseAssignClass()); // Add a subclass
-            else slClass.Add(ParseAssignProperty()); // Add a property
+            if (_current.Value.Value == "method") slClass.Add(ParseAssignMethod(scope)); // Add a method
+            else if (_current.Value.Value == "class") slClass.Add(ParseAssignClass(scope)); // Add a subclass
+            else slClass.Add(ParseAssignProperty(scope)); // Add a property
         }
 
         return slClass;
@@ -336,38 +344,38 @@ internal class Parser
     /// <summary>
     /// This method parses a full expression and adds the needed nodes to the AST.
     /// </summary>
-    private SlExpression ParseExpression()
+    private SlExpression ParseExpression(SlScope scope)
     {
         // This shouldn't ever be reached, I just want to get rid of the warning here
         if (_current is null) throw new Exception("Trying to parse null expression!!");
         else if (_current.Next is not null && _current.Next.Next is not null && _operators.Contains(_current.Next.Value.GetType().Name))
         {
-            return ParseOptree();
+            return ParseOptree(scope);
         }
-        else return ParseSingleExpression();
+        else return ParseSingleExpression(scope);
     }
 
     /// <summary>
     /// This method parses a single expression and adds the needed nodes to the AST.
     /// </summary>
-    private SlExpression ParseSingleExpression()
+    private SlExpression ParseSingleExpression(SlScope scope)
     {
         // This shouldn't ever be reached, I just want to get rid of the warning here
         if (_current is null) throw new Exception("Trying to parse null expression!!");
         else if (nameof(Sapling.Tokens.ID) == _current.Value.GetType().Name)
         {
             // This is an identifier
-            return ParseIdentifier();
+            return ParseIdentifier(scope);
         }
         else if (nameof(Sapling.Tokens.Delimeter) == _current.Value.GetType().Name && _current.Value.Value == "(")
         {
             // This is an expression in parentheses
-            return ParseParenExpression();
+            return ParseParenExpression(scope);
         }
         else if (_literals.Contains(_current.Value.GetType().Name))
         {
             // This is just a value
-            SlExpression expression = new SlLiteralExpression(_current.Value.GetType().Name, _current.Value.Value);
+            SlExpression expression = new SlLiteralExpression(_logger, _current.Value.GetType().Name, _current.Value.Value, scope);
             GetNextNode(); // Consume the value
             return expression;
         }
@@ -377,10 +385,10 @@ internal class Parser
     /// <summary>
     /// This method parses a parensthetical expression and adds the needed nodes to the AST.
     /// </summary>
-    private SlExpression ParseParenExpression()
+    private SlExpression ParseParenExpression(SlScope scope)
     {
         GetNextNode(); // Consume the (
-        SlExpression expression = ParseExpression(); // Parse the inner Expression
+        SlExpression expression = ParseExpression(scope); // Parse the inner Expression
         GetNextNode(); // Consume the )
         return expression;
     }
@@ -388,10 +396,10 @@ internal class Parser
     /// <summary>
     /// This method parses an identifier and adds the needed nodes to the AST.
     /// </summary>
-    private SlIdentifierExpression ParseIdentifier()
+    private SlIdentifierExpression ParseIdentifier(SlScope scope)
     {
         if (_current is null) throw new Exception("Trying to parse null identifier!!");
-        SlIdentifierExpression identifierExpression = new SlIdentifierExpression(_current.Value.Value);
+        SlIdentifierExpression identifierExpression = new SlIdentifierExpression(_logger, _current.Value.Value, scope);
         GetNextNode();
         return identifierExpression;
     }
@@ -399,10 +407,10 @@ internal class Parser
     /// <summary>
     /// This method parses an operator and adds the needed nodes to the AST.
     /// </summary>
-    private SlOperator ParseOperator()
+    private SlOperator ParseOperator(SlScope scope)
     {
         if (_current is null) throw new Exception("Trying to parse null operator!!");
-        SlOperator op = new SlOperator(_current.Value.Value);
+        SlOperator op = new SlOperator(_logger, _current.Value.Value, scope);
         GetNextNode(); // Consume operator
         return op;
     }
@@ -410,21 +418,21 @@ internal class Parser
     /// <summary>
     /// This method parses a return statement and adds the needed nodes to the AST.
     /// </summary>
-    private SlReturn ParseReturn()
+    private SlReturn ParseReturn(SlScope scope)
     {
         GetNextNode(); // Consume Return
-        SlExpression expression = ParseExpression();
+        SlExpression expression = ParseExpression(scope);
         GetNextNode(); // Consume Delimiter
-        return new SlReturn(expression);
+        return new SlReturn(_logger, expression, scope);
     }
 
     /// <summary>
     /// This method calls a method and adds the needed nodes to the AST.
     /// </summary>
-    private SlMethodCall ParseMethodCall()
+    private SlMethodCall ParseMethodCall(SlScope scope)
     {
         // This one will be complicated because we also have to parse arguments and consume all of them, then actually execute the right code
         // TODO
-        return new SlMethodCall();
+        return new SlMethodCall(_logger, scope);
     }
 }

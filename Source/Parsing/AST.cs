@@ -58,12 +58,9 @@ internal class AST
 
         // We use this to add instructions to the functions block
         LLVMSharp.LLVM.PositionBuilderAtEnd(builder, main_entry);
-
-        // Now we create our global scope
-        SlScope global = new SlScope();
         
         // Now we will execute the code of the root node
-        _root.GenerateCode(_logger, module, builder, main_entry, main, global);
+        _root.GenerateCode(module, builder, main_entry, main);
         
         // Ensure we didnt screw up...
         _logger.Add("Verifying Module");

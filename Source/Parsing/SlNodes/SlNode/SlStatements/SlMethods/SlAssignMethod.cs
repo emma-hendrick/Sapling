@@ -8,7 +8,7 @@ internal class SlAssignMethod: SlStatement
     private string _methodIdentifier;
     private SlMethod _method;
 
-    public SlAssignMethod(string identifier, SlMethod method)
+    public SlAssignMethod(Logger logger, string identifier, SlMethod method, SlScope scope): base(logger, scope)
     {
         _methodIdentifier = identifier;
         _method = method;
@@ -17,9 +17,9 @@ internal class SlAssignMethod: SlStatement
     /// <summary>
     /// Generate code for a LLVM method
     /// <example>
-    public override void GenerateCode(Logger logger, LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMBasicBlockRef self_entry, SlScope scope)
+    public override void GenerateCode(LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMBasicBlockRef self_entry)
     {
-        logger.Add("Generating code for SlAssignMethod");
+        Logger.Add("Generating code for SlAssignMethod");
 
         // Add new method to the module
         LLVMSharp.LLVMTypeRef[] method_param_types = { };
@@ -27,12 +27,12 @@ internal class SlAssignMethod: SlStatement
         LLVMSharp.LLVMValueRef new_method = LLVMSharp.LLVM.AddFunction(module, _methodIdentifier, method_fn_type);
 
         // Entry/Exit point for the method
-        logger.IncreaseIndent();
-        logger.Add($"Adding Basic Block: \"{_methodIdentifier}_entry\"");
+        Logger.IncreaseIndent();
+        Logger.Add($"Adding Basic Block: \"{_methodIdentifier}_entry\"");
         LLVMSharp.LLVMBasicBlockRef method_entry = LLVMSharp.LLVM.AppendBasicBlock(new_method, $"{_methodIdentifier}_entry");
 
         // Generate the code for the method
-        _method.GenerateCode(logger, module, builder, method_entry, new_method, scope);
+        _method.GenerateCode(module, builder, method_entry, new_method);
 
         // We will then position the builder back at the end of this method
         LLVMSharp.LLVM.PositionBuilderAtEnd(builder, self_entry);
