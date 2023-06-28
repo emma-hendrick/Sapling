@@ -14,7 +14,7 @@ internal class SlLiteralExpression: SlExpression
         _value = value;
     }
 
-    public override LLVMSharp.LLVMValueRef GenerateValue(Logger logger, LLVMSharp.LLVMBuilderRef builder, SlScope scope)
+    public override LLVMSharp.LLVMValueRef GenerateValue(Logger logger, LLVMSharp.LLVMBuilderRef builder, SlScope scope, LLVMSharp.LLVMModuleRef module)
     {
         Func<string, Logger, LLVMSharp.LLVMBuilderRef, SlScope, LLVMSharp.LLVMValueRef> parser;
         switch (_type)

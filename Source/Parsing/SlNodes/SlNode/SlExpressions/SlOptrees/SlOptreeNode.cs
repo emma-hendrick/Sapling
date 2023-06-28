@@ -23,25 +23,29 @@ internal class SlOptreeNode: SlExpression
         return op.GetReturnType(l.ExType, r.ExType);
     }
 
-    public override LLVMSharp.LLVMValueRef GenerateValue(Logger logger, LLVMSharp.LLVMBuilderRef builder, SlScope scope)
+    public override LLVMSharp.LLVMValueRef GenerateValue(Logger logger, LLVMSharp.LLVMBuilderRef builder, SlScope scope, LLVMSharp.LLVMModuleRef module)
     {
-        LLVMSharp.LLVMValueRef result;
+        logger.Add($"Generating a value for {_l.ExType} {_op.OpType} {_l.ExType}");
+        Func<LLVMSharp.LLVMBuilderRef, LLVMSharp.LLVMValueRef, LLVMSharp.LLVMValueRef, string, LLVMSharp.LLVMValueRef> func;
 
         switch (_op.OpType)
         {
             case "+":
-                result = LLVMSharp.LLVM.BuildAdd(builder, _l.GenerateValue(logger, builder, scope), _r.GenerateValue(logger, builder, scope), $"result_{_num.ToString()}");
+                func = LLVMSharp.LLVM.BuildAdd;
                 break;
             case "-":
-                result = LLVMSharp.LLVM.BuildSub(builder, _l.GenerateValue(logger, builder, scope), _r.GenerateValue(logger, builder, scope), $"result_{_num.ToString()}");
+                func = LLVMSharp.LLVM.BuildSub;
                 break;
             case "*":
-                result = LLVMSharp.LLVM.BuildMul(builder, _l.GenerateValue(logger, builder, scope), _r.GenerateValue(logger, builder, scope), $"result_{_num.ToString()}");
+                func = LLVMSharp.LLVM.BuildMul;
+                break;
+            case "/":
+                func = LLVMSharp.LLVM.BuildUDiv;
                 break;
             default:
                 throw new Exception($"Unexpected operator type {_op.OpType}");
         }
 
-        return result;
+        return func(builder, _l.GenerateValue(logger, builder, scope, module), _r.GenerateValue(logger, builder, scope, module), $"result_{_num.ToString()}");
     }
 }

@@ -18,7 +18,7 @@ internal class SlIdentifierExpression: SlExpression
         return "int";
     }
 
-    public override LLVMSharp.LLVMValueRef GenerateValue(Logger logger, LLVMSharp.LLVMBuilderRef builder, SlScope scope)
+    public override LLVMSharp.LLVMValueRef GenerateValue(Logger logger, LLVMSharp.LLVMBuilderRef builder, SlScope scope, LLVMSharp.LLVMModuleRef module)
     {
         // TODO - Get value from scope
         return LLVMSharp.LLVM.ConstInt(LLVMSharp.LLVM.Int32Type(), 0, false);

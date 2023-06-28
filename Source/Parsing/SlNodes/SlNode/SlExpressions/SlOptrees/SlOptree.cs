@@ -29,66 +29,90 @@ internal class SlOptree: SlExpression
 
     public static SlExpression ParseToNodes(Logger logger, List<SlExpression> expressions, List<SlOperator> operators)
     {
-        logger.Add("Parsing OpTree");
+        logger.Add("Parsing OpTree - Shunting Yard Time!");
+        logger.IncreaseIndent();
 
-        // Here we will start putting the expression in the right order
-        Stack<SlExpression> expressionStack = new Stack<SlExpression>();
-        Stack<SlOperator> operatorStack = new Stack<SlOperator>();
+        // Data structures we will need
+        Stack<SlOperator> operatorsInProcessing = new Stack<SlOperator>();
+        Queue<IShuntingYardable> postfixQueue = new Queue<IShuntingYardable>();
 
-        // For each token we will either add it to the expression stack if it is an expression, or we will re apply the precedence to the lists
-        for (int i = 0; i < expressions.Count; i++)
+        // Algorithm Time!
+        for (int i = 0; i < expressions.Count + operators.Count; i ++)
         {
-            if (i % 2 == 0)
+            // We'll use this to know which expression or operator to access
+            int key = i / 2;
+
+            // If it's an expression
+            if (i % 2 == 0 )
             {
-                expressionStack.Push(expressions[i]);
+                logger.Add($"Enqueueing expression of type: {expressions[key].ExType}");
+                postfixQueue.Enqueue(expressions[key]);
             }
-            else
+            else // If it's an operator
             {
-                ApplyPrecedence(logger, operators[i / 2], expressionStack, operatorStack);
+                SlOperator currentOperator = operators[key];
+
+                while (operatorsInProcessing.Count > 0 && _precedence[currentOperator.OpType] < _precedence[operatorsInProcessing.Peek().OpType])
+                {
+                    SlOperator op = operatorsInProcessing.Pop();
+
+                    logger.Add($"Enqueueing operator of type: {op.OpType}");
+                    postfixQueue.Enqueue(op);
+                };
+                
+                logger.Add($"Adding operator of type {currentOperator.OpType} to stack");
+                operatorsInProcessing.Push(currentOperator);
             }
         }
 
-        // Convert expressions and operators to a set of nodes
-        return BuildTree(logger, expressionStack, operatorStack);
-    }
+        logger.Add("Lists processed, adding remaining operators");
 
-    private static void ApplyPrecedence(Logger logger, SlOperator op, Stack<SlExpression> expressionStack, Stack<SlOperator> operatorStack)
-    {
-        while (operatorStack.Count > 0 && _precedence[op.OpType] <= _precedence[operatorStack.Peek().OpType])
+        while(operatorsInProcessing.Count > 0)
         {
-            SlOperator currentOperator = operatorStack.Pop();
-            SlExpression left = expressionStack.Pop();
-            SlExpression right = expressionStack.Pop();
+            SlOperator op = operatorsInProcessing.Pop();
 
-            SlOptreeNode node = new SlOptreeNode(currentOperator, left, right, 0);
-            expressionStack.Append(node);
+            logger.Add($"Enqueueing operator of type: {op.OpType}");
+            postfixQueue.Enqueue(op);
         }
 
-        operatorStack.Append(op);
-    }
+        // Done shunting those yards!
+        logger.DecreaseIndent();
 
-    private static SlExpression BuildTree(Logger logger, Stack<SlExpression> expressionStack, Stack<SlOperator> operatorStack)
-    {
-        logger.Add("Building OpTree");
+        // Time to parse the postfix queue!
+        logger.Add("Parsing Postfix Queue!");
+        logger.IncreaseIndent();
+        Stack<SlExpression> postfixStack = new Stack<SlExpression>();
+        int num = 0;
 
-        // Build a tree from the expression and operator stacks
-        while (operatorStack.Count > 0 && expressionStack.Count >= 2)
+        while(postfixQueue.Count > 0)
         {
-            SlOperator currentOperator = operatorStack.Pop();
-            SlExpression left = expressionStack.Pop();
-            SlExpression right = expressionStack.Pop();
-
-            SlOptreeNode node = new SlOptreeNode(currentOperator, left, right, 0);
-            expressionStack.Append(node);
+            IShuntingYardable item = postfixQueue.Dequeue();
+            if(item is SlExpression) 
+            {
+                logger.Add($"Dequeueing expression of type: {((SlExpression)item).ExType}");
+                postfixStack.Push((SlExpression)item);
+            }
+            else 
+            {
+                logger.Add($"Dequeueing operator of type: {((SlOperator)item).OpType}");
+                SlExpression r = postfixStack.Pop();
+                SlExpression l = postfixStack.Pop();
+                postfixStack.Push(new SlOptreeNode((SlOperator)item, l, r, num));
+                num ++;
+            }
         }
 
-        return expressionStack.Pop();
+        // Done parsing that postfix!
+        logger.DecreaseIndent();
+
+        return postfixStack.Pop();
     }
 
-    public override LLVMSharp.LLVMValueRef GenerateValue(Logger logger, LLVMSharp.LLVMBuilderRef builder, SlScope scope)
+    public override LLVMSharp.LLVMValueRef GenerateValue(Logger logger, LLVMSharp.LLVMBuilderRef builder, SlScope scope, LLVMSharp.LLVMModuleRef module)
     {
+        logger.Add($"Generating a value for root of OpTree");
         if (_root is null) throw new Exception("Attempting to generate value from unparsed optree");
-        return _root.GenerateValue(logger, builder, scope);
+        return _root.GenerateValue(logger, builder, scope, module);
     }
 }
 

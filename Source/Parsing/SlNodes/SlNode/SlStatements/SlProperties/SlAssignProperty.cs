@@ -19,9 +19,7 @@ internal class SlAssignProperty: SlStatement
     public override void GenerateCode(Logger logger, LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMBasicBlockRef self_entry, SlScope scope)
     {
         logger.Add("Generating code for SlAssignProperty");
-
-        LLVMSharp.LLVMValueRef expression = _expression.GenerateValue(logger, builder, scope);
-
+        LLVMSharp.LLVMValueRef expression = _expression.GenerateValue(logger, builder, scope, module);
         LLVMSharp.LLVMValueRef variable_alloc = LLVMSharp.LLVM.BuildAlloca(builder, scope.FindType(logger, _type), _identifier);
         LLVMSharp.LLVMValueRef variable_store = LLVMSharp.LLVM.BuildStore(builder, expression, variable_alloc);
     }

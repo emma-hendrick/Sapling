@@ -115,14 +115,22 @@ internal static class Program
     {   
         // Create a new logger section and create a new builds folder if necessary
         _logger.NewSection();
+        _logger.Add($"Compiling {filename}.sl");
+
+        // Create the builds folder if it doesn't exists
         if (!Directory.Exists("./builds")) {
             _logger.Add($"Creating builds folder");
             Directory.CreateDirectory("./builds");
         }
-        _logger.Add($"Compiling {filename}.sl");
+        
+        // Remove the bitcode if it already exists
+        if (File.Exists($"builds/{filename}.bc"))
+        {
+            File.Delete($"builds/{filename}.bc");
+            _logger.Add($"builds/{filename}.bc deleted.");
+        }
 
         IEnumerable<Tokens.Token> tokens;
-        
         // Get all tokens from the file
         try
         {
@@ -147,13 +155,6 @@ internal static class Program
             _logger.Add(error);
             PrintError(error);
             return -1;
-        }
-        
-        // Remove the bitcode if it already exists
-        if (File.Exists($"builds/{filename}.bc"))
-        {
-            File.Delete($"builds/{filename}.bc");
-            _logger.Add($"builds/{filename}.bc deleted.");
         }
 
         // Create a parser to handle our tokens

@@ -11,8 +11,8 @@ internal class SlParsedOptree: SlExpression
         _optree = optree;
     }
 
-    public override LLVMSharp.LLVMValueRef GenerateValue(Logger logger, LLVMSharp.LLVMBuilderRef builder, SlScope scope)
+    public override LLVMSharp.LLVMValueRef GenerateValue(Logger logger, LLVMSharp.LLVMBuilderRef builder, SlScope scope, LLVMSharp.LLVMModuleRef module)
     {
-        return _optree.GenerateValue(logger, builder, scope);
+        return _optree.GenerateValue(logger, builder, scope, module);
     }
 }

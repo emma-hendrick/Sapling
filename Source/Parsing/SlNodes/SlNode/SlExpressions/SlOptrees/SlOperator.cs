@@ -2,7 +2,7 @@ namespace Sapling.Nodes;
 
 /// <summary>
 /// </summary>
-internal class SlOperator: SlNode
+internal class SlOperator: SlNode, IShuntingYardable
 {
     private string _optype;
     public string OpType => _optype;
@@ -10,6 +10,19 @@ internal class SlOperator: SlNode
     // Link a list of which types return which type to each operator
     public Dictionary<string, Dictionary<Tuple<string, string>, string>> OpTypeReturns = new Dictionary<string, Dictionary<Tuple<string, string>, string>> {
         {"+", new Dictionary<Tuple<string, string>, string> {
+            {Tuple.Create("Integer", "Integer"), "Integer"},
+            {Tuple.Create("int", "int"), "int"},
+        }},
+        {"*", new Dictionary<Tuple<string, string>, string> {
+            {Tuple.Create("Integer", "Integer"), "Integer"},
+            {Tuple.Create("int", "int"), "int"},
+        }},
+        {"-", new Dictionary<Tuple<string, string>, string> {
+            {Tuple.Create("Integer", "Integer"), "Integer"},
+            {Tuple.Create("int", "int"), "int"},
+        }},
+        {"/", new Dictionary<Tuple<string, string>, string> {
+            {Tuple.Create("Integer", "Integer"), "Integer"},
             {Tuple.Create("int", "int"), "int"},
         }},
     };

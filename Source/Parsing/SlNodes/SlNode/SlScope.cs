@@ -26,6 +26,4 @@ internal class SlScope
         // If parsing fails throw an exception
         throw new Exception($"Failed to parse type: {type}");
     }
-
-
 }
