@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="LibLLVM" Version="5.0.1" NoWarn="NU1701" />
     <PackageReference Include="LLVMSharp" Version="5.0.0" />
   </ItemGroup>
 

@@ -8,7 +8,6 @@ internal class SlOptreeNode: SlExpression
     SlOperator _op;
     SlExpression _l;
     SlExpression _r;
-    int _num;
 
     public SlOptreeNode(Logger logger, SlOperator op, SlExpression l, SlExpression r, SlScope scope): base(logger, GetReturnType(op, l, r), scope)
     {
@@ -45,6 +44,6 @@ internal class SlOptreeNode: SlExpression
                 throw new Exception($"Unexpected operator type {_op.OpType}");
         }
 
-        return func(builder, _l.GenerateValue(builder, module), _r.GenerateValue(builder, module), $"result_{_num.ToString()}");
+        return func(builder, _l.GenerateValue(builder, module), _r.GenerateValue(builder, module), "result");
     }
 }

@@ -45,12 +45,11 @@ internal static class Program
     {
         try
         {
-
             // Default if the user does not provide a file
             string filename = args.Length > 1 ? args[1]: Constants._defaultFileName;
 
             // Reinitialize the logger to use the filename provided in the parameters
-            _logger = new Logger(filename.Substring(0, filename.Length - 3), printOutput: true, debug: true);
+            _logger = new Logger(filename.Substring(0, filename.Length - 3), printOutput: Environment.PrintOutput == "true", debug: Environment.Debug == "true");
 
             // Check whether the filename is valid, and if not, throw an error
             if(_invalidFilenames.Contains(filename)) throw new Exception($"You have entered an invalid filename: You cannot use the following, as they are reserved for tests: {string.Join(' ', _invalidFilenames)}");

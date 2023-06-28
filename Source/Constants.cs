@@ -10,6 +10,16 @@ internal static class Constants
 {
     
     /// <summary>
+    /// Default of whether or not to print our loggers output.
+    /// </summary> 
+    internal const string _defaultPrintOutput = "false";
+    
+    /// <summary>
+    /// Default of whether or not to debug.
+    /// </summary> 
+    internal const string _defaultDebug = "false";
+
+    /// <summary>
     /// The name of the default sapling file.
     /// </summary> 
     internal const string _defaultFileName = "source.sl";
