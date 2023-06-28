@@ -21,6 +21,3 @@ examples_for_me
 # Ignore sl files outside of examples folder
 *.sl
 !examples/*.sl
-
-# Ignore environment configuration
-*.env
