@@ -44,6 +44,7 @@ internal class AST
 
         // Create our module
         LLVMSharp.LLVMModuleRef module = LLVMSharp.LLVM.ModuleCreateWithName("root");
+        LLVMSharp.LLVM.SetTarget(module, Environment.Target);
 
         // We use this to add instructions to the functions block
         LLVMSharp.LLVMBuilderRef builder = LLVMSharp.LLVM.CreateBuilder();

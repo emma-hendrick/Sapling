@@ -4,7 +4,7 @@ using Sapling.Tokens;
 using System.Collections.Generic;
 
 /// <summary>
-/// Class <c>Constants</c> constains constants used elsewhere in the program.
+/// Class <c>Constants</c> contains constants used elsewhere in the program.
 /// </summary>
 internal static class Constants
 {

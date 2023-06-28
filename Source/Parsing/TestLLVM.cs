@@ -104,6 +104,7 @@ internal class TestLLVM
 
         // Create our module
         LLVMSharp.LLVMModuleRef module = LLVMSharp.LLVM.ModuleCreateWithName("root");
+        LLVMSharp.LLVM.SetTarget(module, Environment.Target);
 
         // Add sum to the module
         LLVMSharp.LLVMTypeRef[] sum_param_types = { LLVMSharp.LLVM.Int32Type(), LLVMSharp.LLVM.Int32Type() };
