@@ -4,6 +4,8 @@
 *.ll
 *.o
 *.exe
+*.sl
+!examples/*.sl
 logs
 bin
 obj
