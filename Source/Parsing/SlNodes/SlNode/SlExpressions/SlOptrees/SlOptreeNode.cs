@@ -46,6 +46,9 @@ internal class SlOptreeNode: SlExpression
             case "||":
                 func = LLVMSharp.LLVM.BuildOr;
                 break;
+            case "^":
+                func = LLVMSharp.LLVM.BuildXor;
+                break;
             default:
                 throw new Exception($"Unexpected operator type {_op.OpType}");
         }

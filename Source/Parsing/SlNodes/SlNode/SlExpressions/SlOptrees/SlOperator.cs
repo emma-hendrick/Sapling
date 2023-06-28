@@ -29,6 +29,9 @@ internal class SlOperator: SlNode, IShuntingYardable
         {"||", new Dictionary<Tuple<string, string>, string> {
             {Tuple.Create("bool", "bool"), "bool"},
         }},
+        {"^", new Dictionary<Tuple<string, string>, string> {
+            {Tuple.Create("bool", "bool"), "bool"},
+        }},
     };
 
     public SlOperator(Logger logger, string optype, SlScope scope): base(logger, scope)
