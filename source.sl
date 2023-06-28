@@ -1,9 +1,7 @@
 # A test file to test the lexer, parser, and compiler
-int x = 13;
-int y = 5;
-int z = x + y; 
+int x = 5 + 5;
 
-return 0;
+return x;
 
 # We expect the lexer to return the following:
 # type: int
@@ -24,9 +22,16 @@ return 0;
 #    x     +               x
 #   int   5 5
 
-# We then expect LLVM to generate the following IR for the code
+# We then expect LLVM to generate something similar to the following IR for the code
+# ; ModuleID = 'builds/source.bc'
+# source_filename = "root"
+# target datalayout = "e-m:w-p270:32:32-p271:32:32-p272:64:64-i64:64-f80:128-n8:16:32:64-S128"
+# target triple = "x86_64-w64-windows-gnu"
+
 # define i32 @main() {
-# entry:
-#   %x = add i32 5, 5
-#   ret i32 %x
+# main_entry:
+#   %x = alloca i32, align 4
+#   store i32 10, ptr %x, align 4
+#   %loadedValue = load i32, ptr %x, align 4
+#   ret i32 %loadedValue
 # }
