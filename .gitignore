@@ -1,14 +1,23 @@
+# Ignore vscode settings
 *.vscode
-*.log
+
+# Ignore the compiled files
 *.bc
 *.ll
 *.o
 *.exe
-*.sl
-!examples/*.sl
+
+# Ignore any logs and builds
 logs
+*.log
 bin
 obj
 builds
+
+# Ignore my note folders
 notes
 examples_for_me
+
+# Ignore sl files outside of examples folder
+*.sl
+!examples/*.sl
