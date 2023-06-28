@@ -116,6 +116,7 @@ internal static class Program
         // Create a new logger section and create a new builds folder if necessary
         _logger.NewSection();
         _logger.Add($"Compiling {filename}.sl");
+        _logger.Add($"Current target: {Environment.Target}");
 
         // Create the builds folder if it doesn't exists
         if (!Directory.Exists("./builds")) {
@@ -132,30 +133,12 @@ internal static class Program
 
         IEnumerable<Tokens.Token> tokens;
         // Get all tokens from the file
-        try
-        {
-            string fileContent = File.ReadAllText($"{filename}.sl");
-            PrecedenceBasedLexer lexer = new PrecedenceBasedLexer(Constants._tokenList);
-            tokens = lexer.GetTokens(fileContent);
+        string fileContent = File.ReadAllText($"{filename}.sl");
+        PrecedenceBasedLexer lexer = new PrecedenceBasedLexer(Constants._tokenList);
+        tokens = lexer.GetTokens(fileContent);
 
-            _logger.NewSection();
-            _logger.Add($"Acquired nodes");
-        }
-        catch (FileNotFoundException)
-        {
-            string error = "The file does not exist.";
-            _logger.Add(error);
-            PrintError(error);
-            return -1;
-
-        }
-        catch (IOException ex)
-        {
-            string error = $"An error occurred while reading the file: {ex.Message}";
-            _logger.Add(error);
-            PrintError(error);
-            return -1;
-        }
+        _logger.NewSection();
+        _logger.Add($"Acquired nodes");
 
         // Create a parser to handle our tokens
         Parser parser = new Parser(tokens, _logger);

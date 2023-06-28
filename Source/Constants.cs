@@ -13,6 +13,11 @@ internal static class Constants
     /// The name of the default sapling file.
     /// </summary> 
     internal const string _defaultFileName = "source.sl";
+
+    /// <summary>
+    /// The default target of the compiler
+    /// </summary>
+    internal const string _defaultTarget = "";
     
     /// <summary>
     /// A list of valid tokens and their precedence in the Sapling programming language.
