@@ -42,7 +42,7 @@ internal class Logger
     /// will create a new logger called logger instance and will begin creating a log file.
     /// </example>
     /// </summary>
-    public Logger(string filename = Constants._defaultFileName, bool printOutput = false, bool debug = false)
+    public Logger(string filename = Constants.DefaultFileName, bool printOutput = false, bool debug = false)
     {
         if (!Directory.Exists("./logs")) {
             Directory.CreateDirectory("./logs");

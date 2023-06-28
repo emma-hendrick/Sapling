@@ -17,21 +17,21 @@ internal class SlLiteralExpression: SlExpression
     public override LLVMSharp.LLVMValueRef GenerateValue(LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMModuleRef module)
     {
         Func<string, LLVMSharp.LLVMBuilderRef, LLVMSharp.LLVMValueRef> parser;
-        switch (_type)
+        switch (Constants.EquivalentTypes[_type])
         {
-            case "Integer":
+            case "int":
                 parser = ParseInt;
                 break;
-            case "Float":
+            case "float":
                 parser = ParseFloat;
                 break;
-            case "String":
+            case "str":
                 parser = ParseString;
                 break;
-            case "Char":
+            case "char":
                 parser = ParseChar;
                 break;
-            case "Bool":
+            case "bool":
                 parser = ParseBool;
                 break;
             default:

@@ -12,22 +12,22 @@ internal static class Constants
     /// <summary>
     /// Default of whether or not to print our loggers output.
     /// </summary> 
-    internal const string _defaultPrintOutput = "false";
+    internal const string DefaultPrintOutput = "false";
     
     /// <summary>
     /// Default of whether or not to debug.
     /// </summary> 
-    internal const string _defaultDebug = "false";
+    internal const string DefaultDebug = "false";
 
     /// <summary>
     /// The name of the default sapling file.
     /// </summary> 
-    internal const string _defaultFileName = "source.sl";
+    internal const string DefaultFileName = "source.sl";
 
     /// <summary>
     /// The default target of the compiler
     /// </summary>
-    internal const string _defaultTarget = "";
+    internal const string DefaultTarget = "";
     
     /// <summary>
     /// A list of valid tokens and their precedence in the Sapling programming language.
@@ -129,6 +129,14 @@ internal static class Constants
             "Identifier", 
             (startIndex, endIndex, value) => new ID(startIndex, endIndex, value)), 
             100),
-
+    };
+    
+    // A list of types which are equivalent
+    public static Dictionary<string, string> EquivalentTypes = new Dictionary<string, string>
+    {
+        {"int", "int"},
+        {"Integer", "int"},
+        {"bool", "bool"},
+        {"Boolean", "bool"}
     };
 }

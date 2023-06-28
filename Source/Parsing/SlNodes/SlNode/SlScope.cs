@@ -7,7 +7,8 @@ internal class SlScope
 {
     static Dictionary<string, LLVMSharp.LLVMTypeRef> literalTypes = new Dictionary<string, LLVMSharp.LLVMTypeRef> 
     {
-        {"int", LLVMSharp.LLVM.Int32Type()}
+        {"int", LLVMSharp.LLVM.Int32Type()},
+        {"bool", LLVMSharp.LLVM.Int1Type()}
     };
 
     private Dictionary<string, string> _types = new Dictionary<string, string>();

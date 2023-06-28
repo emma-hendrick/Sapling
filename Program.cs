@@ -46,7 +46,7 @@ internal static class Program
         try
         {
             // Default if the user does not provide a file
-            string filename = args.Length > 1 ? args[1]: Constants._defaultFileName;
+            string filename = args.Length > 1 ? args[1]: Constants.DefaultFileName;
 
             // Reinitialize the logger to use the filename provided in the parameters
             _logger = new Logger(filename.Substring(0, filename.Length - 3), printOutput: Environment.PrintOutput == "true", debug: Environment.Debug == "true");

@@ -40,6 +40,12 @@ internal class SlOptreeNode: SlExpression
             case "/":
                 func = LLVMSharp.LLVM.BuildUDiv;
                 break;
+            case "&&":
+                func = LLVMSharp.LLVM.BuildAnd;
+                break;
+            case "||":
+                func = LLVMSharp.LLVM.BuildOr;
+                break;
             default:
                 throw new Exception($"Unexpected operator type {_op.OpType}");
         }

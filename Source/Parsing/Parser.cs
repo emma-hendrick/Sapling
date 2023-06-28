@@ -176,7 +176,7 @@ internal class Parser
                 break;
 
             default:
-                throw new Exception("Gadzooks! There was an unexpected token at the end of the parser!!");
+                throw new Exception("Gadzooks! There was an unexpected token at the end of the parser!! Double check your syntax!");
 
         }
     }
