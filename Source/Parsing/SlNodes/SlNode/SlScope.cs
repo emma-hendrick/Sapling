@@ -11,7 +11,7 @@ internal class SlScope
         {"int", LLVMSharp.LLVM.Int32Type()},
         {"bool", LLVMSharp.LLVM.Int1Type()},
         {"char", LLVMSharp.LLVM.Int8Type()},
-        {"str", LLVMSharp.LLVM.Int1Type()},
+        {"str", LLVMSharp.LLVM.ArrayType(LLVMSharp.LLVM.Int8Type(), 0)},
         {"float", LLVMSharp.LLVM.FloatType()},
     };
 

@@ -21,7 +21,15 @@ internal class SlAssignProperty: SlStatement
     {
         Logger.Add("Generating code for SlAssignProperty");
         LLVMSharp.LLVMValueRef expression = _expression.GenerateValue(builder, module);
-        LLVMSharp.LLVMValueRef variable_alloc = LLVMSharp.LLVM.BuildAlloca(builder, Scope.FindType(Logger, _type), _identifier);
+        Console.WriteLine(_expression.ExType);
+
+        // Get the llvm type of the user provided type from the scope
+        LLVMSharp.LLVMTypeRef type = Scope.FindType(Logger, _type);
+
+        // It is a string, and we need to get its length
+        if (type.Equals(LLVMSharp.LLVM.ArrayType(LLVMSharp.LLVM.Int8Type(), 0))) type = expression.TypeOf();
+
+        LLVMSharp.LLVMValueRef variable_alloc = LLVMSharp.LLVM.BuildAlloca(builder, type, _identifier);
         LLVMSharp.LLVMValueRef variable_store = LLVMSharp.LLVM.BuildStore(builder, expression, variable_alloc);
         Scope.Add(Logger, _identifier, variable_alloc);
     }

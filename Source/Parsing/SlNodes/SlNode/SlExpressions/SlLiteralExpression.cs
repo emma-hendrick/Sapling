@@ -57,8 +57,7 @@ internal class SlLiteralExpression: SlExpression
 
     public LLVMSharp.LLVMValueRef ParseString(string value, LLVMSharp.LLVMBuilderRef builder)
     {
-        // TODO - This is a little more complicated since it should be an array
-        return LLVMSharp.LLVM.ConstInt(LLVMSharp.LLVM.Int1Type(), 0, false);
+        return LLVMSharp.LLVM.ConstString(value, (uint)value.Length, true);
     }
 
     public LLVMSharp.LLVMValueRef ParseChar(string value, LLVMSharp.LLVMBuilderRef builder)
