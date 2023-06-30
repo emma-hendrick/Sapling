@@ -4,7 +4,7 @@ using Sapling.Tokens;
 using System.Collections.Generic;
 
 /// <summary>
-/// Class <c>Constants</c> contains constants used elsewhere in the program.
+/// Class <c>Constants</c> contains constants used in the program.
 /// </summary>
 internal static class Constants
 {
@@ -131,7 +131,10 @@ internal static class Constants
             100),
     };
     
-    // A list of types which are equivalent
+    
+    /// <summary>
+    /// A list of type names which are equivalent
+    /// </summary> 
     public static Dictionary<string, string> EquivalentTypes = new Dictionary<string, string>
     {
         {"int", "int"},

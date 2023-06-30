@@ -2,13 +2,28 @@ namespace Sapling.Nodes;
 using Sapling.Logging;
 
 /// <summary>
+/// A valid assign property statement within the sapling programming language
 /// </summary>
 internal class SlAssignProperty: SlStatement
-{
+{    
+    /// <summary>
+    /// The properties type
+    /// </summary>
     private string _type;
+    
+    /// <summary>
+    /// The properties identifier
+    /// </summary>
     private string _identifier;
+    
+    /// <summary>
+    /// The properties value
+    /// </summary>
     private SlExpression _expression;
 
+    /// <summary>
+    /// Construct a new SlAssignProperty
+    /// </summary>
     public SlAssignProperty(Logger logger, string type, string identifier, SlExpression expression, SlScope scope): base(logger, scope)
     {
         _type = type;
@@ -17,6 +32,9 @@ internal class SlAssignProperty: SlStatement
         Scope.AddType(Logger, _identifier, type);
     }
 
+    /// <summary>
+    /// Generate code for an sl property assignment
+    /// </summary>
     public override void GenerateCode(LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMBasicBlockRef self_entry)
     {
         Logger.Add("Generating code for SlAssignProperty");

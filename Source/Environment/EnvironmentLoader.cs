@@ -5,13 +5,22 @@ namespace Sapling;
 /// </summary>
 internal class EnvironmentLoader
 {
+    /// <summary>
+    /// Our environment variables
+    /// </summary>
     private Dictionary<string, string> variables = new Dictionary<string, string>();
 
+    /// <summary>
+    /// Construct a new environment loader
+    /// </summary>
     public EnvironmentLoader()
     {
         Load();
     }
 
+    /// <summary>
+    /// Load the variables from our .env file
+    /// </summary>
     private void Load()
     {
         string[] lines = File.ReadAllLines(".env");
@@ -24,6 +33,9 @@ internal class EnvironmentLoader
         }
     }
 
+    /// <summary>
+    /// Get a variable from our environment file if it is there otherwise return null
+    /// </summary>
     public string? Get(string key)
     {
         if (!variables.ContainsKey(key)) return null;

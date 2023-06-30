@@ -55,13 +55,20 @@ internal class Logger
         _debug = debug;
     }
 
+    /// <summary>
+    /// Increase the logger indent.
+    /// </summary>
     public void IncreaseIndent()
     {
         _indent = $"{_indent}  ";
     }
 
+    /// <summary>
+    /// Decrease the logger indent.
+    /// </summary>
     public void DecreaseIndent()
     {
+        if (!(_indent.Length > 1)) throw new Exception("Trying to decrease logger indent when logger is not indented.");
         _indent = _indent.Substring(0, _indent.Length - 2);
     }
 
@@ -79,11 +86,25 @@ internal class Logger
     {
         _Add(message);
     }
+    
+    /// <summary>
+    /// This method adds a new integer to the current log.
+    /// <example>
+    /// For example:
+    /// <code>
+    /// loggerInstance.Add(5);
+    /// </code>
+    /// will add a new line to the log containing the time and the message 5.
+    /// </example>
+    /// </summary>
     public void Add(int i)
     {
         _Add(i.ToString());
     }
 
+    /// <summary>
+    /// Add a message to the logger
+    /// </summary>
     private void _Add(string message)
     {
         string time = DateTime.Now.ToString("H:mm:ss");

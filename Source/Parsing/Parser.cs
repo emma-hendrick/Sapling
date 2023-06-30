@@ -24,7 +24,6 @@ internal class Parser
     /// </summary>
     private Logger _logger;
 
-
     /// <summary>
     /// The valid literal types
     /// </summary>
@@ -64,15 +63,15 @@ internal class Parser
 
     /// <summary>
     /// Log a token.
-    /// <example>
+    /// </summary>
     private void LogToken(Token token)
     {
         _logger.Add($"{token.GetType()} \"{token.Value}\" at {token.StartIndex} to {token.EndIndex}");
     }
 
     /// <summary>
-    /// Get the next node from the linked list.
-    /// <example>
+    /// This method gets the next node from the linked list.
+    /// </summary>
     private LinkedListNode<Token>? GetNextNode()
     {
         // Return null if it was already null
@@ -98,8 +97,8 @@ internal class Parser
     }
 
     /// <summary>
-    /// Get the first node from the linked list.
-    /// <example>
+    /// This method gets the first node from the linked list.
+    /// </summary>
     private LinkedListNode<Token>? GetFirstNode()
     {
         // Get the next node
@@ -130,7 +129,7 @@ internal class Parser
         SlScope global = new SlScope();
 
         // Create a new instance of an abstract syntax tree
-        SlMethod root = new SlMethod(_logger, global);
+        SlMethod root = new SlMethod(_logger, global, "int");
         AST ast = new AST(root, _logger);
 
         // Parse the tokens and create AST nodes from them
@@ -226,7 +225,7 @@ internal class Parser
         GetNextNode(); // Consume = sign
 
         if (_current is null) throw new Exception("Trying to parse null expression!!");
-        SlMethod method = ParseMethod(scope); // Consume the method
+        SlMethod method = ParseMethod(scope, type); // Consume the method
 
         if (_current is null) throw new Exception("Trying to parse null delimiter!!");
         else if (!(nameof(Sapling.Tokens.Delimeter) == _current.Value.GetType().Name && _current.Value.Value == ";")) throw new Exception($"Missing Semicolon!! Instead got {_current.Value.Value}");
@@ -302,13 +301,13 @@ internal class Parser
     /// <summary>
     /// This method parses a method and adds the needed nodes to the AST.
     /// </summary>
-    public SlMethod ParseMethod(SlScope parentScope)
+    public SlMethod ParseMethod(SlScope parentScope, string retType)
     {
         // Create the method scope
         SlScope scope = new SlScope(parentScope);
 
         // Create a new instance of a method
-        SlMethod method = new SlMethod(_logger, scope);
+        SlMethod method = new SlMethod(_logger, scope, retType);
 
         GetNextNode(); // Remove the {
 

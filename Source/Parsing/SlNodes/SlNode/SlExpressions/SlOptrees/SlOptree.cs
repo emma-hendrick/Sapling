@@ -2,10 +2,18 @@ namespace Sapling.Nodes;
 using Sapling.Logging;
 
 /// <summary>
+/// A valid optree in the sapling programming language
 /// </summary>
 internal class SlOptree: SlExpression
 {
+    /// <summary>
+    /// The root of the optree, which is nullable
+    /// </summary>
     private SlExpression? _root;
+    
+    /// <summary>
+    /// A dictionary of valid operators and there precedence
+    /// </summary>
     private static Dictionary <string, int> _precedence = new Dictionary<string, int>
         {
             // Precedence for arithmetic operators
@@ -28,17 +36,26 @@ internal class SlOptree: SlExpression
             {">=", 12},
         };
 
+    /// <summary>
+    /// Construct a new SlOptree
+    /// </summary>
     public SlOptree(Logger logger, List<SlExpression> expressions, List<SlOperator> operators, SlExpression root, SlScope scope): base(logger, root.ExType, scope)
     {
         _root = root;
     }
 
+    /// <summary>
+    /// Get the return type of an SlOptree
+    /// </summary>
     public string GetReturnType()
     {
         if (_root is null) throw new Exception("Attempting to get type of unparsed optree");
         return _root.ExType;
     }
 
+    /// <summary>
+    /// Parse an SlOptree to its respective nodes using the shunting yard algorithm and the postfix queue stack evaluator.
+    /// </summary>
     public static SlExpression ParseToNodes(Logger logger, List<SlExpression> expressions, List<SlOperator> operators, SlScope scope)
     {
         logger.Add("Parsing OpTree - Shunting Yard Time!");
@@ -118,6 +135,9 @@ internal class SlOptree: SlExpression
         return postfixStack.Pop();
     }
 
+    /// <summary>
+    /// Generate the value of an SlOptree
+    /// </summary>
     public override LLVMSharp.LLVMValueRef GenerateValue(LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMModuleRef module)
     {
         Logger.Add($"Generating a value for root of OpTree");

@@ -24,7 +24,8 @@ internal static class Program
         {
             "run",
             "build",
-            "test"
+            "test",
+            "help",
         };
 
     /// <summary>
@@ -40,7 +41,9 @@ internal static class Program
     /// </summary>
     private static string _executionStringFormat = $"Your execution command should be in the form of: sapling {{command}} {{filename.sl}}.";
 
-    // The programs entry point
+    /// <summary>
+    /// Read and execute the users sapling command
+    /// </summary>
     private static int Main(string[] args)
     {
         try
@@ -55,9 +58,8 @@ internal static class Program
             if(_invalidFilenames.Contains(filename)) throw new Exception($"You have entered an invalid filename: You cannot use the following, as they are reserved for tests: {string.Join(' ', _invalidFilenames)}");
             if(filename.Substring(filename.Length - 3) != ".sl") throw new Exception($"You have entered an invalid filename: Valid filenames should end in .sl. {_executionStringFormat}");
 
-            // Default to run the program if the user does not provide a command
-            // Valid commands are run, build, and test
-            string command = args.Length != 0 ? args[0]: "run";
+            // Default to run the help command if the user does not provide a command
+            string command = args.Length != 0 ? args[0]: "help";
 
             // Execute the users command on their provided file, and store the result in success to return at the end
             Func<string, int> commandFunc;
@@ -70,6 +72,9 @@ internal static class Program
                      break;
                 case "test":
                     commandFunc = Test;
+                    break;
+                case "help":
+                    commandFunc = Help;
                     break;
                 default:
                     throw new Exception($"You have entered an invalid command: Valid commands are {string.Join(", ", _validCommands)}. {_executionStringFormat}");
@@ -315,6 +320,24 @@ internal static class Program
         }
 
         return exitCode;
+    }
+
+    /// <summary>
+    /// This method provides the user with help on how to use Sapling.
+    /// <example>
+    /// For example:
+    /// <code>
+    /// Help("source.sl");
+    /// </code>
+    /// results in printing the help instructions.
+    /// </example>
+    /// </summary>
+    private static int Help(string filename)
+    {
+        Console.WriteLine("Hello future Sapling user!");
+        Console.WriteLine("Execute sapling run {filename} in order to run your very own sapling program.");
+        Console.WriteLine("Sapling documentation is located here: ");
+        return 0;
     }
 
     /// <summary>

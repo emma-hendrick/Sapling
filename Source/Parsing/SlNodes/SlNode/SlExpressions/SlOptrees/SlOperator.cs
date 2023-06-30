@@ -2,13 +2,23 @@ namespace Sapling.Nodes;
 using Sapling.Logging;
 
 /// <summary>
+/// A valid operator in the sapling programming language
 /// </summary>
 internal class SlOperator: SlNode, IShuntingYardable
 {
+    /// <summary>
+    /// The operator type
+    /// </summary>
     private string _optype;
+
+    /// <summary>
+    /// The operator type
+    /// </summary>
     public string OpType => _optype;
 
-    // Link a list of which types return which type to each operator
+    /// <summary>
+    /// A dictionary of valid operators and their input and return types
+    /// </summary>
     public Dictionary<string, Dictionary<Tuple<string, string>, string>> OpTypeReturns = new Dictionary<string, Dictionary<Tuple<string, string>, string>> 
     {
         {"+", new Dictionary<Tuple<string, string>, string> {
@@ -52,6 +62,9 @@ internal class SlOperator: SlNode, IShuntingYardable
         }},
     };
 
+    /// <summary>
+    /// Construct a new SlOperator
+    /// </summary>
     public SlOperator(Logger logger, string optype, SlScope scope): base(logger, scope)
     {
         // Ensure that operator is valid
@@ -59,6 +72,9 @@ internal class SlOperator: SlNode, IShuntingYardable
         _optype = optype;
     }
 
+    /// <summary>
+    /// Get the return type of an SlOperator given the operand types
+    /// </summary>
     public string GetReturnType(string op1_type, string op2_type)
     {
         // Get the return type by operator and operand types

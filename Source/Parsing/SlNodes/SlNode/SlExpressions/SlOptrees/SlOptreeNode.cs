@@ -2,13 +2,28 @@ namespace Sapling.Nodes;
 using Sapling.Logging;
 
 /// <summary>
+/// A valid node from an SlOptree
 /// </summary>
 internal class SlOptreeNode: SlExpression
 {
+    /// <summary>
+    /// The operator
+    /// </summary>
     SlOperator _op;
+    
+    /// <summary>
+    /// The left expression
+    /// </summary>
     SlExpression _l;
+    
+    /// <summary>
+    /// The right expression
+    /// </summary>
     SlExpression _r;
 
+    /// <summary>
+    /// A list of valid comparison operators
+    /// </summary>
     private List<string> _comparisonOperators = new List<string>
     {
         "==",
@@ -19,6 +34,9 @@ internal class SlOptreeNode: SlExpression
         ">="
     };
 
+    /// <summary>
+    /// Construct a new SlOptreeNode
+    /// </summary>
     public SlOptreeNode(Logger logger, SlOperator op, SlExpression l, SlExpression r, SlScope scope): base(logger, GetReturnType(op, l, r), scope)
     {
         _op = op;
@@ -26,11 +44,17 @@ internal class SlOptreeNode: SlExpression
         _r = r;
     }
 
+    /// <summary>
+    /// Get the return type of an SlOptreeNode
+    /// </summary>
     private static string GetReturnType(SlOperator op, SlExpression l, SlExpression r)
     {
         return op.GetReturnType(l.ExType, r.ExType);
     }
 
+    /// <summary>
+    /// Generate the value of a SlOptreeNode. This involves recursively generating the values of all nodes which are descendants of this.
+    /// </summary>
     public override LLVMSharp.LLVMValueRef GenerateValue(LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMModuleRef module)
     {
         Logger.Add($"Generating a value for {_l.ExType} {_op.OpType} {_l.ExType}");

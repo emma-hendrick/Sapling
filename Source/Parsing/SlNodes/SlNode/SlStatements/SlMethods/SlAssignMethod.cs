@@ -2,12 +2,23 @@ namespace Sapling.Nodes;
 using Sapling.Logging;
 
 /// <summary>
+/// A valid assign method statement within the sapling programming language
 /// </summary>
 internal class SlAssignMethod: SlStatement
 {
+    /// <summary>
+    /// The identifier of the method
+    /// </summary>
     private string _methodIdentifier;
+    
+    /// <summary>
+    /// The method
+    /// </summary>
     private SlMethod _method;
 
+    /// <summary>
+    /// Construct a new SlAssignMethod
+    /// </summary>
     public SlAssignMethod(Logger logger, string identifier, SlMethod method, SlScope scope): base(logger, scope)
     {
         _methodIdentifier = identifier;
@@ -15,7 +26,7 @@ internal class SlAssignMethod: SlStatement
     }
 
     /// <summary>
-    /// Generate code for a LLVM method
+    /// Generate code for a LLVM assign method statement
     /// <example>
     public override void GenerateCode(LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMBasicBlockRef self_entry)
     {
