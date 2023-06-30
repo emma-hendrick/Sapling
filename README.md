@@ -1,4 +1,4 @@
-# Sapling Programming Language V. 0.0.0
+# Sapling Programming Language V. 0.1.0
 
 Hello all, welcome to the sapling programming language. Once this is in a working capacity it is intended to be an object based language which allows for effortless error handling.
 
