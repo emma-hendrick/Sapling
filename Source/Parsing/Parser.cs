@@ -319,13 +319,11 @@ internal class Parser
     /// </summary>
     private SlExpression ParseExpression(SlScope scope)
     {
-        // TODO - There should be a bug here if the expression is somewhat complicated (ie, more than one token, and is also the first expression of a ternary or optree)
         // This shouldn't ever be reached, I just want to get rid of the warning here
         if (_current is null) throw new Exception("Trying to parse null expression!!");
 
         // This is the original expression. It might be a standalone expression, or it could be part of a ternary expression or an optree
-        SlExpression ex = ParseSingleExpression(scope);
-        return HandleExpressionLookahead(scope, ex);
+        return HandleExpressionLookahead(scope, ParseSingleExpression(scope));
     }
 
     /// <summary>
