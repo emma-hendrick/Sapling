@@ -53,13 +53,13 @@ internal static class Constants
             0),
         
         (new TokenDefinition(
-            @"-?\d+", 
+            @"(?<!\w)-?\d+",
             "IntegerLiteral", 
             (startIndex, endIndex, value) => new Integer(startIndex, endIndex, value)), 
             5),
         
         (new TokenDefinition(
-            @"-?\d+\.\d+", 
+            @"(?<!\w)-?\d+\.\d+", 
             "FloatLiteral", 
             (startIndex, endIndex, value) => new Float(startIndex, endIndex, value)), 
             4),

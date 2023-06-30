@@ -16,17 +16,6 @@ internal class SlOptree: SlExpression
     /// </summary>
     private static Dictionary <string, int> _precedence = new Dictionary<string, int>
         {
-            // Precedence for arithmetic operators
-            {"+", 32}, 
-            {"-", 31}, 
-            {"*", 34}, 
-            {"/", 33},
-
-            // Precedence for boolean operators
-            {"&&", 23},
-            {"||", 22},
-            {"^", 21},
-
             // Precedence for comparison operators
             {"==", 11},
             {"!=", 11},
@@ -34,6 +23,17 @@ internal class SlOptree: SlExpression
             {"<=", 12},
             {">", 12},
             {">=", 12},
+            
+            // Precedence for boolean operators
+            {"^", 21},
+            {"||", 22},
+            {"&&", 23},
+
+            // Precedence for arithmetic operators
+            {"-", 31}, 
+            {"+", 31}, 
+            {"/", 32},
+            {"*", 32}, 
         };
 
     /// <summary>
@@ -81,7 +81,7 @@ internal class SlOptree: SlExpression
             {
                 SlOperator currentOperator = operators[key];
 
-                while (operatorsInProcessing.Count > 0 && _precedence[currentOperator.OpType] < _precedence[operatorsInProcessing.Peek().OpType])
+                while (operatorsInProcessing.Count > 0 && _precedence[currentOperator.OpType] <= _precedence[operatorsInProcessing.Peek().OpType])
                 {
                     SlOperator op = operatorsInProcessing.Pop();
 

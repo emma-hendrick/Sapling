@@ -325,7 +325,14 @@ internal class Parser
 
         // This is the original expression. It might be a standalone expression, or it could be part of a ternary expression or an optree
         SlExpression ex = ParseSingleExpression(scope);
+        return HandleExpressionLookahead(scope, ex);
+    }
 
+    /// <summary>
+    /// Handle expression lookahead.
+    /// </summary>
+    private SlExpression HandleExpressionLookahead(SlScope scope, SlExpression ex)
+    {
         if (_current is not null && _current.Value.Value == "?")
         {
             // Time to parse a ternary
@@ -336,7 +343,6 @@ internal class Parser
             // Time to parse an optree
             return ParseOptree(scope, ex);
         }
-        
         // Its just a normal expression
         else return ex;
     }
@@ -387,13 +393,13 @@ internal class Parser
         if (_current is null) throw new Exception("Trying to parse null expression!!");
         SlExpression valIfFalse = ParseExpression(scope); // Consume the second expression
 
-        return new SlTernaryExpression(_logger, cond, valIfTrue, valIfFalse, scope);
+        return HandleExpressionLookahead(scope, new SlTernaryExpression(_logger, cond, valIfTrue, valIfFalse, scope));
     }
 
     /// <summary>
     /// This method parses an optree and adds the needed nodes to the AST.
     /// </summary>
-    private SlParsedOptree ParseOptree(SlScope scope, SlExpression ex)
+    private SlExpression ParseOptree(SlScope scope, SlExpression ex)
     {
         // A list of expressions in the optree. The optree should start with the initial left hand expression ex
         List<SlExpression> expressions = new List<SlExpression>{ex}; 
@@ -410,7 +416,7 @@ internal class Parser
         SlOptree rawOptree = SlOptreeFactory.CreateInstance(_logger, expressions, operators, scope);
 
         // Create a parsedOptree from the raw optree
-        return new SlParsedOptree(_logger, rawOptree, scope);
+        return HandleExpressionLookahead(scope, new SlParsedOptree(_logger, rawOptree, scope));
     }
 
     /// <summary>
