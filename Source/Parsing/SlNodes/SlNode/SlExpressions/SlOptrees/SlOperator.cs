@@ -32,6 +32,24 @@ internal class SlOperator: SlNode, IShuntingYardable
         {"^", new Dictionary<Tuple<string, string>, string> {
             {Tuple.Create("bool", "bool"), "bool"},
         }},
+        {"==", new Dictionary<Tuple<string, string>, string> {
+            {Tuple.Create("int", "int"), "bool"},
+        }},
+        {"!=", new Dictionary<Tuple<string, string>, string> {
+            {Tuple.Create("int", "int"), "bool"},
+        }},
+        {"<", new Dictionary<Tuple<string, string>, string> {
+            {Tuple.Create("int", "int"), "bool"},
+        }},
+        {"<=", new Dictionary<Tuple<string, string>, string> {
+            {Tuple.Create("int", "int"), "bool"},
+        }},
+        {">", new Dictionary<Tuple<string, string>, string> {
+            {Tuple.Create("int", "int"), "bool"},
+        }},
+        {">=", new Dictionary<Tuple<string, string>, string> {
+            {Tuple.Create("int", "int"), "bool"},
+        }},
     };
 
     public SlOperator(Logger logger, string optype, SlScope scope): base(logger, scope)

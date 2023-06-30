@@ -14,9 +14,17 @@ internal class SlOptree: SlExpression
             {"/", 3},
 
             // TODO - Set precedence
-            {"&&", 0},
-            {"||", 0},
-            {"^", 0},
+            {"&&", -1},
+            {"||", -1},
+            {"^", -1},
+
+            // TODO - Set precedence
+            {"==", 0},
+            {"!=", 0},
+            {"<", 0},
+            {"<=", 0},
+            {">", 0},
+            {">=", 0},
         };
 
     public SlOptree(Logger logger, List<SlExpression> expressions, List<SlOperator> operators, SlExpression root, SlScope scope): base(logger, root.ExType, scope)

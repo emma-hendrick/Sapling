@@ -95,7 +95,7 @@ internal static class Constants
             2),
 
         (new TokenDefinition(
-            @"(==|>|<|>=|<=|!=)", 
+            @"(==|!=|>=|<=|>|<)", 
             "ComparisonOperator", 
             (startIndex, endIndex, value) => new ComparisonOperator(startIndex, endIndex, value)), 
             6),
