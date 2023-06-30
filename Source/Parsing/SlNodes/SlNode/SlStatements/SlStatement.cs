@@ -16,5 +16,5 @@ internal abstract class SlStatement: SlNode
     /// <summary>
     /// Generate the code for an SlStatement
     /// </summary>
-    public abstract void GenerateCode(LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMBasicBlockRef self_entry);
+    public abstract void GenerateCode(LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMBasicBlockRef entry);
 }

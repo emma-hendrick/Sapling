@@ -138,11 +138,11 @@ internal class SlOptree: SlExpression
     /// <summary>
     /// Generate the value of an SlOptree
     /// </summary>
-    public override LLVMSharp.LLVMValueRef GenerateValue(LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMModuleRef module)
+    public override LLVMSharp.LLVMValueRef GenerateValue(LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBasicBlockRef entry)
     {
         Logger.Add($"Generating a value for root of OpTree");
         if (_root is null) throw new Exception("Attempting to generate value from unparsed optree");
-        return _root.GenerateValue(builder, module);
+        return _root.GenerateValue(builder, module, entry);
     }
 }
 

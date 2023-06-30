@@ -22,8 +22,8 @@ internal class SlParsedOptree: SlExpression
     /// <summary>
     /// Generate the value of this optree
     /// </summary>
-    public override LLVMSharp.LLVMValueRef GenerateValue(LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMModuleRef module)
+    public override LLVMSharp.LLVMValueRef GenerateValue(LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBasicBlockRef entry)
     {
-        return _optree.GenerateValue(builder, module);
+        return _optree.GenerateValue(builder, module, entry);
     }
 }

@@ -28,7 +28,7 @@ internal class SlAssignMethod: SlStatement
     /// <summary>
     /// Generate code for a LLVM assign method statement
     /// <example>
-    public override void GenerateCode(LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMBasicBlockRef self_entry)
+    public override void GenerateCode(LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMBasicBlockRef entry)
     {
         Logger.Add("Generating code for SlAssignMethod");
 
@@ -46,6 +46,6 @@ internal class SlAssignMethod: SlStatement
         _method.GenerateCode(module, builder, method_entry, new_method);
 
         // We will then position the builder back at the end of this method
-        LLVMSharp.LLVM.PositionBuilderAtEnd(builder, self_entry);
+        LLVMSharp.LLVM.PositionBuilderAtEnd(builder, entry);
     }
 }

@@ -78,7 +78,7 @@ internal class SlOperator: SlNode, IShuntingYardable
     public string GetReturnType(string op1_type, string op2_type)
     {
         // Get the return type by operator and operand types
-        Tuple<string, string> operators = Tuple.Create(Constants.EquivalentTypes[op1_type], Constants.EquivalentTypes[op2_type]);
+        Tuple<string, string> operators = Tuple.Create(op1_type, op2_type);
 
         if (!OpTypeReturns[_optype].ContainsKey(operators)) throw new Exception($"Invalid operand types {operators.ToString()}");
         return OpTypeReturns[_optype][operators];

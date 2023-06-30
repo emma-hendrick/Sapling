@@ -345,12 +345,20 @@ internal class Parser
     /// </summary>
     private SlExpression ParseExpression(SlScope scope)
     {
+        // TODO - There should be a bug here if the expression is somewhat complicated (ie, more than one token, and is also the first expression of a ternary or optree)
         // This shouldn't ever be reached, I just want to get rid of the warning here
         if (_current is null) throw new Exception("Trying to parse null expression!!");
+        else if (_current.Next is not null && _current.Next.Value.Value == "?")
+        {
+            // Time to parse a ternary
+            return ParseTernary(scope);
+        }
         else if (_current.Next is not null && _current.Next.Next is not null && _operators.Contains(_current.Next.Value.GetType().Name))
         {
+            // Time to parse an optree
             return ParseOptree(scope);
         }
+        // Its just a normal expression
         else return ParseSingleExpression(scope);
     }
 
@@ -373,12 +381,37 @@ internal class Parser
         }
         else if (_literals.Contains(_current.Value.GetType().Name))
         {
-            // This is just a value
+            // This is just a literal
             SlExpression expression = new SlLiteralExpression(_logger, _current.Value.GetType().Name, _current.Value.Value, scope);
-            GetNextNode(); // Consume the value
+            GetNextNode(); // Consume the literal
             return expression;
         }
         else throw new Exception("Invalid Expression!!");
+    }
+
+    /// <summary>
+    /// This method parses a ternary expression and adds the needed nodes to the AST.
+    /// </summary>
+    private SlExpression ParseTernary(SlScope scope)
+    {
+        if (_current is null) throw new Exception("Trying to parse null expression!!");
+        SlExpression cond = ParseSingleExpression(scope);
+
+        if (_current is null) throw new Exception("Trying to parse null delimiter!!");
+        else if (!(nameof(Sapling.Tokens.Ternary) == _current.Value.GetType().Name && _current.Value.Value == "?")) throw new Exception($"Missing Ternary Operator (?)!! Instead got {_current.Value.Value}");
+        GetNextNode(); // Consume ?
+            
+        if (_current is null) throw new Exception("Trying to parse null expression!!");
+        SlExpression valIfTrue = ParseExpression(scope); // Consume the first expression
+
+        if (_current is null) throw new Exception("Trying to parse null delimiter!!");
+        else if (!(nameof(Sapling.Tokens.Ternary) == _current.Value.GetType().Name && _current.Value.Value == ":")) throw new Exception($"Missing Ternary Else Operator (:)!! Instead got {_current.Value.Value}");
+        GetNextNode(); // Consume :
+            
+        if (_current is null) throw new Exception("Trying to parse null expression!!");
+        SlExpression valIfFalse = ParseExpression(scope); // Consume the second expression
+
+        return new SlTernaryExpression(_logger, cond, valIfTrue, valIfFalse, scope);
     }
 
     /// <summary>

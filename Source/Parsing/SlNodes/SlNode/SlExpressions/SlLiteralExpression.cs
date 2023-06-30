@@ -19,19 +19,19 @@ internal class SlLiteralExpression: SlExpression
     /// <summary>
     /// Construct a new SlLiteralExpression
     /// </summary>
-    public SlLiteralExpression(Logger logger, string type, string value, SlScope scope): base(logger, type, scope)
+    public SlLiteralExpression(Logger logger, string type, string value, SlScope scope): base(logger, Constants.EquivalentTypes[type], scope)
     {
-        _type = type;
+        _type = Constants.EquivalentTypes[type];
         _value = value;
     }
 
     /// <summary>
     /// Generate a value for an SlLiteralExpression
     /// </summary>
-    public override LLVMSharp.LLVMValueRef GenerateValue(LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMModuleRef module)
+    public override LLVMSharp.LLVMValueRef GenerateValue(LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBasicBlockRef entry)
     {
         Func<string, LLVMSharp.LLVMBuilderRef, LLVMSharp.LLVMValueRef> parser;
-        switch (Constants.EquivalentTypes[_type])
+        switch (_type)
         {
             case "int":
                 parser = ParseInt;

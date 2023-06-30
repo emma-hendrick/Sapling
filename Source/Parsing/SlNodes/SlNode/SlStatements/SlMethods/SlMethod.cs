@@ -22,7 +22,7 @@ internal class SlMethod: SlNode
     /// </summary>
     public SlMethod(Logger logger, SlScope scope, string type): base(logger, scope)
     {
-        _retType = type;
+        _retType = Constants.EquivalentTypes[type];
     }
 
     /// <summary>
@@ -39,7 +39,7 @@ internal class SlMethod: SlNode
         List<string> returnTypes = _statements.FindAll(statement => statement is SlReturn).Select(statement => ((SlReturn)statement).ExType).ToList();
 
         // Iterate through those types and throw an error if they don't match the methods return type
-        foreach (string retType in returnTypes) if(Constants.EquivalentTypes[retType] != Constants.EquivalentTypes[_retType]) throw new Exception($"Return type {Constants.EquivalentTypes[retType]} does not match expected type {Constants.EquivalentTypes[_retType]}");
+        foreach (string retType in returnTypes) if(retType != _retType) throw new Exception($"Return type {retType} does not match expected type {_retType}");
 
         // If the method does not contain a return log that and then throw an error
         Logger.Add($"Method contains return: {returnTypes.Count != 0}");

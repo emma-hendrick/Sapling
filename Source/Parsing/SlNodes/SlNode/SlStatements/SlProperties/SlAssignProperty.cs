@@ -35,11 +35,10 @@ internal class SlAssignProperty: SlStatement
     /// <summary>
     /// Generate code for an sl property assignment
     /// </summary>
-    public override void GenerateCode(LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMBasicBlockRef self_entry)
+    public override void GenerateCode(LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMBasicBlockRef entry)
     {
         Logger.Add("Generating code for SlAssignProperty");
-        LLVMSharp.LLVMValueRef expression = _expression.GenerateValue(builder, module);
-        Console.WriteLine(_expression.ExType);
+        LLVMSharp.LLVMValueRef expression = _expression.GenerateValue(builder, module, entry);
 
         // Get the llvm type of the user provided type from the scope
         LLVMSharp.LLVMTypeRef type = Scope.FindType(Logger, _type);

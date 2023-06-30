@@ -55,7 +55,7 @@ internal class SlOptreeNode: SlExpression
     /// <summary>
     /// Generate the value of a SlOptreeNode. This involves recursively generating the values of all nodes which are descendants of this.
     /// </summary>
-    public override LLVMSharp.LLVMValueRef GenerateValue(LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMModuleRef module)
+    public override LLVMSharp.LLVMValueRef GenerateValue(LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBasicBlockRef entry)
     {
         Logger.Add($"Generating a value for {_l.ExType} {_op.OpType} {_l.ExType}");
 
@@ -92,7 +92,7 @@ internal class SlOptreeNode: SlExpression
             }
 
             // Create the right operator using the generated values of our left and right operands
-            return func(builder, _l.GenerateValue(builder, module), _r.GenerateValue(builder, module), "result");
+            return func(builder, _l.GenerateValue(builder, module, entry), _r.GenerateValue(builder, module, entry), "result");
         }
 
         // It is a comparison operator
@@ -123,6 +123,6 @@ internal class SlOptreeNode: SlExpression
         }
 
         // Create the correct comparison operator
-        return LLVMSharp.LLVM.BuildICmp(builder, compType, _l.GenerateValue(builder, module), _r.GenerateValue(builder, module), "result");
+        return LLVMSharp.LLVM.BuildICmp(builder, compType, _l.GenerateValue(builder, module, entry), _r.GenerateValue(builder, module, entry), "result");
     }
 }

@@ -28,7 +28,7 @@ internal class SlAssignClass: SlStatement
     /// <summary>
     /// Generate code for a LLVM assign class statement
     /// <example>
-    public override void GenerateCode(LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMBasicBlockRef self_entry)
+    public override void GenerateCode(LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMBasicBlockRef entry)
     {
         // TODO
         Logger.Add("Generating code for SlAssignClass");

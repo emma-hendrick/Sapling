@@ -32,7 +32,7 @@ internal static class Constants
     /// <summary>
     /// A list of valid tokens and their precedence in the Sapling programming language.
     /// </summary> 
-    internal static List<(TokenDefinition, int)> _tokenList = new List<(TokenDefinition, int)>(){
+    internal static List<(TokenDefinition, int)> TokenList = new List<(TokenDefinition, int)>(){
         
         (new TokenDefinition(
             @"###_.*_###", 
@@ -93,6 +93,12 @@ internal static class Constants
             "Keyword", 
             (startIndex, endIndex, value) => new Keyword(startIndex, endIndex, value)), 
             2),
+
+        (new TokenDefinition(
+            @"(:|\?)", 
+            "TernaryOperator", 
+            (startIndex, endIndex, value) => new Ternary(startIndex, endIndex, value)), 
+            5),
 
         (new TokenDefinition(
             @"(==|!=|>=|<=|>|<)", 

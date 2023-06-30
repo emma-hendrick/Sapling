@@ -138,7 +138,7 @@ internal static class Program
         IEnumerable<Tokens.Token> tokens;
         // Get all tokens from the file
         string fileContent = File.ReadAllText($"{filename}.sl");
-        PrecedenceBasedLexer lexer = new PrecedenceBasedLexer(Constants._tokenList);
+        PrecedenceBasedLexer lexer = new PrecedenceBasedLexer(Constants.TokenList);
         tokens = lexer.GetTokens(fileContent);
 
         _logger.NewSection();
@@ -334,9 +334,11 @@ internal static class Program
     /// </summary>
     private static int Help(string filename)
     {
+        Console.ForegroundColor = ConsoleColor.DarkGreen;
         Console.WriteLine("Hello future Sapling user!");
         Console.WriteLine("Execute sapling run {filename} in order to run your very own sapling program.");
         Console.WriteLine("Sapling documentation is located here: ");
+        Console.ResetColor();
         return 0;
     }
 

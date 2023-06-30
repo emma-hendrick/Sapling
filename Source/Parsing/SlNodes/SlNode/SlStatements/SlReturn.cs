@@ -27,11 +27,11 @@ internal class SlReturn: SlStatement
     /// <summary>
     /// Generate code for a LLVM return statement
     /// <example>
-    public override void GenerateCode(LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMBasicBlockRef self_entry)
+    public override void GenerateCode(LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMBasicBlockRef entry)
     {
         Logger.Add("Generating code for SlReturn");
 
-        LLVMSharp.LLVMValueRef expression = _return.GenerateValue(builder, module);
+        LLVMSharp.LLVMValueRef expression = _return.GenerateValue(builder, module, entry);
         
         Logger.Add("Adding terminator for current method");
         Logger.DecreaseIndent();
