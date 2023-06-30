@@ -31,9 +31,6 @@ Things we can parse:
 - Return Statements
 
 Things we can generate code for:
-- Method Assignment
-- Methods
-- Classes
 - Property Assignment
 - Expressions
 - Literal Expressions
