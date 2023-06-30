@@ -59,7 +59,7 @@ internal static class Constants
             5),
         
         (new TokenDefinition(
-            @"-?\d+.d+", 
+            @"-?\d+\.\d+", 
             "FloatLiteral", 
             (startIndex, endIndex, value) => new Float(startIndex, endIndex, value)), 
             4),
@@ -137,6 +137,12 @@ internal static class Constants
         {"int", "int"},
         {"Integer", "int"},
         {"bool", "bool"},
-        {"Boolean", "bool"}
+        {"Boolean", "bool"},
+        {"char", "char"},
+        {"Character", "char"},
+        {"str", "str"},
+        {"String", "str"},
+        {"float", "float"},
+        {"Float", "float"},
     };
 }

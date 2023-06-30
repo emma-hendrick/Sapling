@@ -8,23 +8,24 @@ internal class SlOptree: SlExpression
     private SlExpression? _root;
     private static Dictionary <string, int> _precedence = new Dictionary<string, int>
         {
-            {"+", 2}, 
-            {"-", 1}, 
-            {"*", 4}, 
-            {"/", 3},
+            // Precedence for arithmetic operators
+            {"+", 32}, 
+            {"-", 31}, 
+            {"*", 34}, 
+            {"/", 33},
 
-            // TODO - Set precedence
-            {"&&", -1},
-            {"||", -1},
-            {"^", -1},
+            // Precedence for boolean operators
+            {"&&", 23},
+            {"||", 22},
+            {"^", 21},
 
-            // TODO - Set precedence
-            {"==", 0},
-            {"!=", 0},
-            {"<", 0},
-            {"<=", 0},
-            {">", 0},
-            {">=", 0},
+            // Precedence for comparison operators
+            {"==", 11},
+            {"!=", 11},
+            {"<", 12},
+            {"<=", 12},
+            {">", 12},
+            {">=", 12},
         };
 
     public SlOptree(Logger logger, List<SlExpression> expressions, List<SlOperator> operators, SlExpression root, SlScope scope): base(logger, root.ExType, scope)

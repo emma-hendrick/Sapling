@@ -5,10 +5,14 @@ using Sapling.Logging;
 /// </summary>
 internal class SlScope
 {
+    // TODO - fix str type
     static Dictionary<string, LLVMSharp.LLVMTypeRef> literalTypes = new Dictionary<string, LLVMSharp.LLVMTypeRef> 
     {
         {"int", LLVMSharp.LLVM.Int32Type()},
-        {"bool", LLVMSharp.LLVM.Int1Type()}
+        {"bool", LLVMSharp.LLVM.Int1Type()},
+        {"char", LLVMSharp.LLVM.Int8Type()},
+        {"str", LLVMSharp.LLVM.Int1Type()},
+        {"float", LLVMSharp.LLVM.FloatType()},
     };
 
     private Dictionary<string, string> _types = new Dictionary<string, string>();

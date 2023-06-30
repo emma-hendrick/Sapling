@@ -50,9 +50,9 @@ internal class SlLiteralExpression: SlExpression
 
     public LLVMSharp.LLVMValueRef ParseFloat(string value, LLVMSharp.LLVMBuilderRef builder)
     {
-        // These should be 32 bits long
-        float i = float.Parse(value, System.Globalization.NumberStyles.AllowLeadingSign);
-        return LLVMSharp.LLVM.ConstInt(LLVMSharp.LLVM.FloatType(), (ulong)i, true);
+        // These should be 32? bits long
+        float i = float.Parse(value, System.Globalization.NumberStyles.AllowLeadingSign | System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture);
+        return LLVMSharp.LLVM.ConstReal(LLVMSharp.LLVM.FloatType(), (ulong)i);
     }
 
     public LLVMSharp.LLVMValueRef ParseString(string value, LLVMSharp.LLVMBuilderRef builder)
@@ -66,7 +66,7 @@ internal class SlLiteralExpression: SlExpression
         if ((value.Length - 2) != 1) throw new Exception($"Invalid char length of {(value.Length - 2)} in char {value}");
 
         char c = value[1];
-        int i = (int)c; // Convert that char to a string
+        int i = (int)c; // Convert that char to its code
         
         // These should be a byte long
         return LLVMSharp.LLVM.ConstInt(LLVMSharp.LLVM.Int8Type(), (ulong)i, false);
