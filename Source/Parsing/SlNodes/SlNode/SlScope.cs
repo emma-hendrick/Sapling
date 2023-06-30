@@ -5,7 +5,6 @@ using Sapling.Logging;
 /// </summary>
 internal class SlScope
 {
-    // TODO - fix str type
     static Dictionary<string, LLVMSharp.LLVMTypeRef> literalTypes = new Dictionary<string, LLVMSharp.LLVMTypeRef> 
     {
         {"int", LLVMSharp.LLVM.Int32Type()},

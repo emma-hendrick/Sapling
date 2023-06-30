@@ -27,6 +27,7 @@ internal class SlAssignProperty: SlStatement
         LLVMSharp.LLVMTypeRef type = Scope.FindType(Logger, _type);
 
         // It is a string, and we need to get its length
+        // TODO - maybe one day find a better solution to this jankiness
         if (type.Equals(LLVMSharp.LLVM.ArrayType(LLVMSharp.LLVM.Int8Type(), 0))) type = expression.TypeOf();
 
         LLVMSharp.LLVMValueRef variable_alloc = LLVMSharp.LLVM.BuildAlloca(builder, type, _identifier);
