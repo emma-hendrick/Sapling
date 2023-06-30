@@ -273,32 +273,6 @@ internal class Parser
     }
 
     /// <summary>
-    /// This method parses an optree and adds the needed nodes to the AST.
-    /// </summary>
-    private SlParsedOptree ParseOptree(SlScope scope)
-    {
-        // A list of expressions in the optree
-        List<SlExpression> expressions = new List<SlExpression>(); 
-        List<SlOperator> operators = new List<SlOperator>(); 
-
-        // Add the initial expression to the optree
-        expressions.Add(ParseSingleExpression(scope));
-
-        // While the current node is an operator, add it and the expression following it
-        while (_current is not null && _operators.Contains(_current.Value.GetType().Name))
-        {
-            operators.Add(ParseOperator(scope));
-            expressions.Add(ParseSingleExpression(scope));
-        }
-
-        // This will be used to actually build a tree from the expressions and operators
-        SlOptree rawOptree = SlOptreeFactory.CreateInstance(_logger, expressions, operators, scope);
-
-        // Create a parsedOptree from the raw optree
-        return new SlParsedOptree(_logger, rawOptree, scope);
-    }
-
-    /// <summary>
     /// This method parses a method and adds the needed nodes to the AST.
     /// </summary>
     public SlMethod ParseMethod(SlScope parentScope, string retType)
@@ -348,18 +322,23 @@ internal class Parser
         // TODO - There should be a bug here if the expression is somewhat complicated (ie, more than one token, and is also the first expression of a ternary or optree)
         // This shouldn't ever be reached, I just want to get rid of the warning here
         if (_current is null) throw new Exception("Trying to parse null expression!!");
-        else if (_current.Next is not null && _current.Next.Value.Value == "?")
+
+        // This is the original expression. It might be a standalone expression, or it could be part of a ternary expression or an optree
+        SlExpression ex = ParseSingleExpression(scope);
+
+        if (_current is not null && _current.Value.Value == "?")
         {
             // Time to parse a ternary
-            return ParseTernary(scope);
+            return ParseTernary(scope, ex);
         }
-        else if (_current.Next is not null && _current.Next.Next is not null && _operators.Contains(_current.Next.Value.GetType().Name))
+        else if (_current is not null && _current.Next is not null && _operators.Contains(_current.Value.GetType().Name))
         {
             // Time to parse an optree
-            return ParseOptree(scope);
+            return ParseOptree(scope, ex);
         }
+        
         // Its just a normal expression
-        else return ParseSingleExpression(scope);
+        else return ex;
     }
 
     /// <summary>
@@ -392,11 +371,8 @@ internal class Parser
     /// <summary>
     /// This method parses a ternary expression and adds the needed nodes to the AST.
     /// </summary>
-    private SlExpression ParseTernary(SlScope scope)
+    private SlExpression ParseTernary(SlScope scope, SlExpression cond)
     {
-        if (_current is null) throw new Exception("Trying to parse null expression!!");
-        SlExpression cond = ParseSingleExpression(scope);
-
         if (_current is null) throw new Exception("Trying to parse null delimiter!!");
         else if (!(nameof(Sapling.Tokens.Ternary) == _current.Value.GetType().Name && _current.Value.Value == "?")) throw new Exception($"Missing Ternary Operator (?)!! Instead got {_current.Value.Value}");
         GetNextNode(); // Consume ?
@@ -412,6 +388,29 @@ internal class Parser
         SlExpression valIfFalse = ParseExpression(scope); // Consume the second expression
 
         return new SlTernaryExpression(_logger, cond, valIfTrue, valIfFalse, scope);
+    }
+
+    /// <summary>
+    /// This method parses an optree and adds the needed nodes to the AST.
+    /// </summary>
+    private SlParsedOptree ParseOptree(SlScope scope, SlExpression ex)
+    {
+        // A list of expressions in the optree. The optree should start with the initial left hand expression ex
+        List<SlExpression> expressions = new List<SlExpression>{ex}; 
+        List<SlOperator> operators = new List<SlOperator>(); 
+
+        // While the current node is an operator, add it and the expression following it
+        while (_current is not null && _operators.Contains(_current.Value.GetType().Name))
+        {
+            operators.Add(ParseOperator(scope));
+            expressions.Add(ParseSingleExpression(scope));
+        }
+
+        // This will be used to actually build a tree from the expressions and operators
+        SlOptree rawOptree = SlOptreeFactory.CreateInstance(_logger, expressions, operators, scope);
+
+        // Create a parsedOptree from the raw optree
+        return new SlParsedOptree(_logger, rawOptree, scope);
     }
 
     /// <summary>

@@ -12,6 +12,40 @@ Setting up Classes for all Tokens which will be used within Sapling
 
 Compilation of some testing code works; AST not yet implemented
 
+### 0.1.0
+
+Parser, AST, and Code Generation implemented for most simple expressions and statements.
+Things we can parse:
+- Method Assignment
+- Methods
+- Class Assignment
+- Classes
+- Property Assignment
+- Expressions
+- Literal Expressions
+- Identifier Expressions
+- Paren Expressions
+- Ternary Expressions
+- Optrees
+- Operators
+- Return Statements
+
+Things we can generate code for:
+- Method Assignment
+- Methods
+- Classes
+- Property Assignment
+- Expressions
+- Literal Expressions
+- Identifier Expressions
+- Paren Expressions
+- Ternary Expressions
+- Optrees
+- Operators
+- Return Statements
+
+Compilation is also functional!!
+
 ---
 
 **Enjoy!**
