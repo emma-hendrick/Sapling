@@ -130,7 +130,7 @@ internal class Parser
 
         // Create a new instance of an abstract syntax tree
         SlMethod root = new SlMethod(_logger, global, "int");
-        AST ast = new AST(root, _logger);
+        AST ast = new AST(root, global, _logger);
 
         // Parse the tokens and create AST nodes from them
         while (_current != null)
@@ -168,6 +168,7 @@ internal class Parser
                 break;
 
             case (nameof(Sapling.Tokens.ID)):
+            case (nameof(Sapling.Tokens.Builtin)):
 
                 // Parse a identifier as a method if it is immediately followed by a left parenthesis, otherwise parse it as an expression
                 if (_current.Next is not null && _current.Next.Value.Value == "(") method.Add(ParseMethodCall(scope));
@@ -175,7 +176,7 @@ internal class Parser
                 break;
 
             default:
-                throw new Exception("Gadzooks! There was an unexpected token at the end of the parser!! Double check your syntax!");
+                throw new Exception($"Gadzooks! There was an unexpected token of type {_current.Value.GetType().Name} at the end of the parser!! Double check your syntax!");
 
         }
     }
@@ -315,15 +316,44 @@ internal class Parser
     }
 
     /// <summary>
-    /// This method parses a full expression and adds the needed nodes to the AST.
+    /// This method parses an expression and adds the needed nodes to the AST.
     /// </summary>
     private SlExpression ParseExpression(SlScope scope)
     {
+        return HandleExpressionLookahead(scope, ParseSingleExpression(scope));
+    }
+
+    /// <summary>
+    /// This method parses a single expression and adds the needed nodes to the AST.
+    /// </summary>
+    private SlExpression ParseSingleExpression(SlScope scope)
+    {
+        // THIS NEEDS TO EXIST FOR THE OPTREE. It ensures we parse one expression at a time, without just making the entire optree evaluate left to right.
         // This shouldn't ever be reached, I just want to get rid of the warning here
         if (_current is null) throw new Exception("Trying to parse null expression!!");
-
-        // This is the original expression. It might be a standalone expression, or it could be part of a ternary expression or an optree
-        return HandleExpressionLookahead(scope, ParseSingleExpression(scope));
+        else if (nameof(Sapling.Tokens.Delimeter) == _current.Value.GetType().Name && _current.Value.Value == "(")
+        {
+            // This is an expression in parentheses
+            return ParseParenExpression(scope);
+        }
+        else if (_literals.Contains(_current.Value.GetType().Name))
+        {
+            // This is just a literal
+            SlExpression expression = new SlLiteralExpression(_logger, _current.Value.GetType().Name, _current.Value.Value, scope);
+            GetNextNode(); // Consume the literal
+            return expression;
+        }
+        else if (nameof(Sapling.Tokens.ID) == _current.Value.GetType().Name && _current.Next is not null && _current.Next.Value.Value != "(")
+        {
+            // This is an identifier
+            return ParseIdentifier(scope);
+        }
+        else if (nameof(Sapling.Tokens.ID) == _current.Value.GetType().Name || nameof(Sapling.Tokens.Builtin) == _current.Value.GetType().Name)
+        {
+            // This is a method call as an expression
+            return ParseMethodCallAsExpression(scope);
+        }
+        else throw new Exception("Invalid Expression!!");
     }
 
     /// <summary>
@@ -343,33 +373,6 @@ internal class Parser
         }
         // Its just a normal expression
         else return ex;
-    }
-
-    /// <summary>
-    /// This method parses a single expression and adds the needed nodes to the AST.
-    /// </summary>
-    private SlExpression ParseSingleExpression(SlScope scope)
-    {
-        // This shouldn't ever be reached, I just want to get rid of the warning here
-        if (_current is null) throw new Exception("Trying to parse null expression!!");
-        else if (nameof(Sapling.Tokens.ID) == _current.Value.GetType().Name)
-        {
-            // This is an identifier
-            return ParseIdentifier(scope);
-        }
-        else if (nameof(Sapling.Tokens.Delimeter) == _current.Value.GetType().Name && _current.Value.Value == "(")
-        {
-            // This is an expression in parentheses
-            return ParseParenExpression(scope);
-        }
-        else if (_literals.Contains(_current.Value.GetType().Name))
-        {
-            // This is just a literal
-            SlExpression expression = new SlLiteralExpression(_logger, _current.Value.GetType().Name, _current.Value.Value, scope);
-            GetNextNode(); // Consume the literal
-            return expression;
-        }
-        else throw new Exception("Invalid Expression!!");
     }
 
     /// <summary>
@@ -422,10 +425,17 @@ internal class Parser
     /// </summary>
     private SlExpression ParseParenExpression(SlScope scope)
     {
+        if (_current is null) throw new Exception("Trying to parse null delimeter.");
+        else if (_current.Value.Value != "(") throw new Exception($"Was expecting (, instead got \"{_current.Value.Value}\"!!");
         GetNextNode(); // Consume the (
+
         SlExpression expression = ParseExpression(scope); // Parse the inner Expression
+        
+        if (_current is null) throw new Exception("Trying to parse null delimeter.");
+        else if (_current.Value.Value != ")") throw new Exception($"Was expecting ), instead got \"{_current.Value.Value}\"!!");
         GetNextNode(); // Consume the )
-        return expression;
+
+        return HandleExpressionLookahead(scope, expression);
     }
 
     /// <summary>
@@ -455,7 +465,7 @@ internal class Parser
     /// </summary>
     private SlReturn ParseReturn(SlScope scope)
     {
-        GetNextNode(); // Consume Return
+        GetNextNode(); // Consume Return   
         SlExpression expression = ParseExpression(scope);
         GetNextNode(); // Consume Delimiter
         return new SlReturn(_logger, expression, scope);
@@ -466,8 +476,73 @@ internal class Parser
     /// </summary>
     private SlMethodCall ParseMethodCall(SlScope scope)
     {
-        // This one will be complicated because we also have to parse arguments and consume all of them, then actually execute the right code
-        // TODO
-        return new SlMethodCall(_logger, scope);
+        // The arguements to the method
+        List<SlExpression> args = new List<SlExpression>{}; 
+
+        if (_current is null) throw new Exception("Trying to parse null identifier!!");
+        string identifier = _current.Value.Value;
+        GetNextNode(); // Consume identifier
+
+        if (_current is null) throw new Exception("Trying to parse null delimeter.");
+        else if (_current.Value.Value != "(") throw new Exception($"Was expecting (, instead got \"{_current.Value.Value}\"!!");
+        GetNextNode(); // Consume (
+
+        if (_current is null) throw new Exception("Trying to parse null method args.");
+        else if (_current.Value.Value != ")")
+        {
+            // Get the args of the method
+            args.Add(ParseExpression(scope));
+            while (_current is not null && _current.Value.Value == ",")
+            {
+                GetNextNode(); // Consume ,
+                args.Add(ParseExpression(scope));
+            }
+        }
+
+        if (_current is null) throw new Exception("Trying to parse null delimeter.");
+        else if (_current.Value.Value != ")") throw new Exception($"Was expecting ), instead got \"{_current.Value.Value}\"!!");
+        GetNextNode(); // Consume )
+
+        if (_current is null) throw new Exception("Trying to parse null delimiter!!");
+        else if (!(nameof(Sapling.Tokens.Delimeter) == _current.Value.GetType().Name && _current.Value.Value == ";")) throw new Exception($"Missing Semicolon!! Instead got {_current.Value.Value}");
+        GetNextNode(); // Consume ;
+
+        return new SlMethodCall(_logger, identifier, args, scope);
+    }
+
+    /// <summary>
+    /// This method calls a method (gets the returned expression) and adds the needed nodes to the AST.
+    /// </summary>
+    private SlExpression ParseMethodCallAsExpression(SlScope scope)
+    {
+        // The arguements to the method
+        List<SlExpression> args = new List<SlExpression>{}; 
+
+        if (_current is null) throw new Exception("Trying to parse null identifier!!");
+        string identifier = _current.Value.Value;
+        GetNextNode(); // Consume identifier
+
+        if (_current is null) throw new Exception("Trying to parse null delimeter.");
+        else if (_current.Value.Value != "(") throw new Exception($"Was expecting (, instead got \"{_current.Value.Value}\"!!");
+        GetNextNode(); // Consume (
+
+        if (_current is null) throw new Exception("Trying to parse null method args.");
+        else if (_current.Value.Value != ")")
+        {
+            // Get the args of the method
+            args.Add(ParseExpression(scope));
+            while (_current is not null && _current.Value.Value == ",")
+            {
+                GetNextNode(); // Consume ,
+                args.Add(ParseExpression(scope));
+            }
+        }
+
+        if (_current is null) throw new Exception("Trying to parse null delimeter.");
+        else if (_current.Value.Value != ")") throw new Exception($"Was expecting ), instead got \"{_current.Value.Value}\"!!");
+        GetNextNode(); // Consume )
+        
+        // It is important to note we actually should not consume the semicolon here, as the expression will consume it
+        return new SlMethodCallAsExpression(_logger, identifier, args, scope);
     }
 }

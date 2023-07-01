@@ -14,7 +14,7 @@ internal abstract class SlExpression: SlNode, IShuntingYardable
     /// <summary>
     /// The type of the expression
     /// </summary>
-    public string ExType => Constants.EquivalentTypes[_exType];
+    public string ExType => Constants.EquivalentParsingTypes[_exType];
 
     /// <summary>
     /// Construct a new SlExpression

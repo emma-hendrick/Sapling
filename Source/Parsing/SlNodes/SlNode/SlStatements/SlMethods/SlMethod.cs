@@ -22,7 +22,7 @@ internal class SlMethod: SlNode
     /// </summary>
     public SlMethod(Logger logger, SlScope scope, string type): base(logger, scope)
     {
-        _retType = Constants.EquivalentTypes[type];
+        _retType = Constants.EquivalentParsingTypes[type];
     }
 
     /// <summary>

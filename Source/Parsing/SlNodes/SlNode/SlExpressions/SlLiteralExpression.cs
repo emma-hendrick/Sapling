@@ -19,9 +19,9 @@ internal class SlLiteralExpression: SlExpression
     /// <summary>
     /// Construct a new SlLiteralExpression
     /// </summary>
-    public SlLiteralExpression(Logger logger, string type, string value, SlScope scope): base(logger, Constants.EquivalentTypes[type], scope)
+    public SlLiteralExpression(Logger logger, string type, string value, SlScope scope): base(logger, Constants.EquivalentParsingTypes[type], scope)
     {
-        _type = Constants.EquivalentTypes[type];
+        _type = Constants.EquivalentParsingTypes[type];
         _value = value;
     }
 
@@ -30,7 +30,7 @@ internal class SlLiteralExpression: SlExpression
     /// </summary>
     public override LLVMSharp.LLVMValueRef GenerateValue(LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBasicBlockRef entry)
     {
-        Func<string, LLVMSharp.LLVMBuilderRef, LLVMSharp.LLVMValueRef> parser;
+        Func<string, LLVMSharp.LLVMModuleRef, LLVMSharp.LLVMBuilderRef, LLVMSharp.LLVMValueRef> parser;
         switch (_type)
         {
             case "int":
@@ -52,13 +52,13 @@ internal class SlLiteralExpression: SlExpression
                 throw new Exception($"Unrecognized type {_type}");
         }
 
-        return parser(_value, builder);
+        return parser(_value, module, builder);
     }
 
     /// <summary>
     /// Get the value of an int
     /// </summary>
-    public LLVMSharp.LLVMValueRef ParseInt(string value, LLVMSharp.LLVMBuilderRef builder)
+    public LLVMSharp.LLVMValueRef ParseInt(string value, LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBuilderRef builder)
     {
         // These should be 32 bits long
         int i = int.Parse(value, System.Globalization.NumberStyles.AllowLeadingSign);
@@ -68,7 +68,7 @@ internal class SlLiteralExpression: SlExpression
     /// <summary>
     /// Get the value of a float
     /// </summary>
-    public LLVMSharp.LLVMValueRef ParseFloat(string value, LLVMSharp.LLVMBuilderRef builder)
+    public LLVMSharp.LLVMValueRef ParseFloat(string value, LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBuilderRef builder)
     {
         // These should be 32? bits long
         float i = float.Parse(value, System.Globalization.NumberStyles.AllowLeadingSign | System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture);
@@ -78,15 +78,29 @@ internal class SlLiteralExpression: SlExpression
     /// <summary>
     /// Get the value of a string
     /// </summary>
-    public LLVMSharp.LLVMValueRef ParseString(string value, LLVMSharp.LLVMBuilderRef builder)
+    public LLVMSharp.LLVMValueRef ParseString(string value, LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBuilderRef builder)
     {
-        return LLVMSharp.LLVM.ConstString(value, (uint)value.Length, true);
+        // Create the literal value of the string
+        LLVMSharp.LLVMValueRef stringValue = LLVMSharp.LLVM.ConstString(value, (uint)value.Length, true);
+
+        // Define the global variable for the string literal
+        LLVMSharp.LLVMValueRef stringLiteral = LLVMSharp.LLVM.AddGlobal(module, stringValue.TypeOf(), "");
+        LLVMSharp.LLVM.SetGlobalConstant(stringLiteral, true);
+        LLVMSharp.LLVM.SetInitializer(stringLiteral, stringValue);
+
+        // Get the appropriate LLVM type for the string pointer
+        LLVMSharp.LLVMTypeRef stringPtrType = Scope.FindType(Logger, "str"); // i8*
+
+        // Bitcast the string literal pointer to i8*
+        LLVMSharp.LLVMValueRef stringPtrValue = LLVMSharp.LLVM.ConstBitCast(stringLiteral, stringPtrType);
+
+        return stringPtrValue;
     }
 
     /// <summary>
     /// Get the value of a char
     /// </summary>
-    public LLVMSharp.LLVMValueRef ParseChar(string value, LLVMSharp.LLVMBuilderRef builder)
+    public LLVMSharp.LLVMValueRef ParseChar(string value, LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBuilderRef builder)
     {
         if ((value.Length - 2) != 1) throw new Exception($"Invalid char length of {(value.Length - 2)} in char {value}");
 
@@ -94,13 +108,13 @@ internal class SlLiteralExpression: SlExpression
         int i = (int)c; // Convert that char to its code
         
         // These should be a byte long
-        return LLVMSharp.LLVM.ConstInt(LLVMSharp.LLVM.Int8Type(), (ulong)i, false);
+        return LLVMSharp.LLVM.ConstInt(LLVMSharp.LLVM.Int32Type(), (ulong)i, false);
     }
 
     /// <summary>
     /// Get the value of a bool
     /// </summary>
-    public LLVMSharp.LLVMValueRef ParseBool(string value, LLVMSharp.LLVMBuilderRef builder)
+    public LLVMSharp.LLVMValueRef ParseBool(string value, LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBuilderRef builder)
     {
         switch(value)
         {

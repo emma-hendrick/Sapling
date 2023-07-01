@@ -45,7 +45,7 @@ internal class TokenDefinition
     /// </summary>
     public IEnumerable<Token> FindMatches(string inputString)
     {
-        var matches = _regex.Matches(inputString);
+        MatchCollection matches = _regex.Matches(inputString);
         for(int i=0; i<matches.Count; i++)
         {
             yield return _constructor(matches[i].Index, matches[i].Index + matches[i].Length, matches[i].Value);

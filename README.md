@@ -1,4 +1,4 @@
-# Sapling Programming Language V. 0.1.0
+# Sapling Programming Language V. 0.1.1
 
 Hello all, welcome to the sapling programming language. Once this is in a working capacity it is intended to be an object based language which allows for effortless error handling.
 
@@ -42,6 +42,10 @@ Things we can generate code for:
 - Return Statements
 
 Compilation is also functional!!
+
+### 0.1.1
+
+We can now use BIFs within the Sapling Programming Language. These currently include printf and getchar. Fixed some small bugs within the optree, parser, and token precedence.
 
 ---
 
