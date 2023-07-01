@@ -46,6 +46,16 @@ internal class AST
         LLVMSharp.LLVMModuleRef module = LLVMSharp.LLVM.ModuleCreateWithName("root");
         LLVMSharp.LLVM.SetTarget(module, Environment.Target);
 
+        // Declare the printf function
+        LLVMSharp.LLVMTypeRef[] printfParamTypes = {LLVMSharp.LLVMTypeRef.PointerType(LLVMSharp.LLVMTypeRef.Int8Type(), 0)};
+        var printfType = LLVMSharp.LLVMTypeRef.FunctionType(LLVMSharp.LLVMTypeRef.Int32Type(), printfParamTypes, true);
+        var printfFunc = LLVMSharp.LLVM.AddFunction(module, "printf", printfType);
+
+        // Declare the getchar function
+        LLVMSharp.LLVMTypeRef[] getcharParamTypes = {};
+        var getcharType = LLVMSharp.LLVMTypeRef.FunctionType(LLVMSharp.LLVMTypeRef.Int32Type(), getcharParamTypes, false);
+        var getcharFunc = LLVMSharp.LLVM.AddFunction(module, "getchar", getcharType);
+
         // We use this to add instructions to the functions block
         LLVMSharp.LLVMBuilderRef builder = LLVMSharp.LLVM.CreateBuilder();
 
@@ -53,6 +63,8 @@ internal class AST
         LLVMSharp.LLVMTypeRef[] main_param_types = { };
         LLVMSharp.LLVMTypeRef main_fn_type = LLVMSharp.LLVM.FunctionType(LLVMSharp.LLVM.Int32Type(), main_param_types, false);
         LLVMSharp.LLVMValueRef main = LLVMSharp.LLVM.AddFunction(module, "main", main_fn_type);
+
+        // Create the main entry point  
         _logger.IncreaseIndent();
         _logger.Add("Adding Basic Block: \"main_entry\"");
         LLVMSharp.LLVMBasicBlockRef main_entry = LLVMSharp.LLVM.AppendBasicBlock(main, "main_entry");
