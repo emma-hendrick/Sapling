@@ -80,8 +80,10 @@ internal class SlLiteralExpression: SlExpression
     /// </summary>
     public LLVMSharp.LLVMValueRef ParseString(string value, LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBuilderRef builder)
     {
+        string valueWithoutQuotes = value.Substring(1, value.Length - 2);;
+
         // Create the literal value of the string
-        LLVMSharp.LLVMValueRef stringValue = LLVMSharp.LLVM.ConstString(value, (uint)value.Length, true);
+        LLVMSharp.LLVMValueRef stringValue = LLVMSharp.LLVM.ConstString(valueWithoutQuotes, (uint)valueWithoutQuotes.Length, true);
 
         // Define the global variable for the string literal
         LLVMSharp.LLVMValueRef stringLiteral = LLVMSharp.LLVM.AddGlobal(module, stringValue.TypeOf(), "");
