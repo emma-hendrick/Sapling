@@ -55,7 +55,7 @@ internal static class Constants
         
         // Literals should be parsed next
         (new TokenDefinition(
-            @"""[^""]*""", 
+            @"""[^""]*?""", 
             "StringLiteral", 
             (startIndex, endIndex, value) => new Sapling.Tokens.String(startIndex, endIndex, value)), 
             11),

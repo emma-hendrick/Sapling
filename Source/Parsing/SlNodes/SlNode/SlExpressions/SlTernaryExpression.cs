@@ -53,7 +53,7 @@ internal class SlTernaryExpression: SlExpression
         LLVMSharp.LLVMValueRef function = LLVMSharp.LLVM.AddFunction(module, "ternary", functionType);
 
         // So... many... building blocks
-        LLVMSharp.LLVMBasicBlockRef funcEntry = LLVMSharp.LLVM.AppendBasicBlock(function, "true");
+        LLVMSharp.LLVMBasicBlockRef funcEntry = LLVMSharp.LLVM.AppendBasicBlock(function, "ternary_entry");
         LLVMSharp.LLVMBasicBlockRef trueBranch = LLVMSharp.LLVM.AppendBasicBlock(function, "true");
         LLVMSharp.LLVMBasicBlockRef falseBranch = LLVMSharp.LLVM.AppendBasicBlock(function, "false");
         LLVMSharp.LLVMBasicBlockRef mergeBranch = LLVMSharp.LLVM.AppendBasicBlock(function, "merge");
@@ -72,7 +72,7 @@ internal class SlTernaryExpression: SlExpression
 
         // Choose between valIfFalse and valIfTrue based on the condition
         LLVMSharp.LLVM.PositionBuilderAtEnd(builder, mergeBranch);
-        LLVMSharp.LLVMValueRef phiNode = LLVMSharp.LLVM.BuildPhi(builder, Scope.FindType(Logger, GetReturnType(Logger, _cond, _valIfTrue, _valIfFalse)), "result");
+        LLVMSharp.LLVMValueRef phiNode = LLVMSharp.LLVM.BuildPhi(builder, Scope.FindType(Logger, GetReturnType(Logger, _cond, _valIfTrue, _valIfFalse)), "phi_node");
         LLVMSharp.LLVMValueRef[] incomingValues = new[] {_valIfTrue.GenerateValue(builder, module, entry), _valIfFalse.GenerateValue(builder, module, entry)};
         LLVMSharp.LLVMBasicBlockRef[] incomingBlocks = new[] {trueBranch, falseBranch};
 
@@ -85,7 +85,7 @@ internal class SlTernaryExpression: SlExpression
 
         // Call the ternary function
         LLVMSharp.LLVMValueRef[] args = new LLVMSharp.LLVMValueRef[] { _cond.GenerateValue(builder, module, entry) };
-        LLVMSharp.LLVMValueRef result = LLVMSharp.LLVM.BuildCall(builder, function, args, "result");
+        LLVMSharp.LLVMValueRef result = LLVMSharp.LLVM.BuildCall(builder, function, args, "ternary_result");
         return result;
     }
 }

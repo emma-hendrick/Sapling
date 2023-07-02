@@ -26,7 +26,7 @@ internal class SlAssignProperty: SlStatement
     /// </summary>
     public SlAssignProperty(Logger logger, string type, string identifier, SlExpression expression, SlScope scope): base(logger, scope)
     {
-        _type = Constants.EquivalentParsingTypes[type];
+        _type = Constants.EquivalentExpressionTypes[Constants.EquivalentParsingTypes[type]];
         _identifier = identifier;
         _expression = expression;
         Scope.AddType(Logger, _identifier, type);
@@ -48,6 +48,7 @@ internal class SlAssignProperty: SlStatement
         // Allocate space for the variable and store it
         LLVMSharp.LLVMValueRef variable_alloc = LLVMSharp.LLVM.BuildAlloca(builder, type, _identifier);
         LLVMSharp.LLVMValueRef variable_store = LLVMSharp.LLVM.BuildStore(builder, expression, variable_alloc);
-        Scope.Add(Logger, _identifier, variable_alloc);
+        LLVMSharp.LLVMValueRef loaded_value = LLVMSharp.LLVM.BuildLoad(builder, variable_alloc, $"loaded_value_{_identifier}");
+        Scope.Add(Logger, _identifier, loaded_value);
     }
 }

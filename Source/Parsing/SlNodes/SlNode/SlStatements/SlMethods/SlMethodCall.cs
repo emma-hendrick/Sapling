@@ -77,7 +77,7 @@ internal class SlMethodCall: SlStatement
 
         // Call the method and get the result
         LLVMSharp.LLVMValueRef[] suppliedArgs = _args.Select(element => element.GenerateValue(builder, module, entry)).ToArray();
-        LLVMSharp.LLVMValueRef result = LLVMSharp.LLVM.BuildCall(builder, Scope.GetFunction(Logger, _identifier), suppliedArgs, "call_result");
+        LLVMSharp.LLVMValueRef result = LLVMSharp.LLVM.BuildCall(builder, Scope.GetFunction(Logger, _identifier), suppliedArgs, $"{_identifier}_result");
 
         // Store the result so we can use it if we are parsing the method call as an expression
         _result = result;

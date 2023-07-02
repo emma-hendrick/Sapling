@@ -92,7 +92,7 @@ internal class SlOptreeNode: SlExpression
             }
 
             // Create the right operator using the generated values of our left and right operands
-            return func(builder, _l.GenerateValue(builder, module, entry), _r.GenerateValue(builder, module, entry), "result");
+            return func(builder, _l.GenerateValue(builder, module, entry), _r.GenerateValue(builder, module, entry), "operation_result");
         }
 
         // It is a comparison operator
@@ -123,6 +123,6 @@ internal class SlOptreeNode: SlExpression
         }
 
         // Create the correct comparison operator
-        return LLVMSharp.LLVM.BuildICmp(builder, compType, _l.GenerateValue(builder, module, entry), _r.GenerateValue(builder, module, entry), "result");
+        return LLVMSharp.LLVM.BuildICmp(builder, compType, _l.GenerateValue(builder, module, entry), _r.GenerateValue(builder, module, entry), "comparison_result");
     }
 }

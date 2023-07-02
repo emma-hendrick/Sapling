@@ -1,5 +1,6 @@
 namespace Sapling.Nodes;
 using Sapling.Logging;
+using System.Text.RegularExpressions;
 
 /// <summary>
 /// A valid literal expression within the sapling programming language
@@ -80,7 +81,7 @@ internal class SlLiteralExpression: SlExpression
     /// </summary>
     public LLVMSharp.LLVMValueRef ParseString(string value, LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBuilderRef builder)
     {
-        string valueWithoutQuotes = value.Substring(1, value.Length - 2);;
+        string valueWithoutQuotes = Regex.Unescape(value.Substring(1, value.Length - 2)) + "\0";
 
         // Create the literal value of the string
         LLVMSharp.LLVMValueRef stringValue = LLVMSharp.LLVM.ConstString(valueWithoutQuotes, (uint)valueWithoutQuotes.Length, true);

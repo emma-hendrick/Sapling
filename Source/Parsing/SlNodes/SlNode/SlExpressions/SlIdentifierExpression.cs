@@ -32,7 +32,6 @@ internal class SlIdentifierExpression: SlExpression
     /// </summary>
     public override LLVMSharp.LLVMValueRef GenerateValue(LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBasicBlockRef entry)
     {
-        LLVMSharp.LLVMValueRef variable_alloc = Scope.Get(Logger, _identifier);
-        return LLVMSharp.LLVM.BuildLoad(builder, variable_alloc, "loadedValue");
+        return Scope.Get(Logger, _identifier);
     }
 }

@@ -119,7 +119,7 @@ internal class TestLLVM
         LLVMSharp.LLVM.PositionBuilderAtEnd(builder, sum_entry);
 
         // Add the two parameters and return them
-        LLVMSharp.LLVMValueRef sum_result = LLVMSharp.LLVM.BuildAdd(builder, LLVMSharp.LLVM.GetParam(sum, 0), LLVMSharp.LLVM.GetParam(sum, 1), "result");
+        LLVMSharp.LLVMValueRef sum_result = LLVMSharp.LLVM.BuildAdd(builder, LLVMSharp.LLVM.GetParam(sum, 0), LLVMSharp.LLVM.GetParam(sum, 1), "add_result");
         LLVMSharp.LLVM.BuildRet(builder, sum_result);
 
         // Entry / Exit point for MAIN
@@ -136,7 +136,7 @@ internal class TestLLVM
             LLVMSharp.LLVM.ConstInt(LLVMSharp.LLVM.Int32Type(), 2, false),
             LLVMSharp.LLVM.ConstInt(LLVMSharp.LLVM.Int32Type(), 2, false)
         };
-        LLVMSharp.LLVMValueRef main_tmp = LLVMSharp.LLVM.BuildCall(builder, sum, main_args, "result");
+        LLVMSharp.LLVMValueRef main_tmp = LLVMSharp.LLVM.BuildCall(builder, sum, main_args, "tmp");
         LLVMSharp.LLVM.BuildRet(builder, main_tmp);
         
         // Ensure we didnt screw up...
