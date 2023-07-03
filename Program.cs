@@ -245,6 +245,7 @@ internal static class Program
         process.Start();
 
         // Read the output or wait for the process to exit
+        // TODO - Handle output reading in a thread so we can print it as it is received, instead of just printing it after
         string output = process.StandardOutput.ReadToEnd();
         process.WaitForExit();
 
