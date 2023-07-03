@@ -75,8 +75,15 @@ internal class SlMethodCall: SlStatement
             throw new Exception($"Type mismatch of parameters supplied to method {_identifier}");
         }
 
-        // Call the method and get the result
+        // Call the method and get the result (if it is not a void return type)
         LLVMSharp.LLVMValueRef[] suppliedArgs = _args.Select(element => element.GenerateValue(builder, module, entry)).ToArray();
+
+        if (fType.GetReturnType().Equals(LLVMSharp.LLVM.VoidType()))
+        {
+            LLVMSharp.LLVM.BuildCall(builder, Scope.GetFunction(Logger, _identifier), suppliedArgs, string.Empty);
+            return;
+        }
+
         LLVMSharp.LLVMValueRef result = LLVMSharp.LLVM.BuildCall(builder, Scope.GetFunction(Logger, _identifier), suppliedArgs, $"{_identifier}_result");
 
         // Store the result so we can use it if we are parsing the method call as an expression

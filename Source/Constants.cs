@@ -104,7 +104,7 @@ internal static class Constants
             23),
         
         (new TokenDefinition(
-            @"(printf|getchar)", 
+            @"(printf|getchar|flush_stdin)", 
             "Builtin Method", 
             (startIndex, endIndex, value) => new Builtin(startIndex, endIndex, value)), 
             24),
