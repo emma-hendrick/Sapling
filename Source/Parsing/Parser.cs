@@ -169,7 +169,7 @@ internal class Parser
 
                 // Parse the return statement if the keyword is return, if it isnt, throw an error
                 if (_current.Value.Value == "return") method.Add(ParseReturn(scope));
-                else throw new Exception($"Unexpected keyword \"{_current.Value.Value}\" in input string from {_current.Value.StartIndex} to {_current.Value.EndIndex}."); 
+                else throw new Exception($"Unexpected {_current.Value.GetType().Name} '{_current.Value.Value}' in input string from {_current.Value.StartIndex} to {_current.Value.EndIndex}."); 
                 break;
 
             case (nameof(Sapling.Tokens.ID)):
@@ -177,7 +177,7 @@ internal class Parser
 
                 // Parse a identifier as a method if it is immediately followed by a left parenthesis, otherwise parse it as an expression
                 if (_current.Next is not null && _current.Next.Value.Value == "(") method.Add(ParseMethodCall(scope));
-                else throw new Exception($"Unexpected identifier \"{_current.Value.Value}\" in input string at {_current.Value.StartIndex} to {_current.Value.EndIndex}."); 
+                else throw new Exception($"Unexpected {_current.Value.GetType().Name} '{_current.Value.Value}' in input string from {_current.Value.StartIndex} to {_current.Value.EndIndex}."); 
                 break;
 
             default:
@@ -200,14 +200,14 @@ internal class Parser
         GetNextNode(); // Consume identifier
 
         if (_current is null) throw new Exception("Trying to parse null assignment!!");
-        else if (!(nameof(Sapling.Tokens.Assign) == _current.Value.GetType().Name)) throw new Exception($"Missing Assignment Operator!! Instead got {_current.Value.Value}");
+        else if (!(nameof(Sapling.Tokens.Assign) == _current.Value.GetType().Name)) throw new Exception($"Missing Assignment Operator!! Instead got {_current.Value.GetType().Name} '{_current.Value.Value}' in input string from {_current.Value.StartIndex} to {_current.Value.EndIndex}.");
         GetNextNode(); // Consume = sign
 
         if (_current is null) throw new Exception("Trying to parse null expression!!");
         SlExpression expression = ParseExpression(scope); // Consume the expression
 
         if (_current is null) throw new Exception("Trying to parse null delimiter!!");
-        else if (!(nameof(Sapling.Tokens.Delimeter) == _current.Value.GetType().Name && _current.Value.Value == ";")) throw new Exception($"Missing Semicolon!! Instead got {_current.Value.Value}");
+        else if (!(nameof(Sapling.Tokens.Delimeter) == _current.Value.GetType().Name && _current.Value.Value == ";")) throw new Exception($"Missing Semicolon!! Instead got {_current.Value.GetType().Name} '{_current.Value.Value}' in input string from {_current.Value.StartIndex} to {_current.Value.EndIndex}.");
         GetNextNode(); // Consume ;
 
         return new SlAssignProperty(_logger, _module, type, identifier, expression, scope);
@@ -231,7 +231,7 @@ internal class Parser
         GetNextNode(); // Consume identifier
 
         if (_current is null) throw new Exception("Trying to parse null assignment!!");
-        else if (!(nameof(Sapling.Tokens.Assign) == _current.Value.GetType().Name)) throw new Exception($"Missing Assignment Operator!! Instead got {_current.Value.Value}");
+        else if (!(nameof(Sapling.Tokens.Assign) == _current.Value.GetType().Name)) throw new Exception($"Missing Assignment Operator!! Instead got {_current.Value.GetType().Name} '{_current.Value.Value}' in input string from {_current.Value.StartIndex} to {_current.Value.EndIndex}.");
         GetNextNode(); // Consume = sign
 
         if (_current is null) throw new Exception("Trying to parse null expression!!");
@@ -257,22 +257,22 @@ internal class Parser
         GetNextNode(); // Consume identifier
 
         if (_current is null) throw new Exception("Trying to parse null assignment!!");
-        else if (!(nameof(Sapling.Tokens.Assign) == _current.Value.GetType().Name)) throw new Exception($"Missing Assignment Operator!! Instead got {_current.Value.Value}");
+        else if (!(nameof(Sapling.Tokens.Assign) == _current.Value.GetType().Name)) throw new Exception($"Missing Assignment Operator!! Instead got {_current.Value.GetType().Name} '{_current.Value.Value}' in input string from {_current.Value.StartIndex} to {_current.Value.EndIndex}.");
         GetNextNode(); // Consume = sign
 
         if (_current is null) throw new Exception("Trying to parse null delimiter!!");
-        else if (!(nameof(Sapling.Tokens.Delimeter) == _current.Value.GetType().Name && _current.Value.Value == "{}")) throw new Exception($"Missing Opening Brace!! Instead got {_current.Value.Value}");
+        else if (!(nameof(Sapling.Tokens.Delimeter) == _current.Value.GetType().Name && _current.Value.Value == "{}")) throw new Exception($"Missing Opening Brace!! Instead got {_current.Value.GetType().Name} '{_current.Value.Value}' in input string from {_current.Value.StartIndex} to {_current.Value.EndIndex}.");
         GetNextNode(); // Consume {
             
         if (_current is null) throw new Exception("Trying to parse null class!!");
         SlClass slClass = ParseClass(scope); // Consume the class
 
         if (_current is null) throw new Exception("Trying to parse null delimiter!!");
-        else if (!(nameof(Sapling.Tokens.Delimeter) == _current.Value.GetType().Name && _current.Value.Value == "}")) throw new Exception($"Missing Closing Brace!! Instead got {_current.Value.Value}");
+        else if (!(nameof(Sapling.Tokens.Delimeter) == _current.Value.GetType().Name && _current.Value.Value == "}")) throw new Exception($"Missing Closing Brace!! Instead got {_current.Value.GetType().Name} '{_current.Value.Value}' in input string from {_current.Value.StartIndex} to {_current.Value.EndIndex}.");
         GetNextNode(); // Consume }
 
         if (_current is null) throw new Exception("Trying to parse null delimiter!!");
-        else if (!(nameof(Sapling.Tokens.Delimeter) == _current.Value.GetType().Name && _current.Value.Value == ";")) throw new Exception($"Missing Semicolon!! Instead got {_current.Value.Value}");
+        else if (!(nameof(Sapling.Tokens.Delimeter) == _current.Value.GetType().Name && _current.Value.Value == ";")) throw new Exception($"Missing Semicolon!! Instead got {_current.Value.GetType().Name} '{_current.Value.Value}' in input string from {_current.Value.StartIndex} to {_current.Value.EndIndex}.");
         GetNextNode(); // Consume ;
 
         return new SlAssignClass(_logger, _module, identifier, slClass, scope);
@@ -386,14 +386,14 @@ internal class Parser
     private SlExpression ParseTernary(SlScope scope, SlExpression cond)
     {
         if (_current is null) throw new Exception("Trying to parse null delimiter!!");
-        else if (!(nameof(Sapling.Tokens.Ternary) == _current.Value.GetType().Name && _current.Value.Value == "?")) throw new Exception($"Missing Ternary Operator (?)!! Instead got {_current.Value.Value}");
+        else if (!(nameof(Sapling.Tokens.Ternary) == _current.Value.GetType().Name && _current.Value.Value == "?")) throw new Exception($"Missing Ternary Operator (?)!! Instead got {_current.Value.GetType().Name} '{_current.Value.Value}' in input string from {_current.Value.StartIndex} to {_current.Value.EndIndex}.");
         GetNextNode(); // Consume ?
             
         if (_current is null) throw new Exception("Trying to parse null expression!!");
         SlExpression valIfTrue = ParseExpression(scope); // Consume the first expression
 
         if (_current is null) throw new Exception("Trying to parse null delimiter!!");
-        else if (!(nameof(Sapling.Tokens.Ternary) == _current.Value.GetType().Name && _current.Value.Value == ":")) throw new Exception($"Missing Ternary Else Operator (:)!! Instead got {_current.Value.Value}");
+        else if (!(nameof(Sapling.Tokens.Ternary) == _current.Value.GetType().Name && _current.Value.Value == ":")) throw new Exception($"Missing Ternary Else Operator (:)!! Instead got {_current.Value.GetType().Name} '{_current.Value.Value}' in input string from {_current.Value.StartIndex} to {_current.Value.EndIndex}.");
         GetNextNode(); // Consume :
             
         if (_current is null) throw new Exception("Trying to parse null expression!!");
@@ -431,13 +431,13 @@ internal class Parser
     private SlExpression ParseParenExpression(SlScope scope)
     {
         if (_current is null) throw new Exception("Trying to parse null delimeter.");
-        else if (_current.Value.Value != "(") throw new Exception($"Was expecting (, instead got \"{_current.Value.Value}\"!!");
+        else if (_current.Value.Value != "(") throw new Exception($"Was expecting (, instead got {_current.Value.GetType().Name} '{_current.Value.Value}' in input string from {_current.Value.StartIndex} to {_current.Value.EndIndex}.");
         GetNextNode(); // Consume the (
 
         SlExpression expression = ParseExpression(scope); // Parse the inner Expression
         
         if (_current is null) throw new Exception("Trying to parse null delimeter.");
-        else if (_current.Value.Value != ")") throw new Exception($"Was expecting ), instead got \"{_current.Value.Value}\"!!");
+        else if (_current.Value.Value != ")") throw new Exception($"Was expecting ), instead got {_current.Value.GetType().Name} '{_current.Value.Value}' in input string from {_current.Value.StartIndex} to {_current.Value.EndIndex}.");
         GetNextNode(); // Consume the )
 
         return HandleExpressionLookahead(scope, expression);
@@ -489,7 +489,7 @@ internal class Parser
         GetNextNode(); // Consume identifier
 
         if (_current is null) throw new Exception("Trying to parse null delimeter.");
-        else if (_current.Value.Value != "(") throw new Exception($"Was expecting (, instead got \"{_current.Value.Value}\"!!");
+        else if (_current.Value.Value != "(") throw new Exception($"Was expecting (, instead got {_current.Value.GetType().Name} '{_current.Value.Value}' in input string from {_current.Value.StartIndex} to {_current.Value.EndIndex}.");
         GetNextNode(); // Consume (
 
         if (_current is null) throw new Exception("Trying to parse null method args.");
@@ -505,11 +505,11 @@ internal class Parser
         }
 
         if (_current is null) throw new Exception("Trying to parse null delimeter.");
-        else if (_current.Value.Value != ")") throw new Exception($"Was expecting ), instead got \"{_current.Value.Value}\"!!");
+        else if (_current.Value.Value != ")") throw new Exception($"Was expecting ), instead got {_current.Value.GetType().Name} '{_current.Value.Value}' in input string from {_current.Value.StartIndex} to {_current.Value.EndIndex}.");
         GetNextNode(); // Consume )
 
         if (_current is null) throw new Exception("Trying to parse null delimiter!!");
-        else if (!(nameof(Sapling.Tokens.Delimeter) == _current.Value.GetType().Name && _current.Value.Value == ";")) throw new Exception($"Missing Semicolon!! Instead got {_current.Value.Value}");
+        else if (!(nameof(Sapling.Tokens.Delimeter) == _current.Value.GetType().Name && _current.Value.Value == ";")) throw new Exception($"Missing Semicolon!! Instead got {_current.Value.GetType().Name} '{_current.Value.Value}' in input string from {_current.Value.StartIndex} to {_current.Value.EndIndex}.");
         GetNextNode(); // Consume ;
 
         return new SlMethodCall(_logger, _module, identifier, args, scope);
@@ -528,7 +528,7 @@ internal class Parser
         GetNextNode(); // Consume identifier
 
         if (_current is null) throw new Exception("Trying to parse null delimeter.");
-        else if (_current.Value.Value != "(") throw new Exception($"Was expecting (, instead got \"{_current.Value.Value}\"!!");
+        else if (_current.Value.Value != "(") throw new Exception($"Was expecting (, instead got {_current.Value.GetType().Name} '{_current.Value.Value}' in input string from {_current.Value.StartIndex} to {_current.Value.EndIndex}.");
         GetNextNode(); // Consume (
 
         if (_current is null) throw new Exception("Trying to parse null method args.");
@@ -544,7 +544,8 @@ internal class Parser
         }
 
         if (_current is null) throw new Exception("Trying to parse null delimeter.");
-        else if (_current.Value.Value != ")") throw new Exception($"Was expecting ), instead got \"{_current.Value.Value}\"!!");
+        
+        else if (_current.Value.Value != ")") throw new Exception($"Was expecting ), instead got {_current.Value.GetType().Name} '{_current.Value.Value}' in input string from {_current.Value.StartIndex} to {_current.Value.EndIndex}.");
         GetNextNode(); // Consume )
         
         // It is important to note we actually should not consume the semicolon here, as the expression will consume it
