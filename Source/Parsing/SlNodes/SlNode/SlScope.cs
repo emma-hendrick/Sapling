@@ -142,9 +142,6 @@ internal class SlScope
     /// </summary>
     public LLVMSharp.LLVMValueRef GetFunction(Logger logger, string identifier)
     {
-        Console.WriteLine(identifier);
-        foreach (KeyValuePair<string, LLVMSharp.LLVMValueRef> kvp in _functionValues) Console.WriteLine(kvp.Key);
-
         logger.Add($"Getting function {identifier} from scope");
         if (!_functionValues.ContainsKey(identifier)) throw new Exception($"Could not find function {identifier} in scope");
         return _functionValues[identifier];
@@ -155,9 +152,6 @@ internal class SlScope
     /// </summary>
     public LLVMSharp.LLVMTypeRef GetFunctionType(Logger logger, string identifier)
     {
-        Console.WriteLine(identifier);
-        foreach (KeyValuePair<string, LLVMSharp.LLVMValueRef> kvp in _functionValues) Console.WriteLine(kvp.Key);
-        
         logger.Add($"Getting function {identifier} type from scope");
         if (!_functionTypes.ContainsKey(identifier)) throw new Exception($"Could not find function {identifier} in scope");
         return _functionTypes[identifier];
