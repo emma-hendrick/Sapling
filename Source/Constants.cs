@@ -102,12 +102,6 @@ internal static class Constants
             "Type", 
             (startIndex, endIndex, value) => new SaplingType(startIndex, endIndex, value)), 
             23),
-        
-        (new TokenDefinition(
-            @"(printf|getchar|flush_stdin)", 
-            "Builtin Method", 
-            (startIndex, endIndex, value) => new Builtin(startIndex, endIndex, value)), 
-            24),
 
         // Next we will have all of our operators
         (new TokenDefinition(
