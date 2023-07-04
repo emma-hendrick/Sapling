@@ -17,6 +17,16 @@ internal abstract class SlNode
     public Logger Logger => _logger;
 
     /// <summary>
+    /// The module used by the node
+    /// </summary>
+    private LLVMSharp.LLVMModuleRef _module;
+
+    /// <summary>
+    /// The module used by the node
+    /// </summary>
+    public LLVMSharp.LLVMModuleRef Module => _module;
+
+    /// <summary>
     /// The scope used by the node
     /// </summary>
     private SlScope _scope;
@@ -26,13 +36,13 @@ internal abstract class SlNode
     /// </summary>
     public SlScope Scope => _scope;
 
-
     /// <summary>
     /// Construct a new SlNode
     /// </summary>
-    public SlNode(Logger logger, SlScope scope)
+    public SlNode(Logger logger, LLVMSharp.LLVMModuleRef module, SlScope scope)
     {
         _logger = logger;
+        _module = module;
         _scope = scope;
     }
 

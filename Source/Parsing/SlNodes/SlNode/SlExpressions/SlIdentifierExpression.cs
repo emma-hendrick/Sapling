@@ -14,7 +14,7 @@ internal class SlIdentifierExpression: SlExpression
     /// <summary>
     /// Construct a new SlIdentifierExpression
     /// </summary>
-    public SlIdentifierExpression(Logger logger, string identifier, SlScope scope): base(logger, GetIdentifierType(logger, identifier, scope), scope)
+    public SlIdentifierExpression(Logger logger, LLVMSharp.LLVMModuleRef module, string identifier, SlScope scope): base(logger, module, GetIdentifierType(logger, identifier, scope), scope)
     {
         _identifier = identifier;
     }
@@ -30,7 +30,7 @@ internal class SlIdentifierExpression: SlExpression
     /// <summary>
     /// Generate the value of the identifier expression
     /// </summary>
-    public override LLVMSharp.LLVMValueRef GenerateValue(LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBasicBlockRef entry)
+    public override LLVMSharp.LLVMValueRef GenerateValue(LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMBasicBlockRef entry)
     {
         return Scope.Get(Logger, _identifier);
     }

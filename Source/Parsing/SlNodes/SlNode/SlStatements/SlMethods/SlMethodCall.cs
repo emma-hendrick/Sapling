@@ -25,7 +25,7 @@ internal class SlMethodCall: SlStatement
     /// <summary>
     /// Construct a new SlMethodCall
     /// </summary>
-    public SlMethodCall(Logger logger, string identifier, List<SlExpression> args, SlScope scope): base(logger, scope)
+    public SlMethodCall(Logger logger, LLVMSharp.LLVMModuleRef module, string identifier, List<SlExpression> args, SlScope scope): base(logger, module, scope)
     {
         _identifier = identifier;
         _args = args;
@@ -34,9 +34,9 @@ internal class SlMethodCall: SlStatement
     /// <summary>
     /// Get the value returned by the code generation
     /// </summary>
-    public LLVMSharp.LLVMValueRef GetResult(LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMBasicBlockRef entry)
+    public LLVMSharp.LLVMValueRef GetResult(LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMBasicBlockRef entry)
     {
-        GenerateCode(module, builder, entry);
+        GenerateCode(builder, entry);
 
         if (_result is null) throw new Exception();
         return _result ?? default(LLVMSharp.LLVMValueRef);
@@ -45,7 +45,7 @@ internal class SlMethodCall: SlStatement
     /// <summary>
     /// Generate code for a LLVM method call
     /// <example>
-    public override void GenerateCode(LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMBasicBlockRef entry)
+    public override void GenerateCode(LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMBasicBlockRef entry)
     {
         Logger.Add("Generating code for SlMethodCall");
 
@@ -76,7 +76,7 @@ internal class SlMethodCall: SlStatement
         }
 
         // Call the method and get the result (if it is not a void return type)
-        LLVMSharp.LLVMValueRef[] suppliedArgs = _args.Select(element => element.GenerateValue(builder, module, entry)).ToArray();
+        LLVMSharp.LLVMValueRef[] suppliedArgs = _args.Select(element => element.GenerateValue(builder, entry)).ToArray();
 
         if (fType.GetReturnType().Equals(LLVMSharp.LLVM.VoidType()))
         {

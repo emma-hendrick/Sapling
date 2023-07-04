@@ -52,6 +52,8 @@ internal class SlScope
     {
         _types = parent.GetTypes().ToDictionary(entry => entry.Key, entry => entry.Value);
         _values = parent.GetValues().ToDictionary(entry => entry.Key, entry => entry.Value);
+        _functionTypes = parent.GetFunctionTypes().ToDictionary(entry => entry.Key, entry => entry.Value);
+        _functionValues = parent.GetFunctionValues().ToDictionary(entry => entry.Key, entry => entry.Value);
     }
 
     /// <summary>
@@ -62,13 +64,28 @@ internal class SlScope
         return _types;
     }
 
-
     /// <summary>
     /// Get the values within a scope
     /// </summary>
     public Dictionary<string, LLVMSharp.LLVMValueRef> GetValues()
     {
         return _values;
+    }
+
+    /// <summary>
+    /// Get the function types within a scope
+    /// </summary>
+    public Dictionary<string, LLVMSharp.LLVMTypeRef> GetFunctionTypes()
+    {
+        return _functionTypes;
+    }
+
+    /// <summary>
+    /// Get the function values within a scope
+    /// </summary>
+    public Dictionary<string, LLVMSharp.LLVMValueRef> GetFunctionValues()
+    {
+        return _functionValues;
     }
 
     /// <summary>
@@ -125,6 +142,9 @@ internal class SlScope
     /// </summary>
     public LLVMSharp.LLVMValueRef GetFunction(Logger logger, string identifier)
     {
+        Console.WriteLine(identifier);
+        foreach (KeyValuePair<string, LLVMSharp.LLVMValueRef> kvp in _functionValues) Console.WriteLine(kvp.Key);
+
         logger.Add($"Getting function {identifier} from scope");
         if (!_functionValues.ContainsKey(identifier)) throw new Exception($"Could not find function {identifier} in scope");
         return _functionValues[identifier];
@@ -135,6 +155,9 @@ internal class SlScope
     /// </summary>
     public LLVMSharp.LLVMTypeRef GetFunctionType(Logger logger, string identifier)
     {
+        Console.WriteLine(identifier);
+        foreach (KeyValuePair<string, LLVMSharp.LLVMValueRef> kvp in _functionValues) Console.WriteLine(kvp.Key);
+        
         logger.Add($"Getting function {identifier} type from scope");
         if (!_functionTypes.ContainsKey(identifier)) throw new Exception($"Could not find function {identifier} in scope");
         return _functionTypes[identifier];

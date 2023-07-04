@@ -9,7 +9,7 @@ internal class SlClass: SlNode
     /// <summary>
     /// Construct a new SlClass
     /// </summary>
-    public SlClass(Logger logger, SlScope scope): base(logger, scope)
+    public SlClass(Logger logger, LLVMSharp.LLVMModuleRef module, SlScope scope): base(logger, module, scope)
     {
     }
 
@@ -21,7 +21,7 @@ internal class SlClass: SlNode
     /// <summary>
     /// Generate the code for an SlClass
     /// </summary>
-    public void GenerateCode(LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMBasicBlockRef entry, LLVMSharp.LLVMValueRef method)
+    public void GenerateCode(LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMBasicBlockRef entry, LLVMSharp.LLVMValueRef method)
     {
         Logger.Add("Generating code for SlClass");
 
@@ -38,7 +38,7 @@ internal class SlClass: SlNode
         // Generate the code for each statement in the class
         foreach (SlStatement statement in _statements)
         {
-            statement.GenerateCode(module, builder, entry);
+            statement.GenerateCode(builder, entry);
         }
     }
 

@@ -9,12 +9,12 @@ internal abstract class SlStatement: SlNode
     /// <summary>
     /// Construct a new SlStatement
     /// </summary>
-    public SlStatement(Logger logger, SlScope scope): base(logger, scope)
+    public SlStatement(Logger logger, LLVMSharp.LLVMModuleRef module, SlScope scope): base(logger, module, scope)
     {
     }
 
     /// <summary>
     /// Generate the code for an SlStatement
     /// </summary>
-    public abstract void GenerateCode(LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMBasicBlockRef entry);
+    public abstract void GenerateCode(LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMBasicBlockRef entry);
 }

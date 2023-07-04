@@ -14,7 +14,7 @@ internal class SlParsedOptree: SlExpression
     /// <summary>
     /// Construct a new SlParsedOptree
     /// </summary>
-    public SlParsedOptree(Logger logger, SlOptree optree, SlScope scope): base(logger, optree.GetReturnType(), scope)
+    public SlParsedOptree(Logger logger, LLVMSharp.LLVMModuleRef module, SlOptree optree, SlScope scope): base(logger, module, optree.GetReturnType(), scope)
     {
         _optree = optree;
     }
@@ -22,8 +22,8 @@ internal class SlParsedOptree: SlExpression
     /// <summary>
     /// Generate the value of this optree
     /// </summary>
-    public override LLVMSharp.LLVMValueRef GenerateValue(LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBasicBlockRef entry)
+    public override LLVMSharp.LLVMValueRef GenerateValue(LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMBasicBlockRef entry)
     {
-        return _optree.GenerateValue(builder, module, entry);
+        return _optree.GenerateValue(builder, entry);
     }
 }

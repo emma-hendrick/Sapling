@@ -20,7 +20,7 @@ internal class SlMethod: SlNode
     /// <summary>
     /// Construct a new SlMethod
     /// </summary>
-    public SlMethod(Logger logger, SlScope scope, string type): base(logger, scope)
+    public SlMethod(Logger logger, LLVMSharp.LLVMModuleRef module, SlScope scope, string type): base(logger, module, scope)
     {
         _retType = Constants.EquivalentParsingTypes[type];
     }
@@ -47,7 +47,7 @@ internal class SlMethod: SlNode
         
         foreach (SlStatement statement in _statements)
         {
-            statement.GenerateCode(module, builder, entry);
+            statement.GenerateCode(builder, entry);
         }
     }
 

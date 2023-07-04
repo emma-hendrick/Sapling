@@ -24,7 +24,7 @@ internal class SlTernaryExpression: SlExpression
     /// <summary>
     /// Construct a new SlTernaryExpression
     /// </summary>
-    public SlTernaryExpression(Logger logger, SlExpression cond, SlExpression valIfTrue, SlExpression valIfFalse, SlScope scope): base(logger, GetReturnType(logger, cond, valIfTrue, valIfFalse), scope)
+    public SlTernaryExpression(Logger logger, LLVMSharp.LLVMModuleRef module, SlExpression cond, SlExpression valIfTrue, SlExpression valIfFalse, SlScope scope): base(logger, module, GetReturnType(logger, cond, valIfTrue, valIfFalse), scope)
     {
         _cond = cond;
         _valIfTrue = valIfTrue;
@@ -44,13 +44,13 @@ internal class SlTernaryExpression: SlExpression
     /// <summary>
     /// Generate the value of the ternary expression
     /// </summary>
-    public override LLVMSharp.LLVMValueRef GenerateValue(LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBasicBlockRef entry)
+    public override LLVMSharp.LLVMValueRef GenerateValue(LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMBasicBlockRef entry)
     {
         // Create a function to perform the ternary operation
         LLVMSharp.LLVMTypeRef retType = Scope.FindType(Logger, _valIfTrue.ExType);
         LLVMSharp.LLVMTypeRef[] paramTypes = {Scope.FindType(Logger, "bool")};
         LLVMSharp.LLVMTypeRef functionType = LLVMSharp.LLVM.FunctionType(retType, paramTypes, false);
-        LLVMSharp.LLVMValueRef function = LLVMSharp.LLVM.AddFunction(module, "ternary", functionType);
+        LLVMSharp.LLVMValueRef function = LLVMSharp.LLVM.AddFunction(Module, "ternary", functionType);
 
         // So... many... building blocks
         LLVMSharp.LLVMBasicBlockRef funcEntry = LLVMSharp.LLVM.AppendBasicBlock(function, "ternary_entry");
@@ -73,7 +73,7 @@ internal class SlTernaryExpression: SlExpression
         // Choose between valIfFalse and valIfTrue based on the condition
         LLVMSharp.LLVM.PositionBuilderAtEnd(builder, mergeBranch);
         LLVMSharp.LLVMValueRef phiNode = LLVMSharp.LLVM.BuildPhi(builder, Scope.FindType(Logger, GetReturnType(Logger, _cond, _valIfTrue, _valIfFalse)), "phi_node");
-        LLVMSharp.LLVMValueRef[] incomingValues = new[] {_valIfTrue.GenerateValue(builder, module, entry), _valIfFalse.GenerateValue(builder, module, entry)};
+        LLVMSharp.LLVMValueRef[] incomingValues = new[] {_valIfTrue.GenerateValue(builder, entry), _valIfFalse.GenerateValue(builder, entry)};
         LLVMSharp.LLVMBasicBlockRef[] incomingBlocks = new[] {trueBranch, falseBranch};
 
         // Do the comparison and return the phi node which did the comparison
@@ -84,7 +84,7 @@ internal class SlTernaryExpression: SlExpression
         LLVMSharp.LLVM.PositionBuilderAtEnd(builder, entry);
 
         // Call the ternary function
-        LLVMSharp.LLVMValueRef[] args = new LLVMSharp.LLVMValueRef[] { _cond.GenerateValue(builder, module, entry) };
+        LLVMSharp.LLVMValueRef[] args = new LLVMSharp.LLVMValueRef[] { _cond.GenerateValue(builder, entry) };
         LLVMSharp.LLVMValueRef result = LLVMSharp.LLVM.BuildCall(builder, function, args, "ternary_result");
         return result;
     }

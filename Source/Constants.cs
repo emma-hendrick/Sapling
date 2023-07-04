@@ -84,7 +84,7 @@ internal static class Constants
             (startIndex, endIndex, value) => new Sapling.Tokens.Boolean(startIndex, endIndex, value)), 
             15),
         
-        // Next we will have delimiters, keywords, types and BIFs
+        // Next we will have delimiters, keywords, and types
         (new TokenDefinition(
             @"(\(|\)|\{|\}|\;)", 
             "Delimeter", 
@@ -100,6 +100,12 @@ internal static class Constants
         (new TokenDefinition(
             @"\b(int|float|str|char|bool)\b", 
             "Type", 
+            (startIndex, endIndex, value) => new SaplingType(startIndex, endIndex, value)), 
+            23),
+
+        (new TokenDefinition(
+            @"\b(method|class)\b", 
+            "Special Type", 
             (startIndex, endIndex, value) => new SaplingType(startIndex, endIndex, value)), 
             23),
 

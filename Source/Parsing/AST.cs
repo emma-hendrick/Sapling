@@ -40,6 +40,7 @@ internal class AST
         {"printf", "printf"},
         {"getchar", "getchar"},
         {"flush_stdin", "flush_stdin"},
+        {"getstr", "getstr"},
     };
 
     /// <summary>
@@ -52,11 +53,12 @@ internal class AST
     /// will create a new AST, which can then be used to generate the LLVM bitcode for its nodes.
     /// </example>
     /// </summary>
-    public AST(SlMethod root, SlScope global, Logger logger)
+    public AST(SlMethod root, LLVMSharp.LLVMModuleRef module, SlScope global, Logger logger)
     {
         _logger = logger;
         _global = global;
         _root = root;
+        _module = module;
 
         Initialize();
     }
@@ -70,7 +72,6 @@ internal class AST
         _logger.Add("Initializing AST");
 
         // Create our module
-        _module = LLVMSharp.LLVM.ModuleCreateWithName("root");
         LLVMSharp.LLVM.SetTarget(_module, Environment.Target);
 
         // Initialize the LLVM builder
@@ -87,6 +88,7 @@ internal class AST
     {
         AddPrintf();
         AddGetChar();
+        AddGetStr();
         AddFlushStdin();
     }
 
@@ -120,6 +122,23 @@ internal class AST
         // Add getchar to the global scope
         _global.AddFunctionType(_logger, getcharName, getcharType);
         _global.AddFunction(_logger, getcharName, getcharFunc);
+    }
+
+    /// <summary>
+    /// Add getstr to our module and the global scope
+    /// </summary>
+    private void AddGetStr()
+    {
+        // TODO
+        // // Declare the getstr function
+        // LLVMSharp.LLVMTypeRef[] getstrParamTypes = {};
+        // LLVMSharp.LLVMTypeRef getstrType = LLVMSharp.LLVMTypeRef.FunctionType(_global.FindType(_logger, "str"), getstrParamTypes, false);
+        // string getstrName = _BIFNames["getstr"];
+        // LLVMSharp.LLVMValueRef getstrFunc = LLVMSharp.LLVM.AddFunction(_module, getstrName, getstrType);
+
+        // // Add the getstr function to the global scope
+        // _global.AddFunctionType(_logger, getstrName, getstrType);
+        // _global.AddFunction(_logger, getstrName, getstrFunc);
     }
 
     /// <summary>

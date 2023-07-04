@@ -19,7 +19,7 @@ internal abstract class SlExpression: SlNode, IShuntingYardable
     /// <summary>
     /// Construct a new SlExpression
     /// </summary>
-    public SlExpression(Logger logger, string exType, SlScope scope): base(logger, scope)
+    public SlExpression(Logger logger, LLVMSharp.LLVMModuleRef module, string exType, SlScope scope): base(logger, module, scope)
     {
         _exType = exType;
     }
@@ -27,5 +27,5 @@ internal abstract class SlExpression: SlNode, IShuntingYardable
     /// <summary>
     /// Generate a value for an SlExpression
     /// </summary>
-    public abstract LLVMSharp.LLVMValueRef GenerateValue(LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBasicBlockRef entry);
+    public abstract LLVMSharp.LLVMValueRef GenerateValue(LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMBasicBlockRef entry);
 }

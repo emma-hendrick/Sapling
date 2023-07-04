@@ -65,7 +65,7 @@ internal class SlOperator: SlNode, IShuntingYardable
     /// <summary>
     /// Construct a new SlOperator
     /// </summary>
-    public SlOperator(Logger logger, string optype, SlScope scope): base(logger, scope)
+    public SlOperator(Logger logger, LLVMSharp.LLVMModuleRef module, string optype, SlScope scope): base(logger, module, scope)
     {
         // Ensure that operator is valid
         if (!OpTypeReturns.ContainsKey(optype)) throw new Exception($"Invalid OpType {optype}");

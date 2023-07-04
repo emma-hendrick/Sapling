@@ -19,7 +19,7 @@ internal class SlReturn: SlStatement
     /// <summary>
     /// Construct a new SlReturn
     /// </summary>
-    public SlReturn(Logger logger, SlExpression r, SlScope scope): base(logger, scope)
+    public SlReturn(Logger logger, LLVMSharp.LLVMModuleRef module, SlExpression r, SlScope scope): base(logger, module, scope)
     {
         _return = r;
     }
@@ -27,11 +27,11 @@ internal class SlReturn: SlStatement
     /// <summary>
     /// Generate code for a LLVM return statement
     /// <example>
-    public override void GenerateCode(LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMBasicBlockRef entry)
+    public override void GenerateCode(LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMBasicBlockRef entry)
     {
         Logger.Add("Generating code for SlReturn");
 
-        LLVMSharp.LLVMValueRef expression = _return.GenerateValue(builder, module, entry);
+        LLVMSharp.LLVMValueRef expression = _return.GenerateValue(builder, entry);
         
         Logger.Add("Adding terminator for current method");
         Logger.DecreaseIndent();

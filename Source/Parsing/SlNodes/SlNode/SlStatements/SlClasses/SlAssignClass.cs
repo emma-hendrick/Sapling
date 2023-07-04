@@ -19,7 +19,7 @@ internal class SlAssignClass: SlStatement
     /// <summary>
     /// Construct a new SlAssignClass
     /// </summary>
-    public SlAssignClass(Logger logger, string identifier, SlClass slClass, SlScope scope): base(logger, scope)
+    public SlAssignClass(Logger logger, LLVMSharp.LLVMModuleRef module, string identifier, SlClass slClass, SlScope scope): base(logger, module, scope)
     {
         _classIdentifier = identifier;
         _slClass = slClass;
@@ -28,7 +28,7 @@ internal class SlAssignClass: SlStatement
     /// <summary>
     /// Generate code for a LLVM assign class statement
     /// <example>
-    public override void GenerateCode(LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMBasicBlockRef entry)
+    public override void GenerateCode(LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMBasicBlockRef entry)
     {
         // TODO
         Logger.Add("Generating code for SlAssignClass");

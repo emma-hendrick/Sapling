@@ -37,7 +37,7 @@ internal class SlOptreeNode: SlExpression
     /// <summary>
     /// Construct a new SlOptreeNode
     /// </summary>
-    public SlOptreeNode(Logger logger, SlOperator op, SlExpression l, SlExpression r, SlScope scope): base(logger, GetReturnType(op, l, r), scope)
+    public SlOptreeNode(Logger logger, LLVMSharp.LLVMModuleRef module, SlOperator op, SlExpression l, SlExpression r, SlScope scope): base(logger, module, GetReturnType(op, l, r), scope)
     {
         _op = op;
         _l = l;
@@ -55,7 +55,7 @@ internal class SlOptreeNode: SlExpression
     /// <summary>
     /// Generate the value of a SlOptreeNode. This involves recursively generating the values of all nodes which are descendants of this.
     /// </summary>
-    public override LLVMSharp.LLVMValueRef GenerateValue(LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMModuleRef module, LLVMSharp.LLVMBasicBlockRef entry)
+    public override LLVMSharp.LLVMValueRef GenerateValue(LLVMSharp.LLVMBuilderRef builder, LLVMSharp.LLVMBasicBlockRef entry)
     {
         Logger.Add($"Generating a value for {_l.ExType} {_op.OpType} {_l.ExType}");
 
@@ -92,7 +92,7 @@ internal class SlOptreeNode: SlExpression
             }
 
             // Create the right operator using the generated values of our left and right operands
-            return func(builder, _l.GenerateValue(builder, module, entry), _r.GenerateValue(builder, module, entry), "operation_result");
+            return func(builder, _l.GenerateValue(builder, entry), _r.GenerateValue(builder, entry), "operation_result");
         }
 
         // It is a comparison operator
@@ -123,6 +123,6 @@ internal class SlOptreeNode: SlExpression
         }
 
         // Create the correct comparison operator
-        return LLVMSharp.LLVM.BuildICmp(builder, compType, _l.GenerateValue(builder, module, entry), _r.GenerateValue(builder, module, entry), "comparison_result");
+        return LLVMSharp.LLVM.BuildICmp(builder, compType, _l.GenerateValue(builder, entry), _r.GenerateValue(builder, entry), "comparison_result");
     }
 }

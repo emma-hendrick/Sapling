@@ -25,6 +25,11 @@ internal class Parser
     private Logger _logger;
 
     /// <summary>
+    /// The base module to use
+    /// </summary>
+    private LLVMSharp.LLVMModuleRef _module = LLVMSharp.LLVM.ModuleCreateWithName("root");
+
+    /// <summary>
     /// The valid literal types
     /// </summary>
     private List<string> _literals = new List<string> { 
@@ -129,8 +134,8 @@ internal class Parser
         SlScope global = new SlScope();
 
         // Create a new instance of an abstract syntax tree
-        SlMethod root = new SlMethod(_logger, global, "int");
-        AST ast = new AST(root, global, _logger);
+        SlMethod root = new SlMethod(_logger, _module, global, "int");
+        AST ast = new AST(root, _module, global, _logger);
 
         // Parse the tokens and create AST nodes from them
         while (_current != null)
@@ -205,7 +210,7 @@ internal class Parser
         else if (!(nameof(Sapling.Tokens.Delimeter) == _current.Value.GetType().Name && _current.Value.Value == ";")) throw new Exception($"Missing Semicolon!! Instead got {_current.Value.Value}");
         GetNextNode(); // Consume ;
 
-        return new SlAssignProperty(_logger, type, identifier, expression, scope);
+        return new SlAssignProperty(_logger, _module, type, identifier, expression, scope);
     }
 
     /// <summary>
@@ -213,9 +218,13 @@ internal class Parser
     /// </summary>
     private SlAssignMethod ParseAssignMethod(SlScope scope)
     {
+        // TODO currently method syntax only allows int return with no input args
+        // TODO somehow replace method type with something which can actually get the return type of the method 
+        // TODO replace = sign with the method arguments
+
         if (_current is null) throw new Exception("Trying to parse null type!!");
-        string type = _current.Value.Value;
-        GetNextNode(); // Consume type
+        string type = "int";
+        GetNextNode(); // Consume method type
 
         if (_current is null) throw new Exception("Trying to parse null identifier!!");
         string identifier = _current.Value.Value;
@@ -228,11 +237,7 @@ internal class Parser
         if (_current is null) throw new Exception("Trying to parse null expression!!");
         SlMethod method = ParseMethod(scope, type); // Consume the method
 
-        if (_current is null) throw new Exception("Trying to parse null delimiter!!");
-        else if (!(nameof(Sapling.Tokens.Delimeter) == _current.Value.GetType().Name && _current.Value.Value == ";")) throw new Exception($"Missing Semicolon!! Instead got {_current.Value.Value}");
-        GetNextNode(); // Consume ;
-
-        return new SlAssignMethod(_logger, identifier, method, scope);
+        return new SlAssignMethod(_logger, _module, identifier, method, scope);
     }
 
     /// <summary>
@@ -270,7 +275,7 @@ internal class Parser
         else if (!(nameof(Sapling.Tokens.Delimeter) == _current.Value.GetType().Name && _current.Value.Value == ";")) throw new Exception($"Missing Semicolon!! Instead got {_current.Value.Value}");
         GetNextNode(); // Consume ;
 
-        return new SlAssignClass(_logger, identifier, slClass, scope);
+        return new SlAssignClass(_logger, _module, identifier, slClass, scope);
     }
 
     /// <summary>
@@ -282,7 +287,7 @@ internal class Parser
         SlScope scope = new SlScope(parentScope);
 
         // Create a new instance of a method
-        SlMethod method = new SlMethod(_logger, scope, retType);
+        SlMethod method = new SlMethod(_logger, _module, scope, retType);
 
         GetNextNode(); // Remove the {
 
@@ -303,7 +308,7 @@ internal class Parser
     {
         // Create the class scope
         SlScope scope = new SlScope(parentScope);
-        SlClass slClass = new SlClass(_logger, scope);
+        SlClass slClass = new SlClass(_logger, _module, scope);
 
         while(_current != null && _current.Value.GetType().Name == typeof(Sapling.Tokens.SaplingType).Name)
         {
@@ -339,7 +344,7 @@ internal class Parser
         else if (_literals.Contains(_current.Value.GetType().Name))
         {
             // This is just a literal
-            SlExpression expression = new SlLiteralExpression(_logger, _current.Value.GetType().Name, _current.Value.Value, scope);
+            SlExpression expression = new SlLiteralExpression(_logger, _module, _current.Value.GetType().Name, _current.Value.Value, scope);
             GetNextNode(); // Consume the literal
             return expression;
         }
@@ -394,7 +399,7 @@ internal class Parser
         if (_current is null) throw new Exception("Trying to parse null expression!!");
         SlExpression valIfFalse = ParseExpression(scope); // Consume the second expression
 
-        return HandleExpressionLookahead(scope, new SlTernaryExpression(_logger, cond, valIfTrue, valIfFalse, scope));
+        return HandleExpressionLookahead(scope, new SlTernaryExpression(_logger, _module, cond, valIfTrue, valIfFalse, scope));
     }
 
     /// <summary>
@@ -414,10 +419,10 @@ internal class Parser
         }
 
         // This will be used to actually build a tree from the expressions and operators
-        SlOptree rawOptree = SlOptreeFactory.CreateInstance(_logger, expressions, operators, scope);
+        SlOptree rawOptree = SlOptreeFactory.CreateInstance(_logger, _module, expressions, operators, scope);
 
         // Create a parsedOptree from the raw optree
-        return HandleExpressionLookahead(scope, new SlParsedOptree(_logger, rawOptree, scope));
+        return HandleExpressionLookahead(scope, new SlParsedOptree(_logger, _module, rawOptree, scope));
     }
 
     /// <summary>
@@ -444,7 +449,7 @@ internal class Parser
     private SlIdentifierExpression ParseIdentifier(SlScope scope)
     {
         if (_current is null) throw new Exception("Trying to parse null identifier!!");
-        SlIdentifierExpression identifierExpression = new SlIdentifierExpression(_logger, _current.Value.Value, scope);
+        SlIdentifierExpression identifierExpression = new SlIdentifierExpression(_logger, _module, _current.Value.Value, scope);
         GetNextNode();
         return identifierExpression;
     }
@@ -455,7 +460,7 @@ internal class Parser
     private SlOperator ParseOperator(SlScope scope)
     {
         if (_current is null) throw new Exception("Trying to parse null operator!!");
-        SlOperator op = new SlOperator(_logger, _current.Value.Value, scope);
+        SlOperator op = new SlOperator(_logger, _module, _current.Value.Value, scope);
         GetNextNode(); // Consume operator
         return op;
     }
@@ -468,7 +473,7 @@ internal class Parser
         GetNextNode(); // Consume Return   
         SlExpression expression = ParseExpression(scope);
         GetNextNode(); // Consume Delimiter
-        return new SlReturn(_logger, expression, scope);
+        return new SlReturn(_logger, _module, expression, scope);
     }
 
     /// <summary>
@@ -507,7 +512,7 @@ internal class Parser
         else if (!(nameof(Sapling.Tokens.Delimeter) == _current.Value.GetType().Name && _current.Value.Value == ";")) throw new Exception($"Missing Semicolon!! Instead got {_current.Value.Value}");
         GetNextNode(); // Consume ;
 
-        return new SlMethodCall(_logger, identifier, args, scope);
+        return new SlMethodCall(_logger, _module, identifier, args, scope);
     }
 
     /// <summary>
@@ -543,6 +548,6 @@ internal class Parser
         GetNextNode(); // Consume )
         
         // It is important to note we actually should not consume the semicolon here, as the expression will consume it
-        return new SlMethodCallAsExpression(_logger, identifier, args, scope);
+        return new SlMethodCallAsExpression(_logger, _module, identifier, args, scope);
     }
 }
