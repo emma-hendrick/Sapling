@@ -16,18 +16,18 @@ internal class SlOptree: SlExpression
     /// </summary>
     private static Dictionary <string, int> _precedence = new Dictionary<string, int>
         {
-            // Precedence for comparison operators
-            {"==", 11},
-            {"!=", 11},
-            {"<", 12},
-            {"<=", 12},
-            {">", 12},
-            {">=", 12},
-            
             // Precedence for boolean operators
-            {"^", 21},
-            {"||", 22},
-            {"&&", 23},
+            {"^", 11},
+            {"||", 12},
+            {"&&", 13},
+
+            // Precedence for comparison operators
+            {"==", 21},
+            {"!=", 21},
+            {"<", 22},
+            {"<=", 22},
+            {">", 22},
+            {">=", 22},
 
             // Precedence for arithmetic operators
             {"-", 31}, 
