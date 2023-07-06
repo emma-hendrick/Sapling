@@ -48,7 +48,7 @@ internal class SlTernaryExpression: SlExpression
     {
         // Create a function to perform the ternary operation
         LLVMSharp.LLVMTypeRef retType = Scope.FindType(Logger, _valIfTrue.ExType);
-        LLVMSharp.LLVMTypeRef[] paramTypes = {Scope.FindType(Logger, "bool")};
+        LLVMSharp.LLVMTypeRef[] paramTypes = {Scope.FindType(Logger, "bool"), Scope.FindType(Logger, _valIfTrue.ExType), Scope.FindType(Logger, _valIfFalse.ExType)}; 
         LLVMSharp.LLVMTypeRef functionType = LLVMSharp.LLVM.FunctionType(retType, paramTypes, false);
         LLVMSharp.LLVMValueRef function = LLVMSharp.LLVM.AddFunction(Module, "ternary", functionType);
 
@@ -62,22 +62,6 @@ internal class SlTernaryExpression: SlExpression
         // Branch to true or false basic block based on comparison result
         LLVMSharp.LLVM.BuildCondBr(builder, LLVMSharp.LLVM.GetParam(function, 0), trueBranch, falseBranch);
 
-        // Choose between valIfFalse and valIfTrue based on the condition
-        LLVMSharp.LLVM.PositionBuilderAtEnd(builder, mergeBranch);
-        LLVMSharp.LLVMValueRef phiNode = LLVMSharp.LLVM.BuildPhi(builder, Scope.FindType(Logger, GetReturnType(Logger, _cond, _valIfTrue, _valIfFalse)), "phi_node");
-
-        // We are using this on its own because if one of the values is a ternary / method call, it will be executed in a specific branch, then the builder will have to be positioned again
-        LLVMSharp.LLVMValueRef[] incomingValues = new[] {_valIfTrue.GenerateValue(builder, trueBranch), _valIfFalse.GenerateValue(builder, falseBranch)};
-
-        // Reposition the builder
-        LLVMSharp.LLVM.PositionBuilderAtEnd(builder, mergeBranch);
-        LLVMSharp.LLVMBasicBlockRef[] incomingBlocks = new[] {trueBranch, falseBranch};
-
-        // Do the comparison and return the phi node which did the comparison
-        LLVMSharp.LLVM.AddIncoming(phiNode, incomingValues, incomingBlocks, 2);
-        LLVMSharp.LLVM.BuildRet(builder, phiNode);
-
-        // We are doing it in this weird order to ensure the values are in the branches before we branch from them
         // Set builder to the true basic block
         LLVMSharp.LLVM.PositionBuilderAtEnd(builder, trueBranch);
         LLVMSharp.LLVM.BuildBr(builder, mergeBranch);
@@ -86,11 +70,21 @@ internal class SlTernaryExpression: SlExpression
         LLVMSharp.LLVM.PositionBuilderAtEnd(builder, falseBranch);
         LLVMSharp.LLVM.BuildBr(builder, mergeBranch);
 
+        // Choose between valIfFalse and valIfTrue based on the condition
+        LLVMSharp.LLVM.PositionBuilderAtEnd(builder, mergeBranch);
+        LLVMSharp.LLVMValueRef phiNode = LLVMSharp.LLVM.BuildPhi(builder, Scope.FindType(Logger, GetReturnType(Logger, _cond, _valIfTrue, _valIfFalse)), "phi_node");
+        LLVMSharp.LLVMValueRef[] incomingValues = new[] {LLVMSharp.LLVM.GetParam(function, 1), LLVMSharp.LLVM.GetParam(function, 2)};
+        LLVMSharp.LLVMBasicBlockRef[] incomingBlocks = new[] {trueBranch, falseBranch};
+
+        // Do the comparison and return the phi node which did the comparison
+        LLVMSharp.LLVM.AddIncoming(phiNode, incomingValues, incomingBlocks, 2);
+        LLVMSharp.LLVM.BuildRet(builder, phiNode);
+
         // Return the builder to its original position
         LLVMSharp.LLVM.PositionBuilderAtEnd(builder, entry);
 
         // Call the ternary function
-        LLVMSharp.LLVMValueRef[] args = new LLVMSharp.LLVMValueRef[] { _cond.GenerateValue(builder, entry) };
+        LLVMSharp.LLVMValueRef[] args = new LLVMSharp.LLVMValueRef[] { _cond.GenerateValue(builder, entry), _valIfTrue.GenerateValue(builder, entry), _valIfFalse.GenerateValue(builder, entry) };
         LLVMSharp.LLVMValueRef result = LLVMSharp.LLVM.BuildCall(builder, function, args, "ternary_result");
         return result;
     }
