@@ -231,22 +231,69 @@ internal static class Program
     /// </summary>
     private static int Run(string filename)
     {
+        return Run(filename, false);
+    }
+
+    /// <summary>
+    /// This method tests LLVM IR generation, compilation, and execution, and then runs a sapling program in testing mode.
+    /// <example>
+    /// For example:
+    /// <code>
+    /// Test("source.sl");
+    /// </code>
+    /// results in the creation and execution of source.exe in testing mode.
+    /// </example>
+    /// </summary>
+    private static int Test(string filename)
+    {
+        if (!CompilationTest(_logger))
+        {
+            throw new Exception("There was an error when testing LLVM compilation. Please check our github, and if there is not an issue posted, please post it.");
+        }
+
+        return Run(filename, true);
+    }
+
+    /// <summary>
+    /// This method runs an executable in either standard or testing mode.
+    /// <example>
+    /// For example:
+    /// <code>
+    /// Run("source.sl", true);
+    /// </code>
+    /// results in the creation and execution of source.exe in testing mode.
+    /// </example>
+    /// </summary>
+    private static int Run(string filename, bool testing = false)
+    {
         Build(filename);
 
         _logger.NewSection();
-        _logger.Add($"Running {filename}.sl");
+        string mode = testing ? "Testing" : "Running";
+        _logger.Add($"{mode} {filename}.sl");
 
         // Execute the generated file
         Process process = new Process();
         process.StartInfo.FileName = $"builds/{filename}";
-        // process.StartInfo.Arguments = $""; TODO get args from input
+        process.StartInfo.Arguments = testing ? "test" : ""; // TODO get args from input
         process.StartInfo.RedirectStandardOutput = true;
         process.StartInfo.UseShellExecute = false;
+        
+        process.OutputDataReceived += (sender, e) =>
+        {
+            if (!string.IsNullOrEmpty(e.Data))
+            {
+                Console.WriteLine(e.Data);
+            }
+        };
+
         process.Start();
 
         // Read the output or wait for the process to exit
         // TODO - Handle output reading in a thread so we can print it as it is received, instead of just printing it after
-        string output = process.StandardOutput.ReadToEnd();
+        // string output = process.StandardOutput.ReadToEnd();
+        process.BeginOutputReadLine();
+        string output = "";
         process.WaitForExit();
 
         // Process the output or handle any errors
@@ -264,60 +311,6 @@ internal static class Program
         else
         {
             throw new Exception($"Execution failed with exit code: {exitCode}");
-        }
-
-        return exitCode;
-    }
-
-    /// <summary>
-    /// This method tests LLVM IR generation, compilation, and execution, and then runs a sapling program in testing mode.
-    /// <example>
-    /// For example:
-    /// <code>
-    /// Test("source.sl");
-    /// </code>
-    /// results in the creation and testing of source.exe.
-    /// </example>
-    /// </summary>
-    private static int Test(string filename)
-    {
-        if (!CompilationTest(_logger))
-        {
-            throw new Exception("There was an error when testing LLVM compilation. Please check our github, and if there is not an issue posted, please post it.");
-        }
-
-        Build(filename);
-
-        _logger.NewSection();
-        _logger.Add($"Testing {filename}.sl");
-
-        // Execute the generated file
-        Process process = new Process();
-        process.StartInfo.FileName = $"builds/{filename}";
-        // process.StartInfo.Arguments = $"test"; TODO get args from input
-        process.StartInfo.RedirectStandardOutput = true;
-        process.StartInfo.UseShellExecute = false;
-        process.Start();
-
-        // Read the output or wait for the process to exit
-        string output = process.StandardOutput.ReadToEnd();
-        process.WaitForExit();
-
-        // Process the output or handle any errors
-        if (output != "")
-        {
-            _logger.Add($"Testing generated output: Output = {output}");
-        }
-
-        // Check the process exit code
-        int exitCode = process.ExitCode;
-        if (exitCode == 0)
-        {
-            _logger.Add("Testing succeeded.");
-        }
-        else
-        {
-            throw new Exception($"Testing failed with exit code: {exitCode}");
         }
 
         return exitCode;
