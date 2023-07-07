@@ -276,31 +276,11 @@ internal static class Program
         Process process = new Process();
         process.StartInfo.FileName = $"builds/{filename}";
         process.StartInfo.Arguments = testing ? "test" : ""; // TODO get args from input
-        process.StartInfo.RedirectStandardOutput = true;
+        process.StartInfo.RedirectStandardOutput = false;
         process.StartInfo.UseShellExecute = false;
-        
-        process.OutputDataReceived += (sender, e) =>
-        {
-            if (!string.IsNullOrEmpty(e.Data))
-            {
-                Console.WriteLine(e.Data);
-            }
-        };
 
         process.Start();
-
-        // Read the output or wait for the process to exit
-        // TODO - Handle output reading in a thread so we can print it as it is received, instead of just printing it after
-        // string output = process.StandardOutput.ReadToEnd();
-        process.BeginOutputReadLine();
-        string output = "";
         process.WaitForExit();
-
-        // Process the output or handle any errors
-        if (output != "")
-        {
-            _logger.Add($"Execution generated output: Output = {output}");
-        }
 
         // Check the process exit code
         int exitCode = process.ExitCode;
