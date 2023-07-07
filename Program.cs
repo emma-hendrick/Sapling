@@ -23,6 +23,7 @@ internal static class Program
     private static List<string> _validCommands = new List<string>()
         {
             "run",
+            "run-raw",
             "build",
             "test",
             "help",
@@ -66,6 +67,9 @@ internal static class Program
             switch(command){
                 case "run":
                     commandFunc = Run;
+                    break;
+                case "run-raw":
+                    commandFunc = RunRaw;
                     break;
                 case "build":
                     commandFunc = Build;
@@ -220,7 +224,7 @@ internal static class Program
     }
 
     /// <summary>
-    /// This method runs an executable.
+    /// This method creates and runs an executable.
     /// <example>
     /// For example:
     /// <code>
@@ -231,7 +235,22 @@ internal static class Program
     /// </summary>
     private static int Run(string filename)
     {
-        return Run(filename, false);
+        return Run(filename, false, true);
+    }
+
+    /// <summary>
+    /// This method runs an executable.
+    /// <example>
+    /// For example:
+    /// <code>
+    /// Run("source.sl");
+    /// </code>
+    /// results in the execution of source.exe.
+    /// </example>
+    /// </summary>
+    private static int RunRaw(string filename)
+    {
+        return Run(filename, false, false);
     }
 
     /// <summary>
@@ -251,7 +270,7 @@ internal static class Program
             throw new Exception("There was an error when testing LLVM compilation. Please check our github, and if there is not an issue posted, please post it.");
         }
 
-        return Run(filename, true);
+        return Run(filename, true, true);
     }
 
     /// <summary>
@@ -264,9 +283,9 @@ internal static class Program
     /// results in the creation and execution of source.exe in testing mode.
     /// </example>
     /// </summary>
-    private static int Run(string filename, bool testing = false)
+    private static int Run(string filename, bool testing = false, bool compile = true)
     {
-        Build(filename);
+        if (compile) Build(filename);
 
         _logger.NewSection();
         string mode = testing ? "Testing" : "Running";
