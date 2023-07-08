@@ -86,8 +86,6 @@ internal static class Program
                     break;
                 default:
                     throw new Exception($"You have entered an invalid command: Valid commands are {string.Join(", ", _validCommands)}. {_executionStringFormat}");
-
-            
             }
 
             // Store the result of the users command to return after execution
