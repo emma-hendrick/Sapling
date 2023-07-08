@@ -48,7 +48,6 @@ internal static class Program
     /// </summary>
     private static int Main(string[] args)
     {
-        Console.WriteLine(Environment.AssemblyDirectory);
         try
         {
             // Default if the user does not provide a file
@@ -56,6 +55,7 @@ internal static class Program
 
             // Reinitialize the logger to use the filename provided in the parameters
             _logger = new Logger(filename.Substring(filename.Length - 3) == ".sl" ? filename.Substring(0, filename.Length - 3) : filename, printOutput: (Environment.PrintOutput == "true"), debug: (Environment.Debug == "true"));
+            _logger.Add($"Sapling successfully initialized in directory {Environment.AssemblyDirectory}");
 
             // Check whether the filename is valid, and if not, throw an error
             if(_invalidFilenames.Contains(filename)) throw new Exception($"You have entered an invalid filename: You cannot use the following, as they are reserved for tests: {string.Join(' ', _invalidFilenames)}");

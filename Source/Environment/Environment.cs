@@ -26,7 +26,12 @@ internal static class Environment
     public static string Debug => _loader.Get("DEBUG") ?? Constants.DefaultDebug;
 
     /// <summary>
+    /// The assembly file
+    /// </summary>
+    private static string AssemblyFile => (System.Reflection.Assembly.GetEntryAssembly() ?? System.Reflection.Assembly.GetExecutingAssembly()).Location; // Use the entry assembly if there is one, otherwise use the executing assembly
+
+    /// <summary>
     /// The assembly directory
     /// </summary>
-    public static string AssemblyDirectory => Path.GetDirectoryName( System.Reflection.Assembly.GetEntryAssembly().Location );
+    public static string AssemblyDirectory => Path.GetDirectoryName( AssemblyFile ) ?? "There was an error, so we don't want this path working. No messing up the hosts machine!";
 }
