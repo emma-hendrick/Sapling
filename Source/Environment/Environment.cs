@@ -8,7 +8,7 @@ internal static class Environment
     /// <summary>
     /// The environment loader
     /// </summary>
-    private static EnvironmentLoader _loader = new EnvironmentLoader(AssemblyDirectory + "\\.env"); // TODO - Get from exact path, same folder the sapling executable is in
+    private static EnvironmentLoader _loader = new EnvironmentLoader(AssemblyDirectory + "\\.env");
 
     /// <summary>
     /// The target of the compiler
