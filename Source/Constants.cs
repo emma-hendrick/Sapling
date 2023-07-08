@@ -11,7 +11,7 @@ internal static class Constants
     /// <summary>
     /// The url of the Sapling Documentation.
     /// </summary> 
-    internal const string SaplingDocumentationUrl = "https://github.com/michhendrick/Sapling/tree/main/Guide/home";
+    internal const string SaplingDocumentationUrl = "https://github.com/michhendrick/Sapling/tree/main/Guide/home.md";
 
     /// <summary>
     /// Default of whether or not to print our loggers output.
