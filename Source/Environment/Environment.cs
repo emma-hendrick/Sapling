@@ -8,7 +8,7 @@ internal static class Environment
     /// <summary>
     /// The environment loader
     /// </summary>
-    private static EnvironmentLoader _loader = new EnvironmentLoader(".env"); // TODO - Get from exact path, same folder the sapling executable is in
+    private static EnvironmentLoader _loader = new EnvironmentLoader(AssemblyDirectory + "\\.env"); // TODO - Get from exact path, same folder the sapling executable is in
 
     /// <summary>
     /// The target of the compiler
@@ -24,4 +24,9 @@ internal static class Environment
     /// Whether or not to print the loggers debug messages
     /// </summary>
     public static string Debug => _loader.Get("DEBUG") ?? Constants.DefaultDebug;
+
+    /// <summary>
+    /// The assembly directory
+    /// </summary>
+    public static string AssemblyDirectory => Path.GetDirectoryName( System.Reflection.Assembly.GetEntryAssembly().Location );
 }

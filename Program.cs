@@ -48,6 +48,7 @@ internal static class Program
     /// </summary>
     private static int Main(string[] args)
     {
+        Console.WriteLine(Environment.AssemblyDirectory);
         try
         {
             // Default if the user does not provide a file
