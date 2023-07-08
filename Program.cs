@@ -27,6 +27,7 @@ internal static class Program
             "build",
             "test",
             "help",
+            "clean",
         };
 
     /// <summary>
@@ -53,7 +54,7 @@ internal static class Program
             string filename = args.Length > 1 ? args[1]: Constants.DefaultFileName;
 
             // Reinitialize the logger to use the filename provided in the parameters
-            _logger = new Logger(filename.Substring(0, filename.Length - 3), printOutput: (Environment.PrintOutput == "true"), debug: (Environment.Debug == "true"));
+            _logger = new Logger(filename.Substring(filename.Length - 3) == ".sl" ? filename.Substring(0, filename.Length - 3) : filename, printOutput: (Environment.PrintOutput == "true"), debug: (Environment.Debug == "true"));
 
             // Check whether the filename is valid, and if not, throw an error
             if(_invalidFilenames.Contains(filename)) throw new Exception($"You have entered an invalid filename: You cannot use the following, as they are reserved for tests: {string.Join(' ', _invalidFilenames)}");
@@ -79,6 +80,9 @@ internal static class Program
                     break;
                 case "help":
                     commandFunc = Help;
+                    break;
+                case "clean":
+                    commandFunc = Clean;
                     break;
                 default:
                     throw new Exception($"You have entered an invalid command: Valid commands are {string.Join(", ", _validCommands)}. {_executionStringFormat}");
@@ -332,6 +336,59 @@ internal static class Program
         Console.WriteLine("Execute sapling run {filename} in order to run your very own sapling program.");
         Console.WriteLine("Sapling documentation is located here: ");
         Console.ResetColor();
+        return 0;
+    }
+
+    /// <summary>
+    /// This method deletes logs and build files (with the exception of the executable) for a specific file.
+    /// <example>
+    /// For example:
+    /// <code>
+    /// Clean("source.sl");
+    /// </code>
+    /// will delete all logs and build files (sans executable) of source.sl.
+    /// </example>
+    /// </summary>
+    private static int Clean(string filename)
+    {
+        _logger.NewSection();
+        _logger.Add($"Cleaning {filename}.sl");
+
+        // Delete a file if it exists
+        void DeleteIfExists(string filename)
+        {  
+            if (File.Exists(filename))
+            {
+                _logger.Add($"Deleting {filename}.");
+                File.Delete(filename);
+                _logger.Add($"{filename} deleted.");
+            }
+        }
+
+        // Delete the build files (minus the executable)
+        DeleteIfExists($"builds/{filename}.bc");
+        DeleteIfExists($"builds/{filename}.ll");
+
+        // Delete all logs from the logs directory
+        string[] logs = Directory.GetFiles("logs");
+        foreach (string logName in logs) 
+        {
+            if (logName.Substring(5, filename.Length) == filename && logName.Substring(5) != _logger.LogName) 
+            {
+                DeleteIfExists(logName);
+            }
+        }
+
+        // Delete all errors from the error directory
+        string[] errs = Directory.GetFiles("logs/errs");
+        foreach (string errName in errs) 
+        {
+            if (errName.Substring(14, filename.Length) == filename && errName.Substring(10) != _logger.ErrLogName) 
+            {
+                DeleteIfExists(errName);
+            }
+        }
+        
         return 0;
     }
 
