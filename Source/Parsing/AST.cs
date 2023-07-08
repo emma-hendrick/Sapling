@@ -40,7 +40,6 @@ internal class AST
         {"printf", "printf"},
         {"getchar", "getchar"},
         {"flush_stdin", "flush_stdin"},
-        {"getstr", "getstr"},
     };
 
     /// <summary>
@@ -88,7 +87,6 @@ internal class AST
     {
         AddPrintf();
         AddGetChar();
-        AddGetStr();
         AddFlushStdin();
     }
 
@@ -125,30 +123,13 @@ internal class AST
     }
 
     /// <summary>
-    /// Add getstr to our module and the global scope
-    /// </summary>
-    private void AddGetStr()
-    {
-        // TODO
-        // // Declare the getstr function
-        // LLVMSharp.LLVMTypeRef[] getstrParamTypes = {};
-        // LLVMSharp.LLVMTypeRef getstrType = LLVMSharp.LLVMTypeRef.FunctionType(_global.FindType(_logger, "str"), getstrParamTypes, false);
-        // string getstrName = _BIFNames["getstr"];
-        // LLVMSharp.LLVMValueRef getstrFunc = LLVMSharp.LLVM.AddFunction(_module, getstrName, getstrType);
-
-        // // Add the getstr function to the global scope
-        // _global.AddFunctionType(_logger, getstrName, getstrType);
-        // _global.AddFunction(_logger, getstrName, getstrFunc);
-    }
-
-    /// <summary>
     /// Add flush_stdin to our module and the global scope
     /// </summary>
     private void AddFlushStdin()
     {
         // Declare the flush_stdin function
         LLVMSharp.LLVMTypeRef[] flushStdinParamTypes = {};
-        LLVMSharp.LLVMTypeRef flushStdinType = LLVMSharp.LLVMTypeRef.FunctionType(LLVMSharp.LLVMTypeRef.VoidType(), flushStdinParamTypes, false);
+        LLVMSharp.LLVMTypeRef flushStdinType = LLVMSharp.LLVMTypeRef.FunctionType(LLVMSharp.LLVMTypeRef.Int32Type(), flushStdinParamTypes, false);
         string flushStdinName = _BIFNames["flush_stdin"];
         LLVMSharp.LLVMValueRef flushStdinFunc = LLVMSharp.LLVM.AddFunction(_module, flushStdinName, flushStdinType);
 
@@ -173,7 +154,7 @@ internal class AST
 
         // The done block
         LLVMSharp.LLVM.PositionBuilderAtEnd(_builder, done);
-        LLVMSharp.LLVM.BuildRetVoid(_builder);
+        LLVMSharp.LLVM.BuildRet(_builder, LLVMSharp.LLVM.ConstInt(LLVMSharp.LLVM.Int32Type(), (ulong)0, false));
 
         // Add the flush_stdin function to the global scope
         _global.AddFunctionType(_logger, flushStdinName, flushStdinType);
