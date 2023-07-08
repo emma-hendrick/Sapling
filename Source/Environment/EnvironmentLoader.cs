@@ -29,6 +29,7 @@ internal class EnvironmentLoader
     /// </summary>
     private void Load()
     {
+        if (!File.Exists(_path)) return;
         string[] lines = File.ReadAllLines(_path);
 
         foreach (string line in lines)

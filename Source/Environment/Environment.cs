@@ -8,7 +8,7 @@ internal static class Environment
     /// <summary>
     /// The environment loader
     /// </summary>
-    private static EnvironmentLoader _loader = new EnvironmentLoader(AssemblyDirectory + "\\.env");
+    private static EnvironmentLoader _loader = new EnvironmentLoader(Path.Combine(AssemblyDirectory, ".env"));
 
     /// <summary>
     /// The target of the compiler

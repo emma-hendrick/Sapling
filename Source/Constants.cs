@@ -15,7 +15,7 @@ internal static class Constants
     internal const string DefaultPrintOutput = "false";
     
     /// <summary>
-    /// Default of whether or not to debug.
+    /// Default of whether or not to debug error messages in the compiler.
     /// </summary> 
     internal const string DefaultDebug = "false";
 
