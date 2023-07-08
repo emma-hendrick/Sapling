@@ -333,7 +333,7 @@ internal static class Program
         Console.ForegroundColor = ConsoleColor.DarkGreen;
         Console.WriteLine("Hello future Sapling user!");
         Console.WriteLine("Execute sapling run {filename} in order to run your very own sapling program.");
-        Console.WriteLine("Sapling documentation is located here: ");
+        Console.WriteLine($"Sapling documentation is located here: {Constants.SaplingDocumentationUrl}");
         Console.ResetColor();
         return 0;
     }
