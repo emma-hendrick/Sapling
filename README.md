@@ -66,3 +66,4 @@ Mostly just patches and bug fixing.
 
 ### [Installation Guide](Guide/installation.md)
 ### [Sapling Guide](Guide/home.md)
+### [Syntax Highlighter](https://github.com/michhendrick/Sapling-Syntax-Highlighting)
